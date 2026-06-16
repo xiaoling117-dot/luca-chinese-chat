@@ -879,7 +879,7 @@ $id('csNext').addEventListener('click', nextCallLine);
       el.addEventListener('click',function(){
         if(used>=g.daily) return;
         sent[i]=(sent[i]||0)+1; used=sent[i]; saveSent();
-        love=Math.min(100,love+g.love); updateLove(true);
+        love=Math.min(100,love+g.love); updateLove(true); save();
         var f=document.createElement('div'); f.className='floatgift'; f.textContent=g.emoji;
         f.style.cssText='left:'+Math.random()*60+'%;bottom:200px;';
         document.querySelector('.phone').appendChild(f);
