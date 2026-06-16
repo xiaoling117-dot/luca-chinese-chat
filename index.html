@@ -580,11 +580,16 @@ let love = 0;
 let awarded = new Set();
 
 function save(){ try{
-  localStorage.setItem('luca_save', JSON.stringify({love, dayIdx, awarded:[...awarded]}));
+  localStorage.setItem('luca_save', JSON.stringify({love, dayIdx, idx, awarded:[...awarded]}));
 }catch(e){} }
 function load(){ try{
   const d = JSON.parse(localStorage.getItem('luca_save')||'null');
-  if(d){ love=d.love||0; dayIdx=Math.min(d.dayIdx||0, DAYS.length-1); awarded=new Set(d.awarded||[]); }
+  if(d){
+    love=d.love||0;
+    dayIdx=Math.min(d.dayIdx||0, DAYS.length-1);
+    idx=Math.min(d.idx||0, curStory().length);
+    awarded=new Set(d.awarded||[]);
+  }
 }catch(e){} }
 
 const sleep = ms => new Promise(r=>setTimeout(r, ms));
@@ -698,8 +703,8 @@ function renderChoices(options){
 async function pick(opt){
   choicesEl.innerHTML=''; addUser(opt);
   const key=dayIdx+'-'+idx;
-  if(!awarded.has(key)){ love+=(opt.love||0); awarded.add(key); updateLove(true); save(); }
-  idx++;
+  if(!awarded.has(key)){ love+=(opt.love||0); awarded.add(key); updateLove(true); }
+  idx++; save();
   if(opt.reply){ await sleep(350); await showTyping(800); addLuca(opt.reply); await sleep(300); }
   run();
 }
@@ -735,29 +740,38 @@ function unlockStory(card){
   const btn=card.querySelector('.lock-btn');
   if(btn){ btn.textContent='🔓 解放しました'; btn.disabled=true; }
   card.classList.add('opened');
-  idx++; run();
+  idx++; save(); run();
 }
 async function run(){
   while(idx < curStory().length){
     const node=curStory()[idx];
-    if(node.type==='msg'){ await showTyping(700+node.zh.length*40); addLuca(node); idx++; await sleep(450); }
-    else if(node.type==='voice'){ await showTyping(600); addLuca(node); idx++; await sleep(450); }
+    if(node.type==='msg'){ await showTyping(700+node.zh.length*40); addLuca(node); idx++; save(); await sleep(450); }
+    else if(node.type==='voice'){ await showTyping(600); addLuca(node); idx++; save(); await sleep(450); }
     else if(node.type==='choice'){ renderChoices(node.options); return; }
     else if(node.type==='locked'){ renderLock(node); return; }
-    else if(node.type==='end'){ idx++; ending(); return; }
+    else if(node.type==='end'){ idx++; save(); ending(); return; }
   }
 }
-function startDay(){
-  chat.innerHTML=''; choicesEl.innerHTML=''; idx=0;
+function startDay(resetProgress){
+  chat.innerHTML=''; choicesEl.innerHTML='';
+  if(resetProgress){ idx=0; save(); }
   addDayChip();
   const t = curStory()[0].time || '23:00';
   addTimestamp(t);
   run();
 }
-function nextDay(){ if(dayIdx<DAYS.length-1){ dayIdx++; save(); startDay(); } }
-function restartAll(){ dayIdx=0; idx=0; startDay(); }
+function nextDay(){ if(dayIdx<DAYS.length-1){ dayIdx++; idx=0; save(); startDay(false); } }
+function restartAll(){
+  dayIdx=0;
+  idx=0;
+  love=0;
+  awarded=new Set();
+  save();
+  updateLove(false);
+  startDay(false);
+}
 
-load(); updateLove(false); startDay();
+load(); updateLove(false); startDay(false);
 
 /* ===================== 通話（着信→応答→陸が一言） ===================== */
 var CALL=[
