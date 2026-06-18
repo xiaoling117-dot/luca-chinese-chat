@@ -78,6 +78,11 @@
     border:1px solid rgba(185,167,255,.35); color:var(--accent); font-size:11px;
     font-family:inherit; padding:1px 7px; border-radius:8px; cursor:pointer; line-height:1.5;}
   .zh .spk:active{transform:scale(.9);}
+  .zh .spk:disabled,.voice-play-btn:disabled,#csReplay:disabled{
+    cursor:not-allowed;opacity:.45;transform:none;}
+  .speech-fallback{margin:8px 14px;padding:8px 10px;border-radius:10px;
+    background:rgba(255,190,120,.12);border:1px solid rgba(255,190,120,.3);
+    color:var(--sub);font-size:12px;text-align:center;}
   .meta{font-size:10px; color:var(--sub); margin:0 2px;}
 
   .typing .bubble{padding:13px 16px;}
@@ -627,18 +632,86 @@ function updateLove(bump){
   }
 }
 
-function pickZhVoice(){ var vs=(window.speechSynthesis&&speechSynthesis.getVoices())||[];
-  for(var i=0;i<vs.length;i++){ if(/zh|cmn|chinese/i.test(vs[i].lang+' '+vs[i].name)) return vs[i]; } return null; }
-function speak(text){ try{ if(!window.speechSynthesis) return; speechSynthesis.cancel();
-  var u=new SpeechSynthesisUtterance(text); u.lang='zh-CN'; u.rate=0.9;
-  var v=pickZhVoice(); if(v){ u.voice=v; } speechSynthesis.speak(u);
-}catch(e){} }
-if(window.speechSynthesis){ speechSynthesis.onvoiceschanged=function(){}; }
+var speechSupported=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
+var zhVoice=null;
+var speechRequestId=0;
+function pickZhVoice(vs){
+  vs=vs||[];
+  for(var i=0;i<vs.length;i++){
+    if(/zh|cmn|chinese/i.test(vs[i].lang+' '+vs[i].name)) return vs[i];
+  }
+  return null;
+}
+function refreshZhVoice(){
+  if(!speechSupported) return [];
+  var voices=speechSynthesis.getVoices()||[];
+  zhVoice=pickZhVoice(voices);
+  return voices;
+}
+function initSpeechVoices(){
+  if(!speechSupported) return Promise.resolve(null);
+  if(refreshZhVoice().length) return Promise.resolve(zhVoice);
+  return new Promise(function(resolve){
+    var settled=false;
+    function finish(){
+      var voices=refreshZhVoice();
+      if(!voices.length||settled) return;
+      settled=true;
+      speechSynthesis.removeEventListener('voiceschanged',finish);
+      resolve(zhVoice);
+    }
+    speechSynthesis.addEventListener('voiceschanged',finish);
+    setTimeout(function(){
+      if(settled) return;
+      settled=true;
+      speechSynthesis.removeEventListener('voiceschanged',finish);
+      refreshZhVoice();
+      resolve(zhVoice);
+    },2000);
+  });
+}
+var voiceInitPromise=initSpeechVoices();
+if(speechSupported){
+  speechSynthesis.addEventListener('voiceschanged',refreshZhVoice);
+}
+function configureSpeechButton(btn){
+  if(!btn||speechSupported) return;
+  btn.disabled=true;
+  btn.setAttribute('aria-disabled','true');
+  btn.title='このブラウザは音声読み上げに対応していません';
+}
+function showSpeechFallback(){
+  if(speechSupported||document.querySelector('.speech-fallback')) return;
+  var msg=document.createElement('div');
+  msg.className='speech-fallback';
+  msg.setAttribute('role','status');
+  msg.textContent='このブラウザでは音声読み上げを利用できません。中国語とピンインを表示して練習してください。';
+  var phone=document.querySelector('.phone');
+  var header=phone&&phone.querySelector('header');
+  if(phone) phone.insertBefore(msg,header?header.nextSibling:phone.firstChild);
+}
+function speak(text){
+  if(!speechSupported){ showSpeechFallback(); return Promise.resolve(false); }
+  var requestId=++speechRequestId;
+  speechSynthesis.cancel();
+  return voiceInitPromise.then(function(){
+    if(requestId!==speechRequestId) return false;
+    try{
+      var u=new SpeechSynthesisUtterance(text);
+      u.lang='zh-CN'; u.rate=0.9;
+      if(zhVoice){ u.voice=zhVoice; }
+      speechSynthesis.speak(u);
+      return true;
+    }catch(e){ return false; }
+  });
+}
+showSpeechFallback();
 function makeVoiceBubble(node){
   var wrap=document.createElement('div'); wrap.className='voice-bubble';
   var sec=node.sec||12;
   var playDiv=document.createElement('div'); playDiv.className='voice-play';
   var pbtn=document.createElement('button'); pbtn.className='voice-play-btn'; pbtn.textContent='\u25b6';
+  configureSpeechButton(pbtn);
   var waveDiv=document.createElement('div'); waveDiv.className='voice-wave';
   for(var i=0;i<9;i++){ var sp=document.createElement('span'); waveDiv.appendChild(sp); }
   var secSpan=document.createElement('span'); secSpan.className='voice-sec'; secSpan.textContent=sec+"''";
@@ -651,9 +724,11 @@ function makeVoiceBubble(node){
   textDiv.appendChild(zhDiv); textDiv.appendChild(pyDiv); textDiv.appendChild(jaDiv);
   wrap.appendChild(playDiv); wrap.appendChild(tenBtn); wrap.appendChild(textDiv);
   pbtn.addEventListener('click',function(){
-    speak(node.zh);
-    waveDiv.classList.add('playing'); pbtn.textContent='\u23f8';
-    setTimeout(function(){ waveDiv.classList.remove('playing'); pbtn.textContent='\u25b6'; }, sec*900);
+    speak(node.zh).then(function(started){
+      if(!started) return;
+      waveDiv.classList.add('playing'); pbtn.textContent='\u23f8';
+      setTimeout(function(){ waveDiv.classList.remove('playing'); pbtn.textContent='\u25b6'; }, sec*900);
+    });
   });
   tenBtn.addEventListener('click',function(){
     var isOpen=textDiv.classList.toggle('open');
@@ -668,7 +743,10 @@ function makeBubble(node){
     '<div class="trans"><div class="py">'+node.py+'</div>'+node.ja+'</div>';
   b.addEventListener('click', ()=> b.classList.toggle('open'));
   const sp=b.querySelector('.spk');
-  if(sp) sp.addEventListener('click', function(e){ e.stopPropagation(); speak(node.zh); });
+  if(sp){
+    configureSpeechButton(sp);
+    sp.addEventListener('click', function(e){ e.stopPropagation(); speak(node.zh); });
+  }
   return b;
 }
 function addDayChip(){ const c=document.createElement('div'); c.className='daychip'; c.textContent='— '+DAYS[dayIdx].label+' —'; chat.appendChild(c); }
@@ -818,6 +896,7 @@ function hangUp(){
   if(callAccepted && !awarded.has('call')){ awarded.add('call'); love=Math.min(100, love+8); updateLove(true); save(); }
   callAccepted=false;
 }
+configureSpeechButton($id('csReplay'));
 $id('csReplay').addEventListener('click', function(){ speak(CALL[callIdx].zh); });
 $id('csNext').addEventListener('click', nextCallLine);
 
