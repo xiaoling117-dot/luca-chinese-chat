@@ -104,7 +104,9 @@
   .choice:hover{background:rgba(185,167,255,.2);}
   .choice:active{transform:scale(.98);}
   .choice .cgloss{color:var(--sub); font-size:12px; margin-left:6px;}
-  .shortcut-bar{display:flex;gap:8px;padding:8px 14px 4px;justify-content:flex-start;}
+  .shortcut-bar{display:flex;gap:8px;padding:8px 14px 4px;justify-content:flex-start;
+    overflow-x:auto;scrollbar-width:none;}
+  .shortcut-bar::-webkit-scrollbar{display:none;}
   .sc-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;
     background:rgba(185,167,255,.12);border:1px solid rgba(185,167,255,.25);
     border-radius:20px;color:var(--text);font-size:13px;cursor:pointer;
@@ -190,6 +192,36 @@
     padding:calc(16px + env(safe-area-inset-top)) 18px 12px;border-bottom:1px solid var(--line);}
   .panel-hd h2{font-size:16px;color:var(--text);margin:0;}
   .panel-close{background:none;border:none;color:var(--sub);font-size:20px;cursor:pointer;padding:4px;}
+
+  /* ===== プロフィール・ステータスパネル ===== */
+  .profile-content,.status-content{flex:1;overflow-y:auto;padding:24px 20px calc(28px + env(safe-area-inset-bottom));}
+  .profile-face{width:140px;height:140px;border-radius:50%;margin:0 auto 20px;
+    object-fit:cover;object-position:center 15%;display:block;
+    border:3px solid rgba(185,167,255,.45);box-shadow:0 0 32px rgba(185,167,255,.25);}
+  .profile-card{background:rgba(20,16,40,.85);border:1px solid rgba(185,167,255,.2);
+    border-radius:18px;padding:18px;}
+  .profile-name{font-size:22px;font-weight:700;color:var(--text);text-align:center;margin-bottom:18px;}
+  .profile-name span{display:block;margin-top:3px;font-size:12px;font-weight:400;color:var(--accent);}
+  .profile-row{display:grid;grid-template-columns:62px 1fr;gap:10px;padding:10px 0;
+    border-top:1px solid rgba(185,167,255,.12);font-size:13px;line-height:1.6;}
+  .profile-label{color:var(--sub);}
+  .profile-value{color:var(--text);}
+  .profile-quote{margin-top:18px;padding:14px;border-radius:14px;
+    background:rgba(185,167,255,.1);color:var(--text);text-align:center;font-size:14px;}
+  .profile-intimacy{margin-top:16px;}
+  .panel-progress-label{display:flex;justify-content:space-between;gap:12px;
+    color:var(--sub);font-size:12px;margin-bottom:7px;}
+  .panel-progress{height:7px;border-radius:99px;overflow:hidden;background:rgba(255,255,255,.08);}
+  .panel-progress-fill{height:100%;width:0;border-radius:inherit;
+    background:linear-gradient(90deg,#8a72ff,#ff8db5);transition:width .25s ease;}
+  .status-content{display:flex;flex-direction:column;gap:12px;}
+  .stat-row{background:rgba(20,16,40,.85);border:1px solid rgba(185,167,255,.2);
+    border-radius:16px;padding:16px;}
+  .stat-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .stat-label{color:var(--sub);font-size:13px;}
+  .stat-value{color:var(--text);font-size:18px;font-weight:700;}
+  .stat-note{margin-top:6px;color:var(--sub);font-size:11px;line-height:1.5;}
+  header .avatar,header .htext{cursor:pointer;}
 
   /* フラッシュカード */
   .fc-wrap{flex:1;display:flex;flex-direction:column;align-items:center;
@@ -293,8 +325,8 @@
 <div class="phone">
   <header>
     <a href="#" class="back" title="戻る">‹</a>
-    <div class="avatar"><span class="dot"></span></div>
-    <div class="htext">
+    <div class="avatar" role="button" tabindex="0" aria-label="陸のプロフィールを開く"><span class="dot"></span></div>
+    <div class="htext" role="button" tabindex="0" aria-label="陸のプロフィールを開く">
       <div class="name">陸（ルー）</div>
       <div class="status">● オンライン</div>
     </div>
@@ -312,6 +344,7 @@
     <div class="shortcut-bar">
       <button class="sc-btn" id="scVocab"><span class="sc-icon">📚</span>単語帳</button>
       <button class="sc-btn" id="scGift"><span class="sc-icon">🎁</span>プレゼント</button>
+      <button class="sc-btn" id="scStatus"><span class="sc-icon">📊</span>ステータス</button>
     </div>
     <div class="inputbar">
       <div class="plus" id="plusBtn">＋</div>
@@ -359,6 +392,77 @@
     </div>
     <div class="gift-info">陸に贈り物を送ると親密度がUPします ♥</div>
     <div class="gift-grid" id="giftGrid"></div>
+  </div>
+
+  <!-- キャラ情報パネル -->
+  <div class="panel" id="profilePanel">
+    <div class="panel-hd">
+      <h2>👤 陸のプロフィール</h2>
+      <button class="panel-close" id="profileClose">✕</button>
+    </div>
+    <div class="profile-content">
+      <img class="profile-face" id="profileFace" src="assets/images/luca-face-0.png" alt="陸の顔写真">
+      <div class="profile-card">
+        <div class="profile-name">陸（ルー）<span>Lù</span></div>
+        <div class="profile-row">
+          <div class="profile-label">出身</div>
+          <div class="profile-value">上海 / 大学院生</div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-label">好き</div>
+          <div class="profile-value">映画・コーヒー・深夜の散歩</div>
+        </div>
+        <div class="profile-quote" id="profileQuote">「…誰？」</div>
+        <div class="profile-intimacy">
+          <div class="panel-progress-label">
+            <span id="profileLevel">Lv.1</span>
+            <span id="profileLove">0%</span>
+          </div>
+          <div class="panel-progress"><div class="panel-progress-fill" id="profileProgress"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ステータスパネル -->
+  <div class="panel" id="statusPanel">
+    <div class="panel-hd">
+      <h2>📊 ステータス</h2>
+      <button class="panel-close" id="statusClose">✕</button>
+    </div>
+    <div class="status-content">
+      <div class="stat-row">
+        <div class="stat-heading">
+          <span class="stat-label">親密度</span>
+          <span class="stat-value" id="statusLevel">Lv.1 / 6</span>
+        </div>
+        <div class="panel-progress-label">
+          <span>陸との距離</span>
+          <span id="statusLove">0%</span>
+        </div>
+        <div class="panel-progress"><div class="panel-progress-fill" id="statusProgress"></div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-heading">
+          <span class="stat-label">進捗</span>
+          <span class="stat-value" id="statusDay">Day 1 / 7</span>
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-heading">
+          <span class="stat-label">総獲得ポイント</span>
+          <span class="stat-value" id="statusPoints">0 pt</span>
+        </div>
+        <div class="stat-note">現在保存されている親密度ポイント（love）を表示しています。</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-heading">
+          <span class="stat-label">習得単語</span>
+          <span class="stat-value" id="statusWords">0語</span>
+        </div>
+        <div class="stat-note">獲得済みイベント数（awarded）を習得数として表示しています。</div>
+      </div>
+    </div>
   </div>
 
   <!-- +メニュー -->
@@ -899,6 +1003,71 @@ function hangUp(){
 configureSpeechButton($id('csReplay'));
 $id('csReplay').addEventListener('click', function(){ speak(CALL[callIdx].zh); });
 $id('csNext').addEventListener('click', nextCallLine);
+
+/* ===== プロフィール・ステータス ===== */
+var PROFILE_QUOTES=[
+  '「…誰？」',
+  '「まあ、悪くない。」',
+  '「最近、お前のこと考える。」',
+  '「連絡してくれると、ちょっと嬉しい。」',
+  '「そばにいると、落ち着く。」',
+  '「お前が好きだ。ずっとそう思ってた。」'
+];
+function currentLevel(){
+  return Math.min(6,Math.floor(Math.min(Math.max(love,0),100)/17)+1);
+}
+function closeOtherPanels(exceptId){
+  document.querySelectorAll('.panel.open').forEach(function(panel){
+    if(panel.id!==exceptId) panel.classList.remove('open');
+  });
+  document.getElementById('plusMenu').classList.remove('open');
+}
+function openProfile(){
+  var panel=document.getElementById('profilePanel');
+  if(panel.classList.contains('open')){
+    panel.classList.remove('open');
+    return;
+  }
+  var percent=Math.min(Math.max(love,0),100);
+  var lv=currentLevel();
+  document.getElementById('profileFace').src=LUCA_FACES[lv-1];
+  document.getElementById('profileQuote').textContent=PROFILE_QUOTES[lv-1];
+  document.getElementById('profileLevel').textContent='Lv.'+lv;
+  document.getElementById('profileLove').textContent=percent+'%';
+  document.getElementById('profileProgress').style.width=percent+'%';
+  closeOtherPanels('profilePanel');
+  panel.classList.add('open');
+}
+function openStatus(){
+  var percent=Math.min(Math.max(love,0),100);
+  var lv=currentLevel();
+  document.getElementById('statusLevel').textContent='Lv.'+lv+' / 6';
+  document.getElementById('statusLove').textContent=percent+'%';
+  document.getElementById('statusProgress').style.width=percent+'%';
+  document.getElementById('statusDay').textContent='Day '+(dayIdx+1)+' / '+DAYS.length;
+  document.getElementById('statusPoints').textContent=love+' pt';
+  document.getElementById('statusWords').textContent=awarded.size+'語';
+  closeOtherPanels('statusPanel');
+  document.getElementById('statusPanel').classList.add('open');
+}
+function bindProfileTrigger(el){
+  el.addEventListener('click',openProfile);
+  el.addEventListener('keydown',function(e){
+    if(e.key==='Enter'||e.key===' '){
+      e.preventDefault();
+      openProfile();
+    }
+  });
+}
+bindProfileTrigger(document.querySelector('header .avatar'));
+bindProfileTrigger(document.querySelector('header .htext'));
+document.getElementById('profileClose').addEventListener('click',function(){
+  document.getElementById('profilePanel').classList.remove('open');
+});
+document.getElementById('statusClose').addEventListener('click',function(){
+  document.getElementById('statusPanel').classList.remove('open');
+});
+document.getElementById('scStatus').addEventListener('click',openStatus);
 
 /* ===== 単語帳 ===== */
 (function(){
