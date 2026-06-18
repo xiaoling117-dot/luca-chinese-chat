@@ -1,0 +1,42 @@
+{
+  "_readme": "step型・hint・voice・choiceのlove の仕様は prologue.json の _readme と同じ。第1話のポイント：(1)陸の返事は速い＝『ずっと見てた』感。(2)最後に陸が初めてボイスで『晚安』を送る＝transcript:false（聞くだけ・转文字ボタンなし）。(3)その最初のボイスに hint(icon:'speaker') を付け、初回だけ『タップで再生』を出す。showOnce は localStorage で管理。",
+  "id": "episode1",
+  "title": "第1話「反正我也睡不着」（どうせ俺も眠れない）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_night", "time": "夜", "note": "前回『毎晩練習』と約束した翌日の夜。日付スタンプ。主人公が送るか迷っている所からプレイヤー操作。" },
+    { "type": "narration", "text": "約束は、した。でも。\n（本当に、返ってくるのかな。……忘れてたり、しないかな。）\n指が、入力欄の上で止まる。" },
+    {
+      "type": "choice",
+      "prompt": "最初の一声、どう送る？",
+      "options": [
+        { "send": { "zh": "你好，我来了。", "pinyin": "nǐ hǎo, wǒ lái le.", "ja": "こんばんは、来たよ。" }, "love": 2, "reply": [] },
+        { "send": { "zh": "今天也可以练习吗？", "pinyin": "jīntiān yě kěyǐ liànxí ma?", "ja": "今日も練習していい？" }, "love": 2, "reply": [] },
+        { "send": { "zh": "在吗？", "pinyin": "zài ma?", "ja": "いる？" }, "love": 2, "reply": [] }
+      ]
+    },
+    { "type": "pause", "ms": 700, "note": "“入力中…”が思ったより早く出る演出。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "来了就好好练，别浪费时间。", "pinyin": "lái le jiù hǎohǎo liàn, bié làngfèi shíjiān.", "ja": "来たならちゃんと練習しろ。時間を無駄にするな。" },
+    { "type": "narration", "text": "……ぶっきらぼう。でも、すぐ返ってきた。\n（ずっと、画面を見てた、みたいに。）" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "今天过得怎么样？", "pinyin": "jīntiān guò de zěnmeyàng?", "ja": "今日はどうだった？" },
+    {
+      "type": "choice",
+      "prompt": "今日のこと、なんて答える？",
+      "options": [
+        { "send": { "zh": "还好。", "pinyin": "hái hǎo.", "ja": "まあまあ。" }, "love": 3,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "嗯。", "pinyin": "ng.", "ja": "ん。" } ] },
+        { "send": { "zh": "有点累。", "pinyin": "yǒudiǎn lèi.", "ja": "ちょっと疲れた。" }, "love": 5,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "那今天少练点。", "pinyin": "nà jīntiān shǎo liàn diǎn.", "ja": "じゃあ今日は少なめにしとけ。" } ] },
+        { "send": { "zh": "很开心！", "pinyin": "hěn kāixīn!", "ja": "すごく楽しかった！" }, "love": 5,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……是吗。", "pinyin": "shì ma.", "ja": "……そう。", "note": "口角がわずかに上がる演出" } ] }
+      ]
+    },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "这么晚…我是不是打扰你了？", "pinyin": "zhème wǎn… wǒ shì bùshì dǎrǎo nǐ le?", "ja": "こんなに遅く…邪魔じゃなかった？" },
+    { "type": "pause", "ms": 1200, "note": "陸、一拍。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……反正我也睡不着。", "pinyin": "fǎnzhèng wǒ yě shuì bù zháo.", "ja": "……どうせ俺も、眠れないから。", "note": "傷がのぞく瞬間。説明はしない。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "行了，今天到这儿。早点睡。", "pinyin": "xíng le, jīntiān dào zhèr. zǎodiǎn shuì.", "ja": "よし、今日はここまで。早く寝ろ。" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "晚安。", "pinyin": "wǎn'ān.", "ja": "おやすみ。" },
+    { "type": "voice", "speaker": "陸", "zh": "嗯，晚安。", "pinyin": "ng, wǎn'ān.", "ja": "ん、おやすみ。", "seconds": 1, "transcript": false, "hint": { "id": "tap_play", "icon": "speaker", "text": "音声はタップで再生🔊", "showOnce": true }, "note": "第1話で唯一のボイス。初めて届く彼の声。既知の語なので聞くだけ＝转文字ボタンなし。" },
+    { "type": "narration", "text": "文字だと、あんなにそっけないのに。\n声は――少しだけ、やさしかった。\n「眠れない」って言った声が、なぜか、さみしそうで。\n……明日も、来よう。" },
+    { "type": "end", "next": "episode2" }
+  ]
+}

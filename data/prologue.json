@@ -1,0 +1,90 @@
+{
+  "_readme": {
+    "目的": "プロローグ『朗読ルームの夜』を、チャットアプリで上から順に再生するためのデータ。codexはこの steps 配列を上から順に処理して画面に出すだけでよい。",
+    "stepの種類": {
+      "scene": "場面の切替。location('liveroom'=朗読ルーム背景 / 'dm'=1対1チャットUI), bg, time, note。",
+      "narration": "画面に出す地の文。text（改行可）。",
+      "line": "セリフ1つ＝チャットバブル1つ。speaker('陸'|'CV蓝郎'|'主人公'), lang('zh'|'ja')。lang=='zh'は zh/pinyin/ja を持ち本文に zh を表示、タップで pinyin と ja をポップアップ。lang=='ja'は ja だけ本文表示（ポップアップなし）。to=='room' は朗読ルーム内の発言（任意）。hint（任意）あり。",
+      "voice": "音声メッセージのバブル。speaker, zh, pinyin, ja, seconds(秒), transcript(true=「转文字」「收起文字」ボタンで文字起こし表示/false=聞くだけ・文字ボタンなし)。▶ で発音再生（v1の speak/TTS を流用）。v1 に既にある type:'voice' を再利用する。hint（任意）あり。プロローグでは未使用。",
+      "pause": "間。ms ミリ秒だけ待ってから次へ。",
+      "effect": "演出。name('hesitation'=「…」が出て消えてまた出る/迷い, 'blackout'=暗転, 'datestamp'=日付スタンプ)。note は補足。",
+      "choice": "選択肢。prompt と options[]。各 option は send(プレイヤーが送るセリフ zh/pinyin/ja), love(任意/その選択で増える好感度の数値), reply(その選択にだけ出る陸の line 配列。空配列なら陸の返事なしで次の step へ)。選択後は reply を再生し steps の続きに合流。",
+      "end": "終了。next で次のデータ名（例 'episode1'）へ。"
+    },
+    "hintの仕様": {
+      "意味": "line/voice に付けると、初回オンボーディング用の『指マーク＋一言ヒント』を表示する。テスターが『そこを押せると気づかない』問題への対策。",
+      "形": "{ id, icon('finger'=タップを促す指 / 'speaker'=再生を促す🔊), text, showOnce }",
+      "showOnce": "true のとき、その id を初めて表示したとき1回だけ出す。実アプリ(GitHub Pages版)では localStorage に表示済みフラグを保存し、二度目以降は出さない。1回タップしたら消える。",
+      "素材": "企画書デザイン画にある『指でタップしている絵』を流用してよい。"
+    },
+    "実装メモ": [
+      "ライブルームはシステム化しない。location=='liveroom' の間は雰囲気の静止画背景＋セリフだけ。",
+      "主播『CV蓝郎』はプロローグ限りのNPC。名前を『CV蓝儿』にしたい場合は speaker 文字列を置換するだけ。",
+      "zh の line/voice はすべてタップで pinyin＋ja を表示（v1の学習ポップアップを流用）。",
+      "ja の line（主人公が思わず日本語で話す所）は学習対象外なのでポップアップ不要。"
+    ]
+  },
+  "id": "prologue",
+  "title": "プロローグ「朗読ルームの夜」",
+  "steps": [
+    { "type": "scene", "location": "liveroom", "bg": "liveroom_night", "time": "00:12", "note": "暗い部屋、スマホの光だけ。麦位の丸が並ぶ静止画。中国語の朗読の声が重なる雰囲気。" },
+    { "type": "narration", "text": "眠れない夜だった。\n中国のドラマを観て、真似して声に出して、いつの間にか中国語をかじり始めて――気づけば指が滑って、知らない部屋に入っていた。\n知らない人たちが、順番に何かを朗読している。" },
+    { "type": "line", "speaker": "CV蓝郎", "lang": "zh", "to": "room", "zh": "下一位～", "pinyin": "xià yī wèi～", "ja": "次の人～" },
+    { "type": "narration", "text": "――順番が、回ってきた。\n何か言わなきゃ。でも、言葉が出ない。\n心臓だけがうるさい。" },
+    { "type": "pause", "ms": 2500 },
+    { "type": "line", "speaker": "CV蓝郎", "lang": "zh", "to": "room", "zh": "咋了？网不好？", "pinyin": "zǎ le? wǎng bù hǎo?", "ja": "どした？ ネット悪い？" },
+    { "type": "narration", "text": "答えなきゃ。でも、やっぱり出てこない。\n沈黙が、こわい。" },
+    { "type": "pause", "ms": 1800 },
+    { "type": "line", "speaker": "陸", "lang": "zh", "to": "room", "zh": "别紧张。", "pinyin": "bié jǐnzhāng.", "ja": "緊張しないで。", "hint": { "id": "tap_translate", "icon": "finger", "text": "中国語をタップ → ピンインと日本語が出るよ", "showOnce": true } },
+    { "type": "line", "speaker": "陸", "lang": "zh", "to": "room", "zh": "没事，慢慢来，慢慢习惯了就好了。", "pinyin": "méi shì, màn man lái, màn man xíguàn le jiù hǎo le.", "ja": "大丈夫。ゆっくりでいい。だんだん慣れていけばいいから。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "to": "room", "zh": "让她先听吧。", "pinyin": "ràng tā xiān tīng ba.", "ja": "この子は、まず聞くだけにしてやれ。" },
+    { "type": "line", "speaker": "CV蓝郎", "lang": "zh", "to": "room", "zh": "行～那下一位！", "pinyin": "xíng～ nà xià yī wèi!", "ja": "おっけー～じゃ次の人！" },
+    { "type": "narration", "text": "誰も笑わなかった。彼が、そういう空気にしてくれたから。\n……そっと、部屋を出た。\nでも、あの声が、まだ耳に残っていた。" },
+
+    { "type": "scene", "location": "dm", "bg": "chat", "note": "1対1チャットUIに切替。相手＝陸（ルー）／オンライン。ここからアプリ本編と同じ画面。" },
+    { "type": "narration", "text": "部屋を出ても、心臓はまだ走っていた。\n彼のアイコンを見つけて、指が止まる。\n……お礼くらい、言ってもいいよね。" },
+    {
+      "type": "choice",
+      "prompt": "はじめのDM、なんて送る？",
+      "options": [
+        { "send": { "zh": "谢谢你刚才帮我。", "pinyin": "xièxie nǐ gāngcái bāng wǒ.", "ja": "さっきは助けてくれてありがとう。" }, "love": 3,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "嗯。没什么。", "pinyin": "ng. méi shénme.", "ja": "ん。大したことじゃない。" } ] },
+        { "send": { "zh": "谢谢…我太紧张了。", "pinyin": "xièxie… wǒ tài jǐnzhāng le.", "ja": "ありがとう…緊張しすぎちゃって。" }, "love": 3,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "看出来了。……别紧张了，都过去了。", "pinyin": "kàn chūlái le. … bié jǐnzhāng le, dōu guòqù le.", "ja": "見てればわかる。……もう緊張すんな、終わったことだ。" } ] },
+        { "send": { "zh": "不好意思，打扰了。谢谢你。", "pinyin": "bù hǎoyìsi, dǎrǎo le. xièxie nǐ.", "ja": "ごめんなさい、お邪魔して。ありがとう。" }, "love": 3,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "没打扰。", "pinyin": "méi dǎrǎo.", "ja": "邪魔なんかじゃない。" } ] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "你……不是中国人吧？", "pinyin": "nǐ… bùshì zhōngguó rén ba?", "ja": "きみ……中国人じゃないだろ？" },
+    { "type": "line", "speaker": "主人公", "lang": "ja", "ja": "そうです！" },
+    { "type": "line", "speaker": "主人公", "lang": "ja", "ja": "ありがとうございます！本当に助かりました！" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……我不懂日语。", "pinyin": "wǒ bù dǒng rìyǔ.", "ja": "……日本語は、わからない。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "用中文。慢慢写就行。", "pinyin": "yòng zhōngwén. màn man xiě jiù xíng.", "ja": "中国語で。ゆっくり書けばいい。" },
+    { "type": "narration", "text": "――この人とは、日本語に逃げられない。\nでも、それって。\n（“逃げ道がない”って、練習には、一番いいんじゃ……？）" },
+
+    {
+      "type": "choice",
+      "prompt": "本題、どう切り出す？",
+      "options": [
+        { "send": { "zh": "那个…我可以拜托你一件事吗？", "pinyin": "nàge… wǒ kěyǐ bàituō nǐ yí jiàn shì ma?", "ja": "あの…ひとつお願いしてもいい？" }, "love": 3, "reply": [] },
+        { "send": { "zh": "我在学中文。一个人学。", "pinyin": "wǒ zài xué zhōngwén. yí ge rén xué.", "ja": "中国語、勉強してるの。ひとりで。" }, "love": 3, "reply": [] },
+        { "send": { "zh": "你能不能……当我的练习对象？", "pinyin": "nǐ néng bù néng… dāng wǒ de liànxí duìxiàng?", "ja": "あなた…わたしの練習相手に、なってくれない？" }, "love": 4, "reply": [] }
+      ]
+    },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "每天晚上，陪我练习中文，好不好？", "pinyin": "měitiān wǎnshang, péi wǒ liànxí zhōngwén, hǎo bù hǎo?", "ja": "毎晩、中国語の練習に付き合ってくれない？" },
+    { "type": "effect", "name": "hesitation", "note": "陸の迷い。「…」が出る→消える→また出る、を1回。すぐ返事させない。" },
+    { "type": "pause", "ms": 1500 },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "每天？", "pinyin": "měitiān?", "ja": "毎日？" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "嗯。每天。", "pinyin": "ng. měitiān.", "ja": "うん。毎日。" },
+    { "type": "pause", "ms": 1500 },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……练习而已。", "pinyin": "liànxí éryǐ.", "ja": "……ただの、練習だろ。" },
+    { "type": "narration", "text": "――練習なら。恋じゃないなら。きっと、大丈夫だ。\n（彼がそう自分に言い聞かせたことに、このときの彼女は気づかない。）" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "行。", "pinyin": "xíng.", "ja": "いいよ。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "但是——别迟到。来了就好好练。", "pinyin": "dànshì— bié chídào. lái le jiù hǎohǎo liàn.", "ja": "ただし――遅刻すんな。来たなら、ちゃんと練習しろ。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "慢慢来。习惯了，就不难了。", "pinyin": "màn man lái. xíguàn le, jiù bù nán le.", "ja": "ゆっくりでいい。慣れれば、難しくない。" },
+    { "type": "narration", "text": "こうして、毎晩の“練習”が始まった。\n――まだ、ただの練習だったころの話。" },
+    { "type": "effect", "name": "blackout", "note": "暗転。" },
+    { "type": "effect", "name": "datestamp", "note": "本編開始の日付スタンプ。" },
+    { "type": "end", "next": "episode1" }
+  ]
+}

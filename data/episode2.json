@@ -1,0 +1,56 @@
+{
+  "_readme": "step型・hint・voice・choiceのlove の仕様は prologue.json の _readme と同じ。第2話のポイント：(1)名シーン『5分→（短いと言うと）10分に折れる』。(2)ボイス練習＝陸が新フレーズ『晚安，好梦』を voice(transcript:true) で送る→次の line で『听不懂就转文字』と促し、ここで初めて转文字/收起文字を教える。(3)v1の type:'voice' を再利用。",
+  "id": "episode2",
+  "title": "第2話「五分钟」（あと5分）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_night", "time": "23:48", "note": "平日の深夜。主人公はまだ起きている。今夜は陸の方から声をかける＝気にかけ始めた合図。背景は夜景。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……还没睡？", "pinyin": "hái méi shuì?", "ja": "……まだ寝てないの？" },
+    {
+      "type": "choice",
+      "prompt": "なんて返す？",
+      "options": [
+        { "send": { "zh": "还没。", "pinyin": "hái méi.", "ja": "まだ。" }, "love": 3, "reply": [] },
+        { "send": { "zh": "睡不着。", "pinyin": "shuì bù zháo.", "ja": "眠れなくて。" }, "love": 4, "reply": [], "note": "前回の陸の言葉と同じ＝さりげない呼応" },
+        { "send": { "zh": "我在等你。", "pinyin": "wǒ zài děng nǐ.", "ja": "あなたを、待ってた。" }, "love": 8,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……谁让你等了。", "pinyin": "shéi ràng nǐ děng le.", "ja": "……誰が待てって言った。", "note": "照れ。冷たくはしない。" } ] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "明天不是工作日吗？", "pinyin": "míngtiān bùshì gōngzuò rì ma?", "ja": "明日、仕事の日じゃないの？" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "是啊…", "pinyin": "shì a…", "ja": "そうだけど…" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "那我陪你五分钟。", "pinyin": "nà wǒ péi nǐ wǔ fēnzhōng.", "ja": "じゃあ、5分だけ付き合う。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "五分钟之后必须睡觉。", "pinyin": "wǔ fēnzhōng zhīhòu bìxū shuìjiào.", "ja": "5分経ったら、絶対に寝ること。" },
+    {
+      "type": "choice",
+      "prompt": "陸の“5分ルール”に、どう返す？",
+      "options": [
+        { "send": { "zh": "好啊。", "pinyin": "hǎo a.", "ja": "いいよ。" }, "love": 5,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "嗯。乖。", "pinyin": "ng. guāi.", "ja": "ん。いい子だ。", "note": "レアな甘さ" } ] },
+        { "send": { "zh": "五分钟很短！", "pinyin": "wǔ fēnzhōng hěn duǎn!", "ja": "5分じゃ短いよ！" }, "love": 10,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "那……十分钟。不能再多了。", "pinyin": "nà… shí fēnzhōng. bùnéng zài duō le.", "ja": "じゃあ…10分。これ以上はだめだ。", "note": "折れる＝ツンデレの真骨頂。最大の萌え。" } ] },
+        { "send": { "zh": "你真温柔。", "pinyin": "nǐ zhēn wēnróu.", "ja": "ほんと優しいね。" }, "love": 8,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "闭嘴。谁温柔了。", "pinyin": "bì zuǐ. shéi wēnróu le.", "ja": "黙れ。誰が優しいって。", "note": "照れ隠し、冷たくはない。" } ] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "那，今天最后教你一句。跟我念。", "pinyin": "nà, jīntiān zuìhòu jiāo nǐ yí jù. gēn wǒ niàn.", "ja": "じゃあ、今日最後にひとつ教える。俺について読んで。" },
+    { "type": "voice", "speaker": "陸", "zh": "晚安，好梦。", "pinyin": "wǎn'ān, hǎo mèng.", "ja": "おやすみ、いい夢を。", "seconds": 3, "transcript": true, "note": "新フレーズ(好梦)入り。まず音だけ届く。転文字/收起文字ボタンあり。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "听不懂就转文字。", "pinyin": "tīng bu dǒng jiù zhuǎn wénzì.", "ja": "聞き取れなかったら「转文字」しろ。", "note": "ここで転文字の使い方を陸のセリフで初めて教える。" },
+    {
+      "type": "choice",
+      "prompt": "陸の真似して、返してみる",
+      "options": [
+        { "send": { "zh": "晚安，好梦。", "pinyin": "wǎn'ān, hǎo mèng.", "ja": "おやすみ、いい夢を。" }, "love": 8,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "嗯，发音不错。", "pinyin": "ng, fāyīn búcuò.", "ja": "ん、発音、悪くない。", "note": "ぶっきらぼうな合格点" } ] },
+        { "send": { "zh": "好梦…是什么意思？", "pinyin": "hǎo mèng… shì shénme yìsi?", "ja": "好梦…ってどういう意味？" }, "love": 4,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "好梦＝做个好梦。……别想太多，睡吧。", "pinyin": "hǎo mèng = zuò ge hǎo mèng. … bié xiǎng tài duō, shuì ba.", "ja": "好梦＝いい夢を見ろ、ってこと。……考えすぎるな、寝ろ。", "note": "先生モードのち世話焼き" } ] },
+        { "send": { "zh": "晚安，陆。", "pinyin": "wǎn'ān, lù.", "ja": "おやすみ、陸。" }, "love": 7,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……嗯。", "pinyin": "ng.", "ja": "……ん。", "note": "名前を呼ばれて一瞬詰まる演出" } ] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "时间到了。去睡。", "pinyin": "shíjiān dào le. qù shuì.", "ja": "時間だ。寝ろ。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "明天……好好上班。", "pinyin": "míngtiān… hǎohǎo shàngbān.", "ja": "明日は……ちゃんと仕事しろよ。" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "晚安，陆。", "pinyin": "wǎn'ān, lù.", "ja": "おやすみ、陸。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……晚安。", "pinyin": "wǎn'ān.", "ja": "……おやすみ。" },
+    { "type": "narration", "text": "「5分」って言ったのに、気づけば、ずいぶん経っていた。\n画面の向こうの彼のアイコンも――ずっと、明るいままだった。" },
+    { "type": "end", "next": "main" }
+  ]
+}
