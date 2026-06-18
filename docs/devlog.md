@@ -1,5 +1,34 @@
 # 開発日誌
 
+## 2026-06-18（夕方・Claude Code）
+
+### 実施内容
+- `v2.html` を新規作成：JSONステップエンジン搭載の新エントリポイント
+- `data/prologue.json`, `data/episode1.json`, `data/episode2.json` を追加
+
+### v2エンジンの仕様
+**対応stepタイプ：**
+| type | 内容 |
+|---|---|
+| `scene` | location(liveroom/dm)切替。liveroomモードは電話がダーク化しヘッダーに🔴LIVE表示 |
+| `narration` | 地の文カード（インライン表示）。タップで次へ |
+| `line` | 陸/主人公/NPCのチャットバブル。lang=zh はタップで拼音＋日本語訳 |
+| `voice` | ボイスバブル。▶で再生。transcript:true で転文字ボタン付 |
+| `pause` | 指定ms待機 |
+| `effect` | hesitation（「…」出て消えてを2回）/ blackout（暗転フェード）/ datestamp（日付チップ） |
+| `choice` | send.zh/pinyin/ja 形式の選択肢。reply[]をサブステップとして再生後に合流 |
+| `end` | next でdata/{id}.jsonをfetch→チャットリセット→次エピソードへ自動遷移 |
+
+**その他：**
+- `hint` フィールド対応：`showOnce:true` で localStorage に記録し初回のみ表示（フローティングトースト）
+- v1の全機能（TTS・通話・プレゼント・単語帳・プロフィール・ステータス）を継続搭載
+- エピソード間で `allVocab` が蓄積され、単語帳パネルが動的に更新される
+
+### 設計の注意点
+- 現在の起動は常にidx=0からリスタート（再開機能は今後）。loveやawardedは引き継ぐ
+- `end.next === 'main'` のとき v1（index.html）へのリンクを表示して誘導
+- ライブルームシーンは背景と演出変化のみ。システム化はしない（仕様通り）
+
 ## 2026-06-16
 
 ### 修正内容
