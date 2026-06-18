@@ -33,6 +33,8 @@
     { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "这么晚…我是不是打扰你了？", "pinyin": "zhème wǎn… wǒ shì bùshì dǎrǎo nǐ le?", "ja": "こんなに遅く…邪魔じゃなかった？" },
     { "type": "pause", "ms": 1200, "note": "陸、一拍。" },
     { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……反正我也睡不着。", "pinyin": "fǎnzhèng wǒ yě shuì bù zháo.", "ja": "……どうせ俺も、眠れないから。", "note": "傷がのぞく瞬間。説明はしない。" },
+    { "type": "pause", "ms": 900, "note": "「あ」ってなる間。言いすぎた、と気づく。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "一直这样。", "pinyin": "yìzhí zhèyàng.", "ja": "……ずっと、こうだ。", "note": "最近ではなく「ずっと」。理由は言わない。伏線。" },
     { "type": "line", "speaker": "陸", "lang": "zh", "zh": "行了，今天到这儿。早点睡。", "pinyin": "xíng le, jīntiān dào zhèr. zǎodiǎn shuì.", "ja": "よし、今日はここまで。早く寝ろ。" },
     { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "晚安。", "pinyin": "wǎn'ān.", "ja": "おやすみ。" },
     { "type": "voice", "speaker": "陸", "zh": "嗯，晚安。", "pinyin": "ng, wǎn'ān.", "ja": "ん、おやすみ。", "seconds": 1, "transcript": false, "hint": { "id": "tap_play", "icon": "speaker", "text": "音声はタップで再生🔊", "showOnce": true }, "note": "第1話で唯一のボイス。初めて届く彼の声。既知の語なので聞くだけ＝转文字ボタンなし。" },
