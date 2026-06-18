@@ -29,8 +29,10 @@
     border-bottom:1px solid var(--line); z-index:5;}
   .back{color:var(--sub); font-size:22px; text-decoration:none; line-height:1;}
   .avatar{width:44px; height:44px; border-radius:50%; flex:none; position:relative;
-    background:#1a1530 var(--luca-face) center 15%/cover;
+    background:#1a1530; overflow:hidden;
     box-shadow:0 0 0 2px rgba(185,167,255,.45);}
+  .avatar::before{content:''; position:absolute; inset:-10%;
+    background:var(--luca-face) center 15%/cover;}
   .avatar .dot{position:absolute; right:-1px; bottom:-1px; width:11px;height:11px;
     border-radius:50%; background:#5ee08a; border:2px solid var(--bg-top);}
   .htext{flex:1; min-width:0;}
@@ -55,9 +57,11 @@
 
   .row{display:flex; gap:8px; align-items:flex-end; max-width:100%;}
   .row.me{flex-direction:row-reverse;}
-  .row .mini{width:30px;height:30px;border-radius:50%;flex:none;
-    background:#1a1530 var(--luca-face) center 15%/cover;
+  .row .mini{width:30px;height:30px;border-radius:50%;flex:none; position:relative;
+    background:#1a1530; overflow:hidden;
     box-shadow:0 0 0 1px rgba(185,167,255,.3);}
+  .row .mini::before{content:''; position:absolute; inset:-10%;
+    background:var(--luca-face) center 15%/cover;}
   .bubble{width:fit-content; max-width:100%; padding:10px 13px; border-radius:16px; line-height:1.5;
     font-size:15px; position:relative; animation:pop .28s ease;}
   @keyframes pop{from{opacity:0; transform:translateY(6px) scale(.97);} to{opacity:1; transform:none;}}
@@ -141,9 +145,11 @@
     background:linear-gradient(180deg,#271d4a 0%,#0c0a1b 100%); text-align:center;
     overflow-y:auto;}
   .calloverlay.show{display:flex;}
-  .callface{width:140px; height:140px; border-radius:50%; margin-top:24px;
-    background:#1a1530 url("assets/images/luca-face-call.png") center 12%/cover;
+  .callface{width:140px; height:140px; border-radius:50%; margin-top:24px; position:relative;
+    background:#1a1530; overflow:hidden;
     box-shadow:0 0 0 3px rgba(185,167,255,.45), 0 0 44px rgba(150,110,230,.45);}
+  .callface::before{content:''; position:absolute; inset:-10%;
+    background:url("assets/images/luca-face-call.png") center 12%/cover;}
   .callface.ring{animation:ring 1.2s ease-in-out infinite;}
   @keyframes ring{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
   .callname{margin-top:18px; font-size:22px; font-weight:700;}
@@ -315,9 +321,12 @@
     align-items:center; justify-content:center; background:rgba(8,6,18,.55); backdrop-filter:blur(3px);}
   .lvlup.show{display:flex; animation:fadein .25s ease;}
   @keyframes fadein{from{opacity:0;} to{opacity:1;}}
-  #lvlupImg{width:184px; height:184px; border-radius:50%; background:var(--luca-face) center 15%/cover;
+  #lvlupImg{width:184px; height:184px; border-radius:50%; position:relative;
+    background:#1a1530; overflow:hidden;
     box-shadow:0 0 0 3px rgba(255,141,181,.6), 0 0 50px rgba(255,141,181,.45);
     animation:popface .5s cubic-bezier(.2,1.3,.4,1);}
+  #lvlupImg::before{content:''; position:absolute; inset:-10%;
+    background:var(--luca-face) center 15%/cover;}
   @keyframes popface{from{transform:scale(.5); opacity:0;} to{transform:scale(1); opacity:1;}}
   .lvlup .ttl{margin-top:18px; font-size:13px; color:var(--heart); letter-spacing:1px;}
   .lvlup .big{margin-top:4px; font-size:22px; font-weight:700; color:var(--text);}
@@ -712,12 +721,6 @@ const LUCA_FACES = ['assets/images/luca-face-0.png','assets/images/luca-face-1.p
 function showLevelUp(lv){
   const o=document.getElementById('lvlup');
   const imgDiv=document.getElementById('lvlupImg');
-  // ヘッダーアバターの計算済み背景画像を直接取得（base64が確実に入っている）
-  var avatarEl=document.querySelector('.avatar');
-  if(avatarEl){
-    var bg=window.getComputedStyle(avatarEl).backgroundImage;
-    imgDiv.style.background=bg+' center 15%/cover';
-  }
   document.getElementById('lvlupBig').textContent='Lv.'+lv;
   o.classList.add('show');
   setTimeout(()=>o.classList.remove('show'),1700);
