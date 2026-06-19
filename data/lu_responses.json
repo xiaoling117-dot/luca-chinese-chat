@@ -1,0 +1,80 @@
+{
+  "_readme": {
+    "目的": "スクリプト最終日後に陸との自由入力チャットを提供する。sessions を順に進める。各 exchange は lu_prompt を出してプレイヤーの入力を待ち、patterns のいずれかにマッチしたら lu_reply を出す。マッチしなければ fallback を繰り返す。",
+    "バブル形式": "{ zh, pinyin, ja } — addLuca に渡す時は pinyin を py に変換すること（makeBubble の仕様）。",
+    "マッチ判定": "patterns[].match[] のいずれかの文字列が入力テキストに含まれていれば該当。",
+    "セッション進行": "appData.progress.freeChatDone[] に完了済み id を保存。次回は未完了の先頭セッションを使う。"
+  },
+  "sessions": [
+    {
+      "id": "s01",
+      "_note": "Day 1 の復習。每天・陪・别误会 の3語を自然な会話で確認する。",
+      "lu_opener": [
+        { "zh": "来了。", "pinyin": "lái le.", "ja": "来たな。" },
+        { "zh": "来确认一下昨晚的事。", "pinyin": "lái quèrèn yīxià zuówǎn de shì.", "ja": "昨夜のことを確認しよう。" }
+      ],
+      "exchanges": [
+        {
+          "id": "e01",
+          "_note": "每天（měitiān）のテスト。",
+          "lu_prompt": [
+            { "zh": "我说过，你每天都会来的。", "pinyin": "wǒ shuō guò, nǐ měitiān dōu huì lái de.", "ja": "俺は言ったよな。君、毎日来るって。" },
+            { "zh": "「每天」——写出来。", "pinyin": "「měitiān」——xiě chūlái.", "ja": "「每天」——書いてみて。" }
+          ],
+          "patterns": [
+            {
+              "match": ["每天", "每日"],
+              "love": 1,
+              "lu_reply": [
+                { "zh": "对。每天。", "pinyin": "duì. měitiān.", "ja": "そう。每天。" }
+              ]
+            }
+          ],
+          "fallback": { "zh": "提示：每＋天", "pinyin": null, "ja": "ヒント：每＋天" }
+        },
+        {
+          "id": "e02",
+          "_note": "陪（péi）のテスト。",
+          "lu_prompt": [
+            { "zh": "……我说陪你练习。", "pinyin": "wǒ shuō péi nǐ liànxí.", "ja": "……練習に付き合うって言った。" },
+            { "zh": "「陪」——写出来。", "pinyin": "「péi」——xiě chūlái.", "ja": "「陪」——書いてみて。" }
+          ],
+          "patterns": [
+            {
+              "match": ["陪"],
+              "love": 1,
+              "lu_reply": [
+                { "zh": "嗯。陪。", "pinyin": "ng. péi.", "ja": "そう。陪。" },
+                { "zh": "陪你练习。", "pinyin": "péi nǐ liànxí.", "ja": "練習に付き合う。" }
+              ]
+            }
+          ],
+          "fallback": { "zh": "提示：读音是 péi", "pinyin": null, "ja": "ヒント：読み方は péi" }
+        },
+        {
+          "id": "e03",
+          "_note": "别误会（bié wùhuì）のテスト。",
+          "lu_prompt": [
+            { "zh": "最后一个。我说过——别误会。", "pinyin": "zuìhòu yī ge. wǒ shuō guò— bié wùhuì.", "ja": "最後に一つ。俺が言ったんだ——别误会。" },
+            { "zh": "用中文写。", "pinyin": "yòng zhōngwén xiě.", "ja": "中国語で書いて。" }
+          ],
+          "patterns": [
+            {
+              "match": ["别误会", "误会"],
+              "love": 2,
+              "lu_reply": [
+                { "zh": "别误会。", "pinyin": "bié wùhuì.", "ja": "别误会。" },
+                { "zh": "……随便说说的。", "pinyin": "suíbiàn shuōshuo de.", "ja": "……なんとなく言っただけだ。" }
+              ]
+            }
+          ],
+          "fallback": { "zh": "提示：别＋误会", "pinyin": null, "ja": "ヒント：别＋误会" }
+        }
+      ],
+      "closer": [
+        { "zh": "好了。今天就到这里。", "pinyin": "hǎo le. jīntiān jiù dào zhèlǐ.", "ja": "よし。今日はここまで。" },
+        { "zh": "明天继续。别迟到。", "pinyin": "míngtiān jìxù. bié chídào.", "ja": "また明日。遅刻すんな。" }
+      ]
+    }
+  ]
+}
