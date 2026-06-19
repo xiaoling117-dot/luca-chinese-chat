@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>朗読ルームの夜｜陪练，为了在一起</title>
+<link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+<style>
+:root{
+  --void:#05060e;--indigo:#11142f;--purple:#bcaaff;--purple-deep:#7c6bd6;
+  --gold:#e3c485;--txt:#efedfb;--muted:#9a9fc6;--line:rgba(188,170,255,.18);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{display:flex;justify-content:center;align-items:center;overflow:hidden;color:var(--txt);
+  font-family:-apple-system,"Hiragino Kaku Gothic ProN","Noto Sans JP","PingFang SC",sans-serif;
+  background:radial-gradient(120% 80% at 30% 0%,#20204e 0%,#12132f 40%,#090a18 72%,var(--void) 100%)}
+button{font:inherit}
+.phone{position:relative;display:flex;flex-direction:column;width:100%;max-width:420px;height:100dvh;
+  max-height:880px;overflow:hidden;background:linear-gradient(180deg,rgba(12,13,34,.72),rgba(5,6,14,.94)),
+  url("assets/images/bg.jpg") center/cover;box-shadow:0 0 60px rgba(124,107,214,.25)}
+.phone.live{background:linear-gradient(180deg,rgba(5,6,14,.88),rgba(17,20,47,.92)),
+  url("assets/images/bg.jpg") center/cover}
+@media(min-width:440px){.phone{height:92dvh;border-radius:28px}}
+header{z-index:4;display:flex;align-items:center;gap:11px;padding:14px;
+  background:rgba(5,6,14,.7);border-bottom:1px solid var(--line);backdrop-filter:blur(10px)}
+.back{color:var(--muted);font-size:24px;text-decoration:none}
+.avatar{width:42px;height:42px;flex:none;border-radius:50%;background:url("assets/images/luca-face-default.png") center 15%/cover;
+  border:2px solid rgba(188,170,255,.42)}
+.head-copy{min-width:0;flex:1}.head-name{font-weight:700}.head-status{margin-top:2px;color:var(--purple);font-size:11px}
+.live-badge{padding:5px 9px;border:1px solid rgba(255,100,130,.35);border-radius:99px;color:#ff8da8;
+  background:rgba(255,80,110,.1);font-size:10px}
+.scene-label{text-align:center;padding:7px;color:var(--gold);font-size:11px;letter-spacing:.1em;
+  background:rgba(5,6,14,.52);border-bottom:1px solid rgba(227,196,133,.12)}
+.chat{position:relative;z-index:1;display:flex;flex:1;flex-direction:column;gap:13px;overflow-y:auto;
+  padding:16px 14px 20px;scrollbar-width:none}.chat::-webkit-scrollbar{display:none}
+.stamp{align-self:center;padding:4px 12px;border:1px solid var(--line);border-radius:99px;
+  color:var(--purple);background:rgba(188,170,255,.08);font-size:11px}
+.row{display:flex;align-items:flex-end;gap:8px}.row.me{flex-direction:row-reverse}
+.mini{width:29px;height:29px;flex:none;border-radius:50%;background:url("assets/images/luca-face-default.png") center 15%/cover;
+  border:1px solid rgba(188,170,255,.35)}
+.wrap{max-width:76%;min-width:0}.row.me .wrap{text-align:right}
+.speaker{margin:0 4px 4px;color:var(--gold);font-size:10px}
+.bubble{display:inline-block;max-width:100%;padding:10px 13px;border-radius:16px;text-align:left;
+  background:#25233f;line-height:1.55;animation:pop .25s ease}
+.row.me .bubble{background:linear-gradient(135deg,#7967cf,#6654b7)}
+.bubble.tappable{cursor:pointer}.zh{font-size:16px}.translation{display:none;margin-top:7px;padding-top:7px;
+  border-top:1px dashed var(--line);color:var(--muted);font-size:12px}.bubble.open .translation{display:block}
+.pinyin{margin-bottom:3px;color:var(--purple)}
+.speak{margin-left:7px;padding:1px 6px;border:1px solid var(--line);border-radius:7px;color:var(--purple);
+  background:rgba(188,170,255,.1);cursor:pointer}
+.narration{align-self:center;width:min(100%,350px);padding:16px;border:1px solid rgba(227,196,133,.2);
+  border-radius:16px;color:#e8e5f6;background:rgba(5,6,14,.74);line-height:1.8;white-space:pre-line;
+  overflow-wrap:anywhere;word-break:normal;box-shadow:0 12px 32px rgba(0,0,0,.22)}
+.narration button{display:block;width:100%;margin-top:11px;padding:8px;border:0;color:var(--gold);
+  background:transparent;cursor:pointer;font-size:11px}
+.typing .bubble{padding:13px 16px}.typing i{display:inline-block;width:6px;height:6px;margin:0 2px;
+  border-radius:50%;background:var(--muted);animation:blink 1.1s infinite}.typing i:nth-child(2){animation-delay:.2s}
+.typing i:nth-child(3){animation-delay:.4s}
+.voice{min-width:190px}.voice-main{display:flex;align-items:center;gap:10px}.voice-play{width:34px;height:34px;
+  border:0;border-radius:50%;color:white;background:rgba(188,170,255,.24);cursor:pointer}
+.wave{flex:1;height:3px;border-radius:4px;background:linear-gradient(90deg,var(--purple),rgba(188,170,255,.18))}
+.voice-text{display:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--line);text-align:left}
+.voice-text.open{display:block}.transcript{margin-top:7px;border:0;color:var(--purple);background:none;cursor:pointer;font-size:11px}
+.choices{z-index:5;display:flex;flex-direction:column;gap:8px;padding:10px 12px calc(14px + env(safe-area-inset-bottom));
+  background:rgba(5,6,14,.82);border-top:1px solid var(--line);backdrop-filter:blur(10px)}
+.prompt{text-align:center;color:var(--muted);font-size:11px}.choice{width:100%;padding:11px 13px;border:1px solid var(--line);
+  border-radius:13px;color:var(--txt);background:rgba(188,170,255,.1);cursor:pointer;text-align:left}
+.choice small{margin-left:7px;color:var(--muted)}
+.hint{position:absolute;z-index:20;right:14px;bottom:90px;max-width:260px;padding:10px 13px;border-radius:12px;
+  color:var(--txt);background:rgba(124,107,214,.94);font-size:12px;animation:pop .25s ease}
+.blackout{position:absolute;inset:0;z-index:30;pointer-events:none;opacity:0;background:#000;transition:opacity .6s}
+.blackout.show{opacity:1}
+.error{margin:auto;padding:20px;text-align:center;color:#ffb7c6;line-height:1.7}
+@keyframes pop{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes blink{0%,60%,100%{opacity:.3}30%{opacity:1}}
+</style>
+</head>
+<body>
+<main class="phone live" id="phone">
+  <header>
+    <a class="back" href="index.html" aria-label="トップへ戻る">‹</a>
+    <div class="avatar" aria-hidden="true"></div>
+    <div class="head-copy">
+      <div class="head-name" id="headName">深夜の朗読ルーム</div>
+      <div class="head-status" id="headStatus">知らない声が重なる夜</div>
+    </div>
+    <div class="live-badge" id="liveBadge">● LIVE</div>
+  </header>
+  <div class="scene-label" id="sceneLabel">朗読ルームの夜</div>
+  <div class="chat" id="chat" aria-live="polite"></div>
+  <div class="choices" id="choices" hidden></div>
+  <div class="blackout" id="blackout"></div>
+</main>
+<script>
+'use strict';
+const phone=document.getElementById('phone');
+const chat=document.getElementById('chat');
+const choices=document.getElementById('choices');
+const blackout=document.getElementById('blackout');
+let love=0;
+let hintsSeen=new Set();
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+function scrollDown(){chat.scrollTop=chat.scrollHeight}
+function showHint(hint){
+  if(!hint||!hint.id||(hint.showOnce&&hintsSeen.has(hint.id)))return;
+  if(hint.showOnce)hintsSeen.add(hint.id);
+  const el=document.createElement('div');el.className='hint';
+  el.textContent=(hint.icon==='speaker'?'🔊 ':'👆 ')+hint.text;phone.appendChild(el);
+  setTimeout(()=>el.remove(),4200);
+}
+function speak(text){
+  if(!('speechSynthesis'in window))return;
+  speechSynthesis.cancel();
+  const utterance=new SpeechSynthesisUtterance(text);utterance.lang='zh-CN';utterance.rate=.88;
+  speechSynthesis.speak(utterance);
+}
+function makeBubble(step){
+  const bubble=document.createElement('div');
+  if(step.lang==='zh'&&step.zh){
+    bubble.className='bubble tappable';
+    const zh=document.createElement('div');zh.className='zh';zh.textContent=step.zh;
+    const button=document.createElement('button');button.className='speak';button.textContent='🔊';
+    button.addEventListener('click',event=>{event.stopPropagation();speak(step.zh)});zh.appendChild(button);
+    const translation=document.createElement('div');translation.className='translation';
+    const py=document.createElement('div');py.className='pinyin';py.textContent=step.pinyin||'';
+    translation.appendChild(py);translation.appendChild(document.createTextNode(step.ja||''));
+    bubble.appendChild(zh);bubble.appendChild(translation);
+    bubble.addEventListener('click',()=>bubble.classList.toggle('open'));
+  }else{
+    bubble.className='bubble';bubble.textContent=step.ja||step.zh||'';
+  }
+  return bubble;
+}
+function addLine(step){
+  const row=document.createElement('div');
+  const isUser=step.speaker==='主人公';row.className='row '+(isUser?'me':'luca');
+  if(!isUser){const mini=document.createElement('div');mini.className='mini';row.appendChild(mini)}
+  const wrap=document.createElement('div');wrap.className='wrap';
+  if(step.speaker&&step.speaker!=='主人公'&&step.speaker!=='陸'){
+    const speaker=document.createElement('div');speaker.className='speaker';speaker.textContent=step.speaker;wrap.appendChild(speaker);
+  }
+  wrap.appendChild(makeBubble(step));row.appendChild(wrap);chat.appendChild(row);scrollDown();showHint(step.hint);
+}
+function addNarration(text){
+  return new Promise(resolve=>{
+    const card=document.createElement('div');card.className='narration';card.textContent=text;
+    const next=document.createElement('button');next.textContent='タップして続ける ▾';card.appendChild(next);
+    next.addEventListener('click',()=>{next.remove();resolve()},{once:true});chat.appendChild(card);scrollDown();
+  });
+}
+function showTyping(ms=650){
+  const row=document.createElement('div');row.className='row luca typing';
+  const mini=document.createElement('div');mini.className='mini';
+  const bubble=document.createElement('div');bubble.className='bubble';bubble.innerHTML='<i></i><i></i><i></i>';
+  row.appendChild(mini);row.appendChild(bubble);chat.appendChild(row);scrollDown();
+  return sleep(ms).then(()=>row.remove());
+}
+function addVoice(step){
+  const row=document.createElement('div');row.className='row luca';
+  const mini=document.createElement('div');mini.className='mini';
+  const wrap=document.createElement('div');wrap.className='wrap';
+  const bubble=document.createElement('div');bubble.className='bubble voice';
+  const main=document.createElement('div');main.className='voice-main';
+  const play=document.createElement('button');play.className='voice-play';play.textContent='▶';
+  const wave=document.createElement('div');wave.className='wave';
+  const sec=document.createElement('span');sec.textContent=(step.seconds||1)+'″';
+  play.addEventListener('click',()=>speak(step.zh));main.append(play,wave,sec);bubble.appendChild(main);
+  if(step.transcript){
+    const toggle=document.createElement('button');toggle.className='transcript';toggle.textContent='転文字';
+    const text=document.createElement('div');text.className='voice-text';
+    text.appendChild(makeBubble({lang:'zh',zh:step.zh,pinyin:step.pinyin,ja:step.ja}));
+    toggle.addEventListener('click',()=>{const open=text.classList.toggle('open');toggle.textContent=open?'收起文字':'転文字'});
+    bubble.append(toggle,text);
+  }
+  wrap.appendChild(bubble);row.append(mini,wrap);chat.appendChild(row);scrollDown();showHint(step.hint);
+}
+function handleScene(step){
+  const live=step.location==='liveroom';phone.classList.toggle('live',live);
+  document.getElementById('headName').textContent=live?'深夜の朗読ルーム':'陸（ルー）';
+  document.getElementById('headStatus').textContent=live?'知らない声が重なる夜':'● オンライン';
+  document.getElementById('liveBadge').hidden=!live;
+  document.getElementById('sceneLabel').textContent=step.time?(live?'朗読ルーム · '+step.time:'個別チャット · '+step.time):(live?'朗読ルーム':'個別チャット');
+}
+async function handleEffect(step){
+  if(step.name==='hesitation'){await showTyping(550);await sleep(250);await showTyping(550)}
+  if(step.name==='blackout'){blackout.classList.add('show');await sleep(900);blackout.classList.remove('show');await sleep(550)}
+  if(step.name==='datestamp'){const stamp=document.createElement('div');stamp.className='stamp';stamp.textContent='— 毎晩の練習、はじまりの日 —';chat.appendChild(stamp);scrollDown()}
+}
+function choose(step){
+  return new Promise(resolve=>{
+    choices.hidden=false;choices.replaceChildren();
+    const prompt=document.createElement('div');prompt.className='prompt';prompt.textContent=step.prompt||'なんて送る？';choices.appendChild(prompt);
+    step.options.forEach(option=>{
+      const button=document.createElement('button');button.className='choice';
+      button.textContent=option.send.zh;
+      const gloss=document.createElement('small');gloss.textContent=option.send.ja;button.appendChild(gloss);
+      button.addEventListener('click',async()=>{
+        choices.hidden=true;choices.replaceChildren();addLine({speaker:'主人公',lang:'zh',...option.send});
+        love+=Number(option.love)||0;
+        for(const reply of option.reply||[]){await showTyping(550);addLine(reply);await sleep(280)}
+        resolve();
+      },{once:true});choices.appendChild(button);
+    });
+  });
+}
+function createInitialData(){
+  let data=null;
+  try{data=JSON.parse(localStorage.getItem('luca_data')||'null')}catch(error){}
+  if(data)return data;
+  const uuid=crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{
+    const r=Math.random()*16|0;return(c==='x'?r:(r&3|8)).toString(16);
+  });
+  return{userId:uuid,createdAt:new Date().toISOString(),settings:{lang:'ja',autoPlay:false,hintsSeen:[...hintsSeen]},
+    progress:{currentEpId:'prologue',currentIdx:0,completedEps:['prologue'],unlockedContent:[]},
+    affection:{love:love,level:Math.min(6,Math.floor(Math.min(love,100)/17)+1)},
+    awards:[],choices:[],words:[],giftLog:[],voiceLogs:[]};
+}
+async function play(){
+  try{
+    const response=await fetch('data/prologue.json');
+    if(!response.ok)throw new Error('プロローグを読み込めませんでした');
+    const data=await response.json();
+    for(const step of data.steps){
+      if(step.type==='scene')handleScene(step);
+      else if(step.type==='narration')await addNarration(step.text);
+      else if(step.type==='line'){if(step.speaker==='陸')await showTyping(500);addLine(step);await sleep(300)}
+      else if(step.type==='voice'){await showTyping(500);addVoice(step);await sleep(300)}
+      else if(step.type==='pause')await sleep(step.ms||0);
+      else if(step.type==='effect')await handleEffect(step);
+      else if(step.type==='choice')await choose(step);
+      else if(step.type==='end'){
+        localStorage.setItem('luca_data',JSON.stringify(createInitialData()));
+        location.href='chat.html';return;
+      }
+    }
+  }catch(error){
+    const message=document.createElement('div');message.className='error';
+    message.textContent=error.message+'。HTTPサーバー経由で開いてください。';chat.replaceChildren(message);
+  }
+}
+play();
+</script>
+</body>
+</html>

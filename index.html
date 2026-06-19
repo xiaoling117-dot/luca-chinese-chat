@@ -120,16 +120,16 @@
 
   /* ===== 開発中 落款 ===== */
   .dev-seal{
-    position:absolute; top:18px; right:18px; z-index:8;
-    width:36px; padding:10px 0;
-    border:2px solid rgba(210,40,40,.8);
+    display:inline-block;
+    width:34px; padding:9px 0;
+    border:2px solid rgba(210,40,40,.75);
     border-radius:4px;
     font-family:-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;
     font-size:11px; font-weight:700; letter-spacing:.1em;
-    color:rgba(210,40,40,.8);
+    color:rgba(210,40,40,.75);
     text-align:center; line-height:1.7;
     transform:rotate(-8deg);
-    opacity:.85;
+    opacity:.82;
     pointer-events:none;
     user-select:none;
   }
@@ -195,6 +195,7 @@
         </div>
       </div>
       <p class="tagline">一緒にいるために、<br>今日も少しだけ練習しよう。</p>
+      <div class="dev-seal" aria-hidden="true">開<br>発<br>中</div>
     </div>
     <div class="btm">
       <div class="markers">
@@ -208,9 +209,6 @@
   </div>
 
   <div class="vignette"></div>
-
-  <!-- 開発中 落款 -->
-  <div class="dev-seal" aria-hidden="true">開<br>発<br>中</div>
 </div>
 
 <script src="three.min.js"></script>

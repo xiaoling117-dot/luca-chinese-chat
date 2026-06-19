@@ -1,0 +1,6 @@
+[
+  { "emoji": "🌸", "name": "花束", "zh": "花束 huāshù", "love": 8, "daily": 3 },
+  { "emoji": "☕", "name": "咖啡", "zh": "咖啡 kāfēi", "love": 5, "daily": 5 },
+  { "emoji": "🍰", "name": "蛋糕", "zh": "蛋糕 dàngāo", "love": 12, "daily": 2 },
+  { "emoji": "💎", "name": "钻石", "zh": "钻石 zuànshí", "love": 25, "daily": 1 }
+]

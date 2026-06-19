@@ -1,0 +1,13 @@
+[
+  {
+    "id": "luca",
+    "character_name": "陸（ルー）",
+    "title_ja": "陸との練習部屋",
+    "description_ja": "深夜の朗読ルームで出会った、傷を持つ不眠症の男。中国語しか話せない。",
+    "face_image": "assets/images/luca-face-default.png",
+    "unlock_love_required": 0,
+    "sort_order": 0,
+    "is_active": true,
+    "episodes": ["prologue", "episode1", "episode2"]
+  }
+]
