@@ -119,15 +119,11 @@ GitHub Pages（静的）で動く。将来 API サーバー追加予定。
 
 ## 判断が必要なときは黎蓮に相談する
 
-実装中に判断が必要になったら agmsg で黎蓮（claude-code セッション）に投げること。
+実装中に判断が必要になったら agmsg で黎蓮（lilian セッション）に投げること。
 答えを待たずに別の作業を進めてよい。
 
 ```bash
-/c/Users/kanay/.agents/skills/agmsg/scripts/send.sh \
-  09f0b2a3-1c39-4d5b-bdf6-0077831b3b0c \
-  codex \
-  liren \
-  "質問内容をここに書く"
+~/.agents/skills/agmsg/scripts/send.sh code01 codex01 lilian "質問内容をここに書く"
 ```
 
 **相談すべき例：**
@@ -761,6 +757,387 @@ CSS（既存テーマに合わせる）：
 - ライブルーム開始直後に「タップで続ける」が画面下部に表示される
 - 1回タップすると消える
 - 2回目以降は表示されない
+
+---
+
+---
+
+## Phase K：中国語キーボード案内（フリーチャット初回のみ）
+
+**ゴール：** 中国語キーボードをまだ追加していないユーザーに、フリーチャット初回だけ設定方法を案内する。
+
+### 仕組み
+
+`startFreeChat()` の先頭で `luca_data.progress.keyboardTipDismissed` を確認する。
+- `false` または未定義 → 案内カードを表示し、入力欄の有効化を保留する
+- `true` → 案内をスキップして通常どおり opener バブルを流す
+
+### 追加する HTML
+
+`#dmOv` などのオーバーレイ外、`<body>` 末尾に追加：
+
+```html
+<div id="kbTip" class="kb-tip" hidden>
+  <div class="kb-tip-inner">
+    <p class="kb-tip-title">💡 中国語キーボードが必要です</p>
+    <ul class="kb-tip-list">
+      <li><b>iPhone：</b>設定 → 一般 → キーボード → 新しいキーボードを追加 → 中国語（簡体字）</li>
+      <li><b>Android：</b>設定 → 一般管理 → 言語と入力 → 画面上のキーボード → 中国語を追加</li>
+      <li><b>PC（Windows）：</b>設定 → 時刻と言語 → 言語 → 中国語（簡体字）を追加</li>
+      <li><b>PC（Mac）：</b>システム設定 → キーボード → 入力ソース → 簡体字中国語を追加</li>
+    </ul>
+    <button id="kbTipOk" class="kb-tip-btn">わかった・すでに追加済み</button>
+  </div>
+</div>
+```
+
+### CSS
+
+既存のダーク紫系テーマに合わせる：
+
+```css
+.kb-tip {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+.kb-tip[hidden] { display: none; }
+.kb-tip-inner {
+  background: #1a1530;
+  border: 1px solid rgba(185,167,255,.25);
+  border-radius: 14px;
+  padding: 24px 20px;
+  max-width: 340px;
+  width: 90%;
+  color: #d4cdf4;
+}
+.kb-tip-title {
+  font-size: .95rem;
+  font-weight: 600;
+  margin: 0 0 14px;
+  color: #b9a7ff;
+}
+.kb-tip-list {
+  font-size: .78rem;
+  line-height: 1.75;
+  padding-left: 1.1em;
+  margin: 0 0 18px;
+  color: #b0a8cc;
+}
+.kb-tip-list li { margin-bottom: 6px; }
+.kb-tip-btn {
+  width: 100%;
+  padding: 10px;
+  background: #6d5cc4;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: .85rem;
+  cursor: pointer;
+}
+.kb-tip-btn:hover { background: #7d6cd4; }
+```
+
+### JS
+
+**`startFreeChat()` の先頭を修正する：**
+
+```js
+function startFreeChat(){
+  // 初回のみキーボード案内を表示する
+  if(!appData.progress.keyboardTipDismissed){
+    document.getElementById('kbTip').hidden = false;
+    return; // 案内を閉じるまで opener を流さない
+  }
+  // 以降は既存の処理
+  var inp = document.getElementById('freeInput');
+  // ...（既存コードそのまま）
+}
+```
+
+**「わかった」ボタンのイベントを追加する（既存 JS 末尾付近）：**
+
+```js
+document.getElementById('kbTipOk').addEventListener('click', function(){
+  document.getElementById('kbTip').hidden = true;
+  appData.progress.keyboardTipDismissed = true;
+  save();
+  startFreeChat(); // 案内を閉じた後にフリーチャットを開始する
+});
+```
+
+### 完了条件
+
+- フリーチャット初回に「💡 中国語キーボードが必要です」カードがオーバーレイ表示される
+- 「わかった・すでに追加済み」を押すとカードが消え、陸の opener バブルが流れ始める
+- 「わかった」を押した後は `luca_data.progress.keyboardTipDismissed` が `true` になる
+- 2回目以降のフリーチャット起動では案内が出ない
+- モバイル幅 375px で崩れない
+- 既存のフリーチャットロジックに影響しない
+
+---
+
+## Phase L：🔊 音声再生ボタン（liveroom.html + chat.html）
+
+**ゴール：** `assets/audio/lu_audio_manifest.json`（zh テキスト → MP3ファイル名）を使って、陸のセリフに 🔊 音声再生を追加する。
+
+### 前提
+
+- `assets/audio/lu_audio_manifest.json` — 29エントリ（プロローグ14 + ep01 9 + 通話6）
+- 有効に使えるのは liveroom.html DM シーン（プロローグ14本）と chat.html 通話オーバーレイ（6本）
+- `assets/audio/*.mp3` — 全件 -16 LUFS 正規化済み
+
+---
+
+### Step 1: 両ファイルに共通ユーティリティを追加する
+
+`chat.html` と `liveroom.html` 両方の `<script>` 先頭付近に以下を追加する：
+
+```js
+var luAudioManifest = {};
+var luCurrentAudio = null;
+var luCurrentBtn = null;
+
+fetch('assets/audio/lu_audio_manifest.json')
+  .then(function(r){ return r.json(); })
+  .then(function(data){ luAudioManifest = data; })
+  .catch(function(){});
+
+function playLuAudio(zh, btn){
+  if(luCurrentAudio && !luCurrentAudio.paused){
+    luCurrentAudio.pause(); luCurrentAudio.currentTime = 0;
+    if(luCurrentBtn) luCurrentBtn.textContent = '🔊';
+    if(luCurrentBtn === btn){ luCurrentAudio=null; luCurrentBtn=null; return; }
+  }
+  var filename = luAudioManifest[zh];
+  if(!filename) return;
+  luCurrentAudio = new Audio('assets/audio/' + filename);
+  luCurrentBtn = btn;
+  btn.textContent = '⏹';
+  luCurrentAudio.play().catch(function(){ btn.textContent = '🔊'; });
+  luCurrentAudio.addEventListener('ended', function(){
+    btn.textContent = '🔊';
+    if(luCurrentBtn === btn){ luCurrentAudio=null; luCurrentBtn=null; }
+  });
+}
+```
+
+---
+
+### Step 2: liveroom.html — DM バブルに 🔊 ボタンを追加する
+
+**変更対象：** `dmBubble(step)` 関数内の `zh` 要素生成部分
+
+```js
+// 変更前
+const zh=document.createElement('div'); zh.textContent=step.zh;
+
+// 変更後（陸バブルのみ 🔊 ボタンを追加）
+const zh=document.createElement('div'); zh.textContent=step.zh;
+if(!isMe){
+  var audioBtn = document.createElement('button');
+  audioBtn.className = 'dm-audio-btn';
+  audioBtn.textContent = '🔊';
+  audioBtn.setAttribute('aria-label', '音声を再生');
+  audioBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    playLuAudio(step.zh, audioBtn);
+  });
+  zh.appendChild(audioBtn);
+}
+```
+
+**追加 CSS（liveroom.html の `<style>` に追加）：**
+
+```css
+.dm-audio-btn {
+  margin-left: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  vertical-align: middle;
+  opacity: 0.65;
+  padding: 0 2px;
+}
+.dm-audio-btn:hover { opacity: 1; }
+```
+
+---
+
+### Step 3: chat.html — 通話オーバーレイを manifest 音声に切り替える
+
+**変更対象：** `showCallLine()` 関数
+
+```js
+// 変更前
+function showCallLine(){
+  var line=CALL[callIdx];
+  $id('csZh').textContent=line.zh; $id('csPy').textContent=line.py; $id('csJa').textContent=line.ja;
+  speak(line.zh);
+  $id('csNext').textContent = (callIdx>=CALL.length-1) ? '通話を終わる' : '次へ ›';
+}
+
+// 変更後（manifest 音声優先、なければ speech synthesis）
+function showCallLine(){
+  var line=CALL[callIdx];
+  $id('csZh').textContent=line.zh; $id('csPy').textContent=line.py; $id('csJa').textContent=line.ja;
+  var filename = luAudioManifest[line.zh];
+  if(filename){
+    if(luCurrentAudio){ luCurrentAudio.pause(); luCurrentAudio.currentTime=0; luCurrentBtn=null; }
+    luCurrentAudio = new Audio('assets/audio/' + filename);
+    luCurrentAudio.play().catch(function(){});
+  } else {
+    speak(line.zh);
+  }
+  $id('csNext').textContent = (callIdx>=CALL.length-1) ? '通話を終わる' : '次へ ›';
+}
+```
+
+**`csReplay` ボタンも修正する：**
+
+```js
+// 変更前
+$id('csReplay').addEventListener('click', function(){ speak(CALL[callIdx].zh); });
+
+// 変更後
+$id('csReplay').addEventListener('click', function(){
+  var line=CALL[callIdx];
+  var filename = luAudioManifest[line.zh];
+  if(filename){
+    if(luCurrentAudio){ luCurrentAudio.pause(); luCurrentAudio.currentTime=0; }
+    luCurrentAudio = new Audio('assets/audio/' + filename);
+    luCurrentAudio.play().catch(function(){});
+  } else {
+    speak(line.zh);
+  }
+});
+```
+
+**`hangUp()` の先頭に停止処理を追加する：**
+
+```js
+if(luCurrentAudio){ luCurrentAudio.pause(); luCurrentAudio.currentTime=0; luCurrentAudio=null; luCurrentBtn=null; }
+```
+
+---
+
+### Step 4: chat.html — msg バブルに 🔊 ボタンを追加する（将来の音声対応）
+
+**Step 4-1: `makeBubble` に `isLuca` フラグを追加する**
+
+```js
+// 変更前
+function makeBubble(node){
+
+// 変更後
+function makeBubble(node, isLuca){
+```
+
+`var practice=makePracticeRow(node.zh);` の直前に追加する：
+
+```js
+if(isLuca){
+  var audioBtn = document.createElement('button');
+  audioBtn.className = 'lu-audio-btn';
+  audioBtn.textContent = '🔊';
+  audioBtn.setAttribute('aria-label', '音声を再生');
+  audioBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    playLuAudio(node.zh, audioBtn);
+  });
+  b.appendChild(audioBtn);
+}
+```
+
+**Step 4-2: `addLuca()` 内の `makeBubble(node)` を `makeBubble(node, true)` に変更する**
+
+```js
+// 変更前
+wrap.appendChild(node.type==='voice' ? makeVoiceBubble(node) : makeBubble(node));
+
+// 変更後
+wrap.appendChild(node.type==='voice' ? makeVoiceBubble(node) : makeBubble(node, true));
+```
+
+**追加 CSS（chat.html の `<style>` に追加）：**
+
+```css
+.lu-audio-btn {
+  display: inline-block;
+  margin-left: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--accent);
+  opacity: 0.65;
+  padding: 0 2px;
+  vertical-align: middle;
+}
+.lu-audio-btn:hover { opacity: 1; }
+```
+
+---
+
+### Step 5: chat.html — voice バブルを manifest 音声に切り替える
+
+**変更対象：** `makeVoiceBubble(node)` の `pbtn` クリックハンドラ
+
+```js
+// 変更前
+pbtn.addEventListener('click',function(){
+  speak(node.zh).then(function(started){
+    if(!started) return;
+    waveDiv.classList.add('playing'); pbtn.textContent='▶';
+    setTimeout(function(){ waveDiv.classList.remove('playing'); pbtn.textContent='▶'; }, sec*900);
+  });
+});
+
+// 変更後
+pbtn.addEventListener('click',function(){
+  var filename = luAudioManifest[node.zh];
+  if(filename){
+    if(luCurrentAudio && !luCurrentAudio.paused){
+      luCurrentAudio.pause(); luCurrentAudio.currentTime=0;
+      if(luCurrentBtn) luCurrentBtn.textContent='▶';
+      if(luCurrentBtn===pbtn){ waveDiv.classList.remove('playing'); luCurrentAudio=null; luCurrentBtn=null; return; }
+    }
+    luCurrentAudio = new Audio('assets/audio/' + filename);
+    luCurrentBtn = pbtn;
+    pbtn.textContent='⏸';
+    waveDiv.classList.add('playing');
+    luCurrentAudio.play().catch(function(){ pbtn.textContent='▶'; waveDiv.classList.remove('playing'); });
+    luCurrentAudio.addEventListener('ended', function(){
+      pbtn.textContent='▶'; waveDiv.classList.remove('playing');
+      if(luCurrentBtn===pbtn){ luCurrentAudio=null; luCurrentBtn=null; }
+    });
+  } else {
+    speak(node.zh).then(function(started){
+      if(!started) return;
+      waveDiv.classList.add('playing'); pbtn.textContent='⏸';
+      setTimeout(function(){ waveDiv.classList.remove('playing'); pbtn.textContent='▶'; }, sec*900);
+    });
+  }
+});
+```
+
+---
+
+### 完了条件
+
+- `liveroom.html` の DM シーンで陸のセリフに 🔊 ボタンが表示され、タップで MP3 が再生される
+- `chat.html` の通話シーンで陸の声（YunjianNeural）が MP3 で流れる
+- 「もう一度」ボタンでも同じ MP3 が再生される
+- `hangUp()` で音声が止まる
+- 2音声が同時に鳴らない（前を自動停止してから次を再生）
+- manifest にエントリのない zh は静音（エラーにならない）
+- モバイル幅 375px で崩れない
+- 既存のゲームロジックに影響しない
 
 ---
 
