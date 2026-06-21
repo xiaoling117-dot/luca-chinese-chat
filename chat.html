@@ -126,6 +126,12 @@
   .inputbar input::placeholder{color:var(--sub);}
   .inputbar input:not(:disabled){outline:1px solid rgba(185,167,255,.35);
     background:rgba(185,167,255,.10);opacity:1;}
+  .free-send-btn{flex-shrink:0;padding:0 12px;height:36px;background:#6d5cc4;color:#fff;
+    border:none;border-radius:8px;font-size:.85rem;cursor:pointer;opacity:.5;}
+  .free-send-btn:not(:disabled){opacity:1;}
+  .fc-hint-chip{text-align:center;font-size:.72rem;color:#b9a7ff;padding:6px 0;opacity:.75;
+    animation:fcPulse 1.5s ease-in-out infinite;}
+  @keyframes fcPulse{0%,100%{opacity:.5}50%{opacity:1}}
 
   .ending{margin:6px 2px 2px; padding:16px; border-radius:16px;
     background:rgba(185,167,255,.10); border:1px solid rgba(185,167,255,.25); animation:pop .4s ease;}
@@ -325,6 +331,8 @@
   .mic-btn.listening{animation:micpulse .8s ease-in-out infinite alternate;background:rgba(255,141,181,.28);}
   .voice-score{font-size:11px;color:var(--sub);}
   .voice-score.good{color:#7be08a}.voice-score.retry{color:#ffbd82}
+  .voice-retry-btn{display:block;margin-top:4px;padding:0;border:0;background:none;color:var(--accent);
+    font:inherit;font-size:.75rem;text-decoration:underline;cursor:pointer;}
   .voice-diff{grid-column:1/-1;font-size:14px;letter-spacing:.08em;line-height:1.5;}
   .voice-diff .ok{color:#7dde9a}.voice-diff .miss{color:#ff7d7d;text-decoration:underline;}
   @keyframes micpulse{to{box-shadow:0 0 0 5px rgba(255,141,181,.12);}}
@@ -395,6 +403,7 @@
     <div class="inputbar">
       <div class="plus" id="plusBtn">＋</div>
       <input type="text" id="freeInput" placeholder="自由入力＝2回目（AI）で実装予定…" disabled>
+      <button id="freeSend" class="free-send-btn" disabled>送信</button>
     </div>
   </div>
   <div class="lvlup" id="lvlup">
@@ -729,7 +738,7 @@ const DAYS = [
 /* ===================== ここから下は仕組み（触らなくてOK） ===================== */
 const chat = document.getElementById('chat');
 const choicesEl = document.getElementById('choices');
-const EPISODE_IDS = ['prologue','episode1','episode2','day4','day5'];
+const EPISODE_IDS = ['episode1','episode2','episode3','episode4','episode5'];
 var ROOMS=[];
 var GIFTS=[];
 var CALL=[];
@@ -957,18 +966,46 @@ function renderPronunciationDiff(target,recognized,diffEl){
     diffEl.appendChild(span);
   });
 }
+function resetPronunciationButton(button,recognition){
+  if(button._recognition===recognition) button._recognition=null;
+  button.textContent='🎤 発音';
+  button.classList.remove('listening');
+  button.setAttribute('aria-label','中国語の発音を録音して採点');
+}
+function showPronunciationFailure(message,targetZh,button,resultEl,diffEl){
+  resultEl.className='voice-score retry';
+  resultEl.replaceChildren(document.createTextNode(message));
+  var retry=document.createElement('button');
+  retry.type='button';
+  retry.className='voice-retry-btn';
+  retry.textContent='もう一度試す';
+  retry.addEventListener('click',function(e){
+    e.stopPropagation();
+    startPronunciation(targetZh,button,resultEl,diffEl);
+  });
+  resultEl.appendChild(retry);
+}
 function startPronunciation(targetZh,button,resultEl,diffEl){
   if(!recognitionSupported) return;
+  if(button._recognition){
+    button._recognition._stoppedByUser=true;
+    try{ button._recognition.stop(); }catch(e){}
+    return;
+  }
   var recognition=new SpeechRecognitionCtor();
   recognition.lang='zh-CN';
   recognition.interimResults=false;
   recognition.maxAlternatives=1;
-  button.disabled=true;
+  recognition._hasOutcome=false;
+  button._recognition=recognition;
+  button.textContent='🛑 停止';
   button.classList.add('listening');
+  button.setAttribute('aria-label','発音の録音を停止');
   resultEl.className='voice-score';
   resultEl.textContent='聞き取り中…';
   diffEl.replaceChildren();
   recognition.onresult=function(event){
+    recognition._hasOutcome=true;
     var recognized=event.results[0][0].transcript||'';
     var score=similarityScore(targetZh,recognized);
     var log={ts:new Date().toISOString(),epId:EPISODE_IDS[dayIdx]||('day'+(dayIdx+1)),
@@ -980,11 +1017,32 @@ function startPronunciation(targetZh,button,resultEl,diffEl){
     renderPronunciationDiff(targetZh,recognized,diffEl);
   };
   recognition.onerror=function(event){
-    resultEl.className='voice-score retry';
-    resultEl.textContent=event.error==='not-allowed'?'マイクの許可が必要です':'認識できませんでした';
+    recognition._hasOutcome=true;
+    resetPronunciationButton(button,recognition);
+    showPronunciationFailure(
+      event.error==='not-allowed'?'マイクの許可が必要です':'認識できませんでした',
+      targetZh,button,resultEl,diffEl
+    );
   };
-  recognition.onend=function(){ button.disabled=false; button.classList.remove('listening'); };
-  try{ recognition.start(); }catch(e){ recognition.onend(); resultEl.textContent='録音を開始できませんでした'; }
+  recognition.onnomatch=function(){
+    recognition._hasOutcome=true;
+    resetPronunciationButton(button,recognition);
+    showPronunciationFailure('認識できませんでした',targetZh,button,resultEl,diffEl);
+  };
+  recognition.onend=function(){
+    resetPronunciationButton(button,recognition);
+    if(recognition._stoppedByUser&&!recognition._hasOutcome){
+      resultEl.className='voice-score';
+      resultEl.textContent='録音を停止しました';
+    }
+  };
+  try{
+    recognition.start();
+  }catch(e){
+    recognition._hasOutcome=true;
+    resetPronunciationButton(button,recognition);
+    showPronunciationFailure('録音を開始できませんでした',targetZh,button,resultEl,diffEl);
+  }
 }
 function makePracticeRow(targetZh){
   if(!recognitionSupported) return null;
@@ -1132,6 +1190,7 @@ var fcExchangeIdx = 0;
 function startFreeChat(){
   var inp=document.getElementById('freeInput');
   inp.disabled=true;
+  document.getElementById('freeSend').disabled=true;
   fetch('data/lu_responses.json')
     .then(function(r){
       if(!r.ok) throw new Error('free chat data not found');
@@ -1168,13 +1227,25 @@ async function fcShowExchange(){
   await fcShowBubbles(ex.lu_prompt,null);
   var inp=document.getElementById('freeInput');
   inp.disabled=false;
+  document.getElementById('freeSend').disabled=false;
   inp.placeholder='中国語で入力…';
+  var oldHint=document.getElementById('fcHintChip');
+  if(oldHint) oldHint.remove();
+  var hint=document.createElement('div');
+  hint.className='fc-hint-chip';
+  hint.id='fcHintChip';
+  hint.textContent='← 中国語で返事を入力してください';
+  chat.appendChild(hint);
+  scrollDown();
   inp.focus();
 }
 
 async function handleFreeChatInput(text){
   var inp=document.getElementById('freeInput');
+  var chip=document.getElementById('fcHintChip');
+  if(chip) chip.remove();
   inp.disabled=true;
+  document.getElementById('freeSend').disabled=true;
   inp.value='';
   if(!fcSession) return;
   addUser({zh:text,py:'',ja:''});
@@ -1202,6 +1273,7 @@ async function handleFreeChatInput(text){
     addLuca({zh:fb.zh,py:fb.pinyin||'',ja:fb.ja||''});
     await sleep(300);
     inp.disabled=false;
+    document.getElementById('freeSend').disabled=false;
     inp.placeholder='中国語で入力…';
     inp.focus();
   }
@@ -1219,6 +1291,7 @@ async function fcFinish(){
   fcSession=null;
   var inp=document.getElementById('freeInput');
   inp.disabled=true;
+  document.getElementById('freeSend').disabled=true;
   inp.placeholder='今日はここまで。また明日。';
 }
 
@@ -1504,6 +1577,10 @@ document.getElementById('freeInput').addEventListener('keydown',function(e){
   if(e.key==='Enter'&&!e.isComposing&&this.value.trim()){
     handleFreeChatInput(this.value.trim());
   }
+});
+document.getElementById('freeSend').addEventListener('click',function(){
+  var inp=document.getElementById('freeInput');
+  if(inp.value.trim()) handleFreeChatInput(inp.value.trim());
 });
 
 /* ===== 起動・ルーム一覧 ===== */

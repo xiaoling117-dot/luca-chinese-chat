@@ -514,6 +514,256 @@ document.getElementById('freeInput').addEventListener('keydown', function(e){
 
 ---
 
+---
+
+## Phase I：バグ修正2件（最優先）
+
+**フェーズ順に進めること。I-1 → I-2 の順。**
+
+---
+
+### Phase I-1：EPISODE_IDS ズレ修正（chat.html）
+
+**背景：**
+`liveroom.html` がプロローグ完了時に `currentEpId:'episode1'` で保存する。
+しかし `chat.html` の `EPISODE_IDS = ['prologue','episode1',...]` では
+`indexOf('episode1') = 1` となり、`dayIdx = 1 = DAYS[1] = Day 2` から始まってしまう。
+Day 1 が永久にスキップされる致命的バグ。
+
+**変更箇所：** `chat.html` 1箇所
+
+```js
+// 変更前（chat.html の EPISODE_IDS 定義行）
+const EPISODE_IDS = ['prologue','episode1','episode2','day4','day5'];
+
+// 変更後
+const EPISODE_IDS = ['episode1','episode2','episode3','episode4','episode5'];
+```
+
+**注意：**
+- `liveroom.html` の保存内容（`currentEpId:'episode1'`）は変更不要
+- `data/episode1.json` などの v2 用 JSON ファイルは変更不要（chat.html の DAYS はハードコード）
+- `EPISODE_IDS` の参照箇所（`save()`・`nextDay()`・`voiceLogs` 等）は文字列参照なので、配列の中身を変えるだけで全て連動する
+
+**完了条件：**
+- ブラウザで `luca_data` を削除した状態でプロローグを完走し、トークルームで陸を押すと **Day 1** から始まる
+- ブラウザコンソールで `JSON.parse(localStorage.getItem('luca_data')).progress` を確認すると `currentEpId:'episode1'` が入っている
+
+---
+
+### Phase I-2：CTA遷移構造バグ修正（index.html）
+
+**背景：**
+`index.html` の CTA ボタンの HTML は `href="prologue.html"` だが、
+JS クリックハンドラが `location.href = hasSave ? 'chat.html' : 'liveroom.html'` に上書きしている。
+Three.js / WebGL の初期化中に JS がエラーで止まると、クリックハンドラが未登録のまま残り、
+ボタンをタップすると意図しない `prologue.html` に飛ぶ。
+
+**変更箇所：** `index.html` 1箇所
+
+```html
+<!-- 変更前 -->
+<div class="cta"><a id="start" href="prologue.html">会話を始める<span class="arr">▸</span></a></div>
+
+<!-- 変更後：JS が落ちても正しいフォールバック先（liveroom.html）に飛ぶ -->
+<div class="cta"><a id="start" href="liveroom.html">会話を始める<span class="arr">▸</span></a></div>
+```
+
+既存の JS クリックハンドラ（`hasSave ? 'chat.html' : 'liveroom.html'`）はそのまま残す。
+JS が正常動作する場合はハンドラが `e.preventDefault()` するので href は使われない。
+JS が落ちた場合のみ `href="liveroom.html"` のフォールバックが機能する。
+
+**完了条件：**
+- `index.html` の `id="start"` の `href` が `liveroom.html` になっている
+- JS クリックハンドラの内容は変更されていない
+
+---
+
+## Phase J：UX改善4件
+
+**フェーズ順に進めること。J-1 → J-4 の順。**
+
+---
+
+### Phase J-1：発音評価UI改善（chat.html）
+
+**背景：**
+発音マイクボタンを押した後、録音中かどうかユーザーが分からない。
+失敗時に「認識できませんでした」だけ出て、次のアクションがない。
+特に iPhone Safari は認識開始に失敗しやすい。
+
+**変更内容：**
+
+1. **マイクボタンを切替式にする**
+   - 録音開始 → ボタンを `🛑 停止` に変える
+   - 録音終了（成功・失敗いずれでも）→ ボタンを `🎤 発音` に戻す
+   - `recognition.stop()` をボタンに紐付ける
+
+2. **失敗時に「もう一度試す」ボタンを表示する**
+   - `onerror` / `onnomatch` 時に「認識できませんでした」の下に `[もう一度試す]` ボタンを追加する
+   - ボタン押下で同じ `zh` ターゲットに対して再度 `recognition.start()` する
+
+**スタイル：**
+- `🛑 停止` ボタンは既存マイクボタンと同色（`--accent: #b9a7ff` 系）でよい
+- `[もう一度試す]` ボタンは小さめ（`font-size: 0.75rem`）でテキストボタン形式
+
+**完了条件：**
+- マイクを押すと「聞き取り中...」表示 + ボタンが `🛑 停止` に変わる
+- 停止ボタンで録音を止められる
+- 認識失敗時に「もう一度試す」ボタンが出る
+- 再試行ボタンで再録音できる
+
+---
+
+### Phase J-2：自由入力チャット送信ボタン追加（chat.html）
+
+**背景：**
+フリーチャットの入力が Enter キーのみ。
+iPhone の日本語 / 中国語 IME では Enter が「変換確定」になることがあり、送信できない。
+LINE・微信（WeChat）と同じく送信ボタンを付ける。
+
+**変更箇所：** `chat.html` の inputbar 周辺
+
+Step 1: `freeInput` の入力欄横に送信ボタンを追加する
+
+```html
+<!-- 既存の freeInput <input> の直後に追加 -->
+<button id="freeSend" class="free-send-btn" disabled>送信</button>
+```
+
+Step 2: 送信ボタンの CSS を追加する（既存のダーク紫系テーマに合わせる）
+
+```css
+.free-send-btn {
+  flex-shrink: 0;
+  padding: 0 12px;
+  height: 36px;
+  background: #6d5cc4;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  opacity: 0.5;
+}
+.free-send-btn:not(:disabled) { opacity: 1; }
+```
+
+Step 3: `startFreeChat()` / `fcShowExchange()` の inputbar 有効化コードに `freeSend` ボタンの有効化を追加する
+
+```js
+// inp.disabled=false の直後に追加
+document.getElementById('freeSend').disabled = false;
+```
+
+Step 4: `handleFreeChatInput` 呼び出しを送信ボタンにも接続する
+
+```js
+document.getElementById('freeSend').addEventListener('click', function(){
+  var inp = document.getElementById('freeInput');
+  if(inp.value.trim()) handleFreeChatInput(inp.value.trim());
+});
+```
+
+Step 5: `handleFreeChatInput` の先頭で `freeSend` ボタンも無効化する
+
+```js
+document.getElementById('freeSend').disabled = true;
+```
+
+**完了条件：**
+- 入力欄の右横に [送信] ボタンが表示される
+- フリーチャット有効時のみボタンが有効になる
+- ボタンをタップすると送信される
+- Enter キーでも引き続き送信できる
+- モバイル幅 375px でボタンが入力欄と並んで表示される
+
+---
+
+### Phase J-3：入力待ち演出追加（chat.html）
+
+**背景：**
+フリーチャットで陸のバブルが終わった後、入力欄が有効になるが、
+ユーザーに「次に何をすべきか」が伝わらない。
+
+**変更内容：**
+`fcShowExchange()` の末尾（`inp.disabled=false` の直後）に、チャット欄内へヒントチップを表示する。
+
+```js
+// inp.disabled=false; の直後に追加
+var hint = document.createElement('div');
+hint.className = 'fc-hint-chip';
+hint.id = 'fcHintChip';
+hint.textContent = '← 中国語で返事を入力してください';
+chat.appendChild(hint);
+scrollDown();
+```
+
+`handleFreeChatInput` の先頭（入力受付直後）にチップを削除する：
+
+```js
+var chip = document.getElementById('fcHintChip');
+if(chip) chip.remove();
+```
+
+CSS（既存テーマに合わせる）：
+
+```css
+.fc-hint-chip {
+  text-align: center;
+  font-size: 0.72rem;
+  color: #b9a7ff;
+  padding: 6px 0;
+  opacity: 0.75;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+```
+
+**完了条件：**
+- 陸がお題を出した後、チャット欄に「← 中国語で返事を入力してください」が点滅表示される
+- 入力を送信するとヒントが消える
+
+---
+
+### Phase J-4：ライブルーム開始ヒント追加（liveroom.html）
+
+**背景：**
+ライブルーム開始後、最初のナレーションが表示されてタップ待ちになるが、
+「タップして進む」ことが伝わらず「止まった？」と感じるユーザーがいる。
+
+**変更内容：**
+`liveroom.html` の narration カード表示時、初回のみ画面下部に「タップで続ける」ヒントを出す。
+2回目以降のタップ後は消える。
+
+- ヒント要素（`#tapHint`）を `<body>` 末尾に追加する
+- narration 表示関数の中で、`tapHintShown` フラグが false の場合のみ `#tapHint` を表示する
+- 画面タップ（`document.body` の click ハンドラ）で `#tapHint` を非表示にし `tapHintShown = true` にする
+
+```css
+#tapHint {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: rgba(185,167,255,0.7);
+  letter-spacing: 0.05em;
+  pointer-events: none;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+```
+
+**完了条件：**
+- ライブルーム開始直後に「タップで続ける」が画面下部に表示される
+- 1回タップすると消える
+- 2回目以降は表示されない
+
+---
+
 ## 禁止事項
 
 - `v2.html` を変更しない（凍結ファイル・参照のみ）
