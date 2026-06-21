@@ -232,6 +232,9 @@
   .dm-trans{display:none; margin-top:7px; padding-top:7px;
     border-top:1px dashed rgba(188,170,255,.22); color:#aeb3d5; font-size:12px;}
   .dm-bubble.open .dm-trans{display:block;} .dm-py{margin-bottom:3px; color:#b9a7ff;}
+  .dm-audio-btn{margin-left:8px;background:none;border:none;cursor:pointer;font-size:13px;
+    vertical-align:middle;opacity:.65;padding:0 2px;}
+  .dm-audio-btn:hover{opacity:1;}
   .dm-narr{align-self:center; width:min(100%,340px); padding:16px; border:1px solid rgba(227,196,133,.22);
     border-radius:16px; background:rgba(8,10,24,.78); color:#d9dcf2; line-height:1.9;
     white-space:pre-line; overflow-wrap:anywhere;}
@@ -364,6 +367,41 @@
 
 <script>
 const LUCA_IMG = "assets/images/luca-portrait.jpg";
+var luAudioManifest = {};
+var luCurrentAudio = null;
+var luCurrentBtn = null;
+
+fetch('assets/audio/lu_audio_manifest.json')
+  .then(function(r){ return r.json(); })
+  .then(function(data){ luAudioManifest = data; })
+  .catch(function(){});
+
+function stopLuAudio(){
+  if(luCurrentAudio){ luCurrentAudio.pause(); luCurrentAudio.currentTime=0; }
+  if(luCurrentBtn) luCurrentBtn.textContent='🔊';
+  luCurrentAudio=null;
+  luCurrentBtn=null;
+}
+function playLuAudio(zh, btn){
+  if(luCurrentAudio && !luCurrentAudio.paused){
+    var sameButton=luCurrentBtn===btn;
+    stopLuAudio();
+    if(sameButton) return;
+  }
+  var filename = luAudioManifest[zh];
+  if(!filename) return;
+  luCurrentAudio = new Audio('assets/audio/' + filename);
+  luCurrentBtn = btn;
+  btn.textContent = '⏹';
+  luCurrentAudio.play().catch(function(){
+    btn.textContent='🔊';
+    if(luCurrentBtn===btn){ luCurrentAudio=null; luCurrentBtn=null; }
+  });
+  luCurrentAudio.addEventListener('ended', function(){
+    btn.textContent = '🔊';
+    if(luCurrentBtn === btn){ luCurrentAudio=null; luCurrentBtn=null; }
+  });
+}
 
 /* ===== 参加者（アンビエント）コメントのプール ===== */
 const AMBIENT = [
@@ -579,6 +617,17 @@ function dmBubble(step){
   if(step.lang==='zh'&&step.zh){
     bubble.className='dm-bubble learn';
     const zh=document.createElement('div'); zh.textContent=step.zh;
+    if(!isMe){
+      var audioBtn=document.createElement('button');
+      audioBtn.className='dm-audio-btn';
+      audioBtn.textContent='🔊';
+      audioBtn.setAttribute('aria-label','音声を再生');
+      audioBtn.addEventListener('click',function(e){
+        e.stopPropagation();
+        playLuAudio(step.zh,audioBtn);
+      });
+      zh.appendChild(audioBtn);
+    }
     const trans=document.createElement('div'); trans.className='dm-trans';
     const py=document.createElement('div'); py.className='dm-py'; py.textContent=step.pinyin||'';
     trans.appendChild(py); trans.appendChild(document.createTextNode(step.ja||''));

@@ -347,6 +347,9 @@
   .voice-diff{grid-column:1/-1;font-size:14px;letter-spacing:.08em;line-height:1.5;}
   .voice-diff .ok{color:#7dde9a}.voice-diff .miss{color:#ff7d7d;text-decoration:underline;}
   @keyframes micpulse{to{box-shadow:0 0 0 5px rgba(255,141,181,.12);}}
+  .lu-audio-btn{display:inline-block;margin-left:8px;background:none;border:none;cursor:pointer;
+    font-size:13px;color:var(--accent);opacity:.65;padding:0 2px;vertical-align:middle;}
+  .lu-audio-btn:hover{opacity:1;}
   .room-screen{position:absolute;inset:0;z-index:70;display:none;flex-direction:column;
     background:linear-gradient(180deg,rgba(26,21,48,.94),rgba(13,10,28,.98)),url("assets/images/bg.jpg") center/cover;}
   .room-screen.show{display:flex;}
@@ -574,6 +577,52 @@
 </div>
 
 <script>
+var luAudioManifest = {};
+var luCurrentAudio = null;
+var luCurrentBtn = null;
+
+fetch('assets/audio/lu_audio_manifest.json')
+  .then(function(r){ return r.json(); })
+  .then(function(data){ luAudioManifest = data; })
+  .catch(function(){});
+
+function resetLuAudioButton(btn){
+  if(!btn) return;
+  btn.textContent=btn.classList.contains('voice-play-btn')?'\u25b6':'🔊';
+  if(btn._waveDiv) btn._waveDiv.classList.remove('playing');
+}
+function stopLuAudio(){
+  if(luCurrentAudio){ luCurrentAudio.pause(); luCurrentAudio.currentTime=0; }
+  resetLuAudioButton(luCurrentBtn);
+  luCurrentAudio=null;
+  luCurrentBtn=null;
+}
+function stopLuSpeech(){
+  speechRequestId++;
+  try{ speechSynthesis.cancel(); }catch(e){}
+}
+function playLuAudio(zh, btn){
+  if(luCurrentAudio && !luCurrentAudio.paused){
+    var sameButton=luCurrentBtn===btn;
+    stopLuAudio();
+    if(sameButton) return;
+  }
+  var filename = luAudioManifest[zh];
+  if(!filename) return;
+  stopLuSpeech();
+  luCurrentAudio = new Audio('assets/audio/' + filename);
+  luCurrentBtn = btn;
+  btn.textContent = '⏹';
+  luCurrentAudio.play().catch(function(){
+    resetLuAudioButton(btn);
+    if(luCurrentBtn===btn){ luCurrentAudio=null; luCurrentBtn=null; }
+  });
+  luCurrentAudio.addEventListener('ended', function(){
+    resetLuAudioButton(btn);
+    if(luCurrentBtn === btn){ luCurrentAudio=null; luCurrentBtn=null; }
+  });
+}
+
 /* =====================================================================
    キャラ：陸（ルー）ツンデレ・少し強引・でも面倒見がいい
    DAYS[日数].story にセリフ/選択肢、DAYS[日数].vocab に復習単語
@@ -948,6 +997,7 @@ function showSpeechFallback(){
   if(phone) phone.insertBefore(msg,header?header.nextSibling:phone.firstChild);
 }
 function speak(text){
+  stopLuAudio();
   if(!speechSupported){ showSpeechFallback(); return Promise.resolve(false); }
   var requestId=++speechRequestId;
   speechSynthesis.cancel();
@@ -1087,8 +1137,8 @@ function makeVoiceBubble(node){
   var sec=node.sec||12;
   var playDiv=document.createElement('div'); playDiv.className='voice-play';
   var pbtn=document.createElement('button'); pbtn.className='voice-play-btn'; pbtn.textContent='\u25b6';
-  configureSpeechButton(pbtn);
   var waveDiv=document.createElement('div'); waveDiv.className='voice-wave';
+  pbtn._waveDiv=waveDiv;
   for(var i=0;i<9;i++){ var sp=document.createElement('span'); waveDiv.appendChild(sp); }
   var secSpan=document.createElement('span'); secSpan.className='voice-sec'; secSpan.textContent=sec+"''";
   playDiv.appendChild(pbtn); playDiv.appendChild(waveDiv); playDiv.appendChild(secSpan);
@@ -1100,11 +1150,38 @@ function makeVoiceBubble(node){
   textDiv.appendChild(zhDiv); textDiv.appendChild(pyDiv); textDiv.appendChild(jaDiv);
   wrap.appendChild(playDiv); wrap.appendChild(tenBtn); wrap.appendChild(textDiv);
   pbtn.addEventListener('click',function(){
-    speak(node.zh).then(function(started){
-      if(!started) return;
-      waveDiv.classList.add('playing'); pbtn.textContent='\u23f8';
-      setTimeout(function(){ waveDiv.classList.remove('playing'); pbtn.textContent='\u25b6'; }, sec*900);
-    });
+    var filename=luAudioManifest[node.zh];
+    if(filename){
+      stopLuSpeech();
+      if(luCurrentAudio&&!luCurrentAudio.paused){
+        var sameButton=luCurrentBtn===pbtn;
+        stopLuAudio();
+        if(sameButton){
+          waveDiv.classList.remove('playing');
+          return;
+        }
+      }
+      luCurrentAudio=new Audio('assets/audio/'+filename);
+      luCurrentBtn=pbtn;
+      pbtn.textContent='\u23f8';
+      waveDiv.classList.add('playing');
+      luCurrentAudio.play().catch(function(){
+        pbtn.textContent='\u25b6';
+        waveDiv.classList.remove('playing');
+        if(luCurrentBtn===pbtn){ luCurrentAudio=null; luCurrentBtn=null; }
+      });
+      luCurrentAudio.addEventListener('ended',function(){
+        pbtn.textContent='\u25b6';
+        waveDiv.classList.remove('playing');
+        if(luCurrentBtn===pbtn){ luCurrentAudio=null; luCurrentBtn=null; }
+      });
+    }else{
+      speak(node.zh).then(function(started){
+        if(!started) return;
+        waveDiv.classList.add('playing'); pbtn.textContent='\u23f8';
+        setTimeout(function(){ waveDiv.classList.remove('playing'); pbtn.textContent='\u25b6'; },sec*900);
+      });
+    }
   });
   tenBtn.addEventListener('click',function(){
     var isOpen=textDiv.classList.toggle('open');
@@ -1117,7 +1194,7 @@ function escapeHtml(value){
   el.textContent=String(value==null?'':value);
   return el.innerHTML;
 }
-function makeBubble(node){
+function makeBubble(node,isLuca){
   const b=document.createElement('div'); b.className='bubble tappable';
   var spk = node.teach ? '<button class="spk" aria-label="発音">🔊 覚える</button>' : '';
   b.innerHTML='<div class="zh">'+escapeHtml(node.zh)+spk+'</div>'+
@@ -1128,6 +1205,17 @@ function makeBubble(node){
     configureSpeechButton(sp);
     sp.addEventListener('click', function(e){ e.stopPropagation(); speak(node.zh); });
   }
+  if(isLuca){
+    var audioBtn=document.createElement('button');
+    audioBtn.className='lu-audio-btn';
+    audioBtn.textContent='🔊';
+    audioBtn.setAttribute('aria-label','音声を再生');
+    audioBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      playLuAudio(node.zh,audioBtn);
+    });
+    b.appendChild(audioBtn);
+  }
   var practice=makePracticeRow(node.zh);
   if(practice) b.appendChild(practice);
   return b;
@@ -1137,7 +1225,7 @@ function addTimestamp(t){ const d=document.createElement('div'); d.className='ti
 function addLuca(node){
   const row=document.createElement('div'); row.className='row luca';
   const mini=document.createElement('div'); mini.className='mini';
-  const wrap=document.createElement('div'); wrap.className='bwrap'; wrap.appendChild(node.type==='voice' ? makeVoiceBubble(node) : makeBubble(node));
+  const wrap=document.createElement('div'); wrap.className='bwrap'; wrap.appendChild(node.type==='voice' ? makeVoiceBubble(node) : makeBubble(node,true));
   if(node.time){ const m=document.createElement('div'); m.className='meta'; m.textContent=node.time; wrap.appendChild(m);}
   row.appendChild(mini); row.appendChild(wrap); chat.appendChild(row); scrollDown();
 }
@@ -1411,19 +1499,38 @@ function acceptCall(){
 function showCallLine(){
   var line=CALL[callIdx];
   $id('csZh').textContent=line.zh; $id('csPy').textContent=line.py; $id('csJa').textContent=line.ja;
-  speak(line.zh);
+  var filename=luAudioManifest[line.zh];
+  if(filename){
+    stopLuAudio();
+    stopLuSpeech();
+    luCurrentAudio=new Audio('assets/audio/'+filename);
+    luCurrentAudio.play().catch(function(){});
+  }else{
+    speak(line.zh);
+  }
   $id('csNext').textContent = (callIdx>=CALL.length-1) ? '通話を終わる' : '次へ ›';
 }
 function nextCallLine(){ if(callIdx>=CALL.length-1){ hangUp(); return; } callIdx++; showCallLine(); }
 function hangUp(){
+  stopLuAudio();
   if(callTimer){ clearInterval(callTimer); callTimer=null; }
-  try{ speechSynthesis.cancel(); }catch(e){}
+  stopLuSpeech();
   $id('callOverlay').classList.remove('show');
   if(callAccepted && recordAward('call','call',8)){ love=Math.min(100,love+8); updateLove(true); save(); }
   callAccepted=false;
 }
-configureSpeechButton($id('csReplay'));
-$id('csReplay').addEventListener('click', function(){ speak(CALL[callIdx].zh); });
+$id('csReplay').addEventListener('click',function(){
+  var line=CALL[callIdx];
+  var filename=luAudioManifest[line.zh];
+  if(filename){
+    stopLuAudio();
+    stopLuSpeech();
+    luCurrentAudio=new Audio('assets/audio/'+filename);
+    luCurrentAudio.play().catch(function(){});
+  }else{
+    speak(line.zh);
+  }
+});
 $id('csNext').addEventListener('click', nextCallLine);
 
 /* ===== プロフィール・ステータス ===== */
