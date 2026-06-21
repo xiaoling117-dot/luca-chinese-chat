@@ -132,6 +132,17 @@
   .fc-hint-chip{text-align:center;font-size:.72rem;color:#b9a7ff;padding:6px 0;opacity:.75;
     animation:fcPulse 1.5s ease-in-out infinite;}
   @keyframes fcPulse{0%,100%{opacity:.5}50%{opacity:1}}
+  .kb-tip{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;
+    justify-content:center;z-index:200;}
+  .kb-tip[hidden]{display:none;}
+  .kb-tip-inner{background:#1a1530;border:1px solid rgba(185,167,255,.25);border-radius:14px;
+    padding:24px 20px;max-width:340px;width:90%;color:#d4cdf4;}
+  .kb-tip-title{font-size:.95rem;font-weight:600;margin:0 0 14px;color:#b9a7ff;}
+  .kb-tip-list{font-size:.78rem;line-height:1.75;padding-left:1.1em;margin:0 0 18px;color:#b0a8cc;}
+  .kb-tip-list li{margin-bottom:6px;}
+  .kb-tip-btn{width:100%;padding:10px;background:#6d5cc4;color:#fff;border:none;border-radius:8px;
+    font-size:.85rem;cursor:pointer;}
+  .kb-tip-btn:hover{background:#7d6cd4;}
 
   .ending{margin:6px 2px 2px; padding:16px; border-radius:16px;
     background:rgba(185,167,255,.10); border:1px solid rgba(185,167,255,.25); animation:pop .4s ease;}
@@ -546,6 +557,19 @@
     <div class="callbtns" id="callHang" style="display:none;">
       <button class="cb hang" onclick="hangUp()">通話を終了</button>
     </div>
+  </div>
+</div>
+
+<div id="kbTip" class="kb-tip" hidden>
+  <div class="kb-tip-inner">
+    <p class="kb-tip-title">💡 中国語キーボードが必要です</p>
+    <ul class="kb-tip-list">
+      <li><b>iPhone：</b>設定 → 一般 → キーボード → 新しいキーボードを追加 → 中国語（簡体字）</li>
+      <li><b>Android：</b>設定 → 一般管理 → 言語と入力 → 画面上のキーボード → 中国語を追加</li>
+      <li><b>PC（Windows）：</b>設定 → 時刻と言語 → 言語 → 中国語（簡体字）を追加</li>
+      <li><b>PC（Mac）：</b>システム設定 → キーボード → 入力ソース → 簡体字中国語を追加</li>
+    </ul>
+    <button id="kbTipOk" class="kb-tip-btn">わかった・すでに追加済み</button>
   </div>
 </div>
 
@@ -1188,6 +1212,10 @@ var fcSession = null;
 var fcExchangeIdx = 0;
 
 function startFreeChat(){
+  if(!appData.progress.keyboardTipDismissed){
+    document.getElementById('kbTip').hidden=false;
+    return;
+  }
   var inp=document.getElementById('freeInput');
   inp.disabled=true;
   document.getElementById('freeSend').disabled=true;
@@ -1581,6 +1609,12 @@ document.getElementById('freeInput').addEventListener('keydown',function(e){
 document.getElementById('freeSend').addEventListener('click',function(){
   var inp=document.getElementById('freeInput');
   if(inp.value.trim()) handleFreeChatInput(inp.value.trim());
+});
+document.getElementById('kbTipOk').addEventListener('click',function(){
+  document.getElementById('kbTip').hidden=true;
+  appData.progress.keyboardTipDismissed=true;
+  save();
+  startFreeChat();
 });
 
 /* ===== 起動・ルーム一覧 ===== */
