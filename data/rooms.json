@@ -9,5 +9,18 @@
     "sort_order": 0,
     "is_active": true,
     "episodes": ["prologue", "episode1", "episode2"]
+  },
+  {
+    "id": "hskk_basic",
+    "character_name": "陸（ルー）",
+    "title_ja": "秘密の発音練習部屋",
+    "description_ja": "短い質問に中国語で答える、HSKK形式の口頭練習。採点より、声に出せたことを大切にします。",
+    "face_image": "assets/images/luca-face-default.png",
+    "unlock_love_required": 0,
+    "sort_order": 1,
+    "is_active": true,
+    "route": "hskk.html",
+    "level_label": "HSKK 初級",
+    "episodes": []
   }
 ]

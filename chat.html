@@ -337,9 +337,18 @@
   .voice-text .py{font-size:11px;color:rgba(185,167,255,.7);margin-bottom:2px;}
   .voice-text .ja{font-size:12px;color:var(--sub);}
   .practice-row{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:4px 7px;margin-top:7px;}
+  .practice-row[data-state="playing"] .voice-score{color:var(--accent);}
+  .practice-row[data-state="recording"] .voice-score{color:var(--heart);}
+  .practice-row[data-state="judging"] .voice-score{color:#ffd27d;}
+  .practice-row[data-state="success"] .voice-score{color:#7be08a;}
+  .practice-row[data-state="failure"] .voice-score{color:#ffbd82;}
   .mic-btn{border:1px solid rgba(255,141,181,.35);background:rgba(255,141,181,.12);
     color:var(--heart);border-radius:10px;padding:3px 8px;font:inherit;font-size:11px;cursor:pointer;}
   .mic-btn.listening{animation:micpulse .8s ease-in-out infinite alternate;background:rgba(255,141,181,.28);}
+  .practice-fallback{grid-column:1/-1;color:var(--sub);font-size:11px;line-height:1.55;}
+  .practice-fallback-actions{display:flex;gap:7px;margin-top:5px;}
+  .practice-fallback-actions button{border:1px solid rgba(185,167,255,.3);background:rgba(185,167,255,.12);
+    color:var(--text);border-radius:9px;padding:5px 8px;font:inherit;font-size:11px;cursor:pointer;}
   .voice-score{font-size:11px;color:var(--sub);}
   .voice-score.good{color:#7be08a}.voice-score.retry{color:#ffbd82}
   .voice-retry-btn{display:block;margin-top:4px;padding:0;border:0;background:none;color:var(--accent);
@@ -531,6 +540,20 @@
         </div>
         <div class="stat-note">獲得済みイベント数（awarded）を習得数として表示しています。</div>
       </div>
+      <div class="stat-row">
+        <div class="stat-heading">
+          <span class="stat-label">今日練習した回数</span>
+          <span class="stat-value" id="statusPracticeToday">0回</span>
+        </div>
+        <div class="stat-note">今日の発音練習と秘密の練習部屋の記録です。</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-heading">
+          <span class="stat-label">今日言えたフレーズ</span>
+          <span class="stat-value" id="statusSuccessToday">0個</span>
+        </div>
+        <div class="stat-note">通常チャットで70点以上だったフレーズを数えています。</div>
+      </div>
     </div>
   </div>
 
@@ -608,7 +631,20 @@ function playLuAudio(zh, btn){
     if(sameButton) return;
   }
   var filename = luAudioManifest[zh];
-  if(!filename) return;
+  if(!filename){
+    if(btn){
+      btn.textContent='再生中…';
+      btn.disabled=true;
+    }
+    speak(zh).then(function(started){
+      if(btn){
+        btn.textContent=btn.classList.contains('voice-play-btn')?'\u25b6':'🔊';
+        btn.disabled=false;
+      }
+      if(!started) showSpeechFallback();
+    });
+    return;
+  }
   stopLuSpeech();
   luCurrentAudio = new Audio('assets/audio/' + filename);
   luCurrentBtn = btn;
@@ -616,6 +652,7 @@ function playLuAudio(zh, btn){
   luCurrentAudio.play().catch(function(){
     resetLuAudioButton(btn);
     if(luCurrentBtn===btn){ luCurrentAudio=null; luCurrentBtn=null; }
+    speak(zh).then(function(started){ if(!started) showSpeechFallback(); });
   });
   luCurrentAudio.addEventListener('ended', function(){
     resetLuAudioButton(btn);
@@ -1007,7 +1044,7 @@ function showSpeechFallback(){
   var msg=document.createElement('div');
   msg.className='speech-fallback';
   msg.setAttribute('role','status');
-  msg.textContent='このブラウザでは音声読み上げを利用できません。中国語とピンインを表示して練習してください。';
+  msg.textContent='音が出ない時は、中国語とピンインで練習できます。吹き出しをタップすると表示できます。';
   var phone=document.querySelector('.phone');
   var header=phone&&phone.querySelector('header');
   if(phone) phone.insertBefore(msg,header?header.nextSibling:phone.firstChild);
@@ -1062,9 +1099,15 @@ function resetPronunciationButton(button,recognition){
   button.classList.remove('listening');
   button.setAttribute('aria-label','中国語の発音を録音して採点');
 }
+function setPracticeState(button,state,message,resultEl){
+  var row=button&&button.closest('.practice-row');
+  if(row) row.dataset.state=state;
+  if(message!==undefined&&resultEl) resultEl.textContent=message;
+}
 function showPronunciationFailure(message,targetZh,button,resultEl,diffEl){
+  setPracticeState(button,'failure',undefined,resultEl);
   resultEl.className='voice-score retry';
-  resultEl.replaceChildren(document.createTextNode(message));
+  resultEl.replaceChildren(document.createTextNode(message||'今回はうまく聞き取れませんでした。もう一度試す？'));
   var retry=document.createElement('button');
   retry.type='button';
   retry.className='voice-retry-btn';
@@ -1074,6 +1117,19 @@ function showPronunciationFailure(message,targetZh,button,resultEl,diffEl){
     startPronunciation(targetZh,button,resultEl,diffEl);
   });
   resultEl.appendChild(retry);
+  var listen=document.createElement('button');
+  listen.type='button';
+  listen.className='voice-retry-btn';
+  listen.textContent='お手本を聞く';
+  listen.addEventListener('click',function(e){
+    e.stopPropagation();
+    setPracticeState(button,'playing','お手本再生中…',resultEl);
+    speak(targetZh).then(function(started){
+      if(!started) showSpeechFallback();
+      setTimeout(function(){ setPracticeState(button,'idle','お手本を聞いて、次へ進めます',resultEl); },900);
+    });
+  });
+  resultEl.appendChild(listen);
 }
 function startPronunciation(targetZh,button,resultEl,diffEl){
   if(!recognitionSupported) return;
@@ -1093,10 +1149,11 @@ function startPronunciation(targetZh,button,resultEl,diffEl){
   button.classList.add('listening');
   button.setAttribute('aria-label','発音の録音を停止');
   resultEl.className='voice-score';
-  resultEl.textContent='聞き取り中…';
+  setPracticeState(button,'recording','録音中：聞き取り中…',resultEl);
   diffEl.replaceChildren();
   recognition.onresult=function(event){
     recognition._hasOutcome=true;
+    setPracticeState(button,'judging','判定中…',resultEl);
     var recognized=event.results[0][0].transcript||'';
     var score=similarityScore(targetZh,recognized);
     var log={ts:new Date().toISOString(),epId:EPISODE_IDS[dayIdx]||('day'+(dayIdx+1)),
@@ -1105,27 +1162,30 @@ function startPronunciation(targetZh,button,resultEl,diffEl){
     save();
     resultEl.className='voice-score '+(score>=70?'good':'retry');
     resultEl.textContent=score+'点「'+recognized+'」';
+    setPracticeState(button,'success',undefined,resultEl);
     renderPronunciationDiff(targetZh,recognized,diffEl);
   };
   recognition.onerror=function(event){
     recognition._hasOutcome=true;
     resetPronunciationButton(button,recognition);
     showPronunciationFailure(
-      event.error==='not-allowed'?'マイクの許可が必要です':'認識できませんでした',
+      event.error==='not-allowed'
+        ?'マイクが使えない時は、お手本を聞いて次へ進めます'
+        :'今回はうまく聞き取れませんでした。もう一度試す？',
       targetZh,button,resultEl,diffEl
     );
   };
   recognition.onnomatch=function(){
     recognition._hasOutcome=true;
     resetPronunciationButton(button,recognition);
-    showPronunciationFailure('認識できませんでした',targetZh,button,resultEl,diffEl);
+    showPronunciationFailure('今回はうまく聞き取れませんでした。もう一度試す？',targetZh,button,resultEl,diffEl);
   };
   recognition.onend=function(){
     if(activeRecognition===recognition) activeRecognition=null;
     resetPronunciationButton(button,recognition);
     if(recognition._stoppedByUser&&!recognition._hasOutcome){
       resultEl.className='voice-score';
-      resultEl.textContent='録音を停止しました';
+      setPracticeState(button,'idle','録音を停止しました',resultEl);
     }
   };
   try{
@@ -1134,12 +1194,35 @@ function startPronunciation(targetZh,button,resultEl,diffEl){
     recognition._hasOutcome=true;
     if(activeRecognition===recognition) activeRecognition=null;
     resetPronunciationButton(button,recognition);
-    showPronunciationFailure('録音を開始できませんでした',targetZh,button,resultEl,diffEl);
+    showPronunciationFailure('録音を開始できませんでした。お手本を聞いて次へ進めます',targetZh,button,resultEl,diffEl);
   }
 }
 function makePracticeRow(targetZh){
-  if(!recognitionSupported) return null;
   var row=document.createElement('div'); row.className='practice-row';
+  row.dataset.state='idle';
+  if(!recognitionSupported){
+    var fallback=document.createElement('div'); fallback.className='practice-fallback';
+    fallback.textContent='マイクが使えない時は、お手本を聞いて次へ進めます。';
+    var actions=document.createElement('div'); actions.className='practice-fallback-actions';
+    var listen=document.createElement('button'); listen.type='button'; listen.textContent='▶ お手本を聞く';
+    listen.addEventListener('click',function(e){
+      e.stopPropagation();
+      row.dataset.state='playing';
+      listen.textContent='お手本再生中…';
+      speak(targetZh).then(function(started){
+        if(!started) showSpeechFallback();
+        setTimeout(function(){ row.dataset.state='idle'; listen.textContent='▶ お手本を聞く'; },900);
+      });
+    });
+    var next=document.createElement('button'); next.type='button'; next.textContent='次へ';
+    next.addEventListener('click',function(e){
+      e.stopPropagation();
+      fallback.textContent='そのまま会話を進めて大丈夫です。';
+    });
+    actions.appendChild(listen); actions.appendChild(next);
+    row.appendChild(fallback); row.appendChild(actions);
+    return row;
+  }
   var mic=document.createElement('button'); mic.className='mic-btn'; mic.type='button';
   mic.textContent='🎤 発音';
   mic.setAttribute('aria-label','中国語の発音を録音して採点');
@@ -1595,6 +1678,14 @@ function openStatus(){
   document.getElementById('statusDay').textContent='Day '+(dayIdx+1)+' / '+DAYS.length;
   document.getElementById('statusPoints').textContent=love+' pt';
   document.getElementById('statusWords').textContent=awarded.size+'語';
+  var today=new Date().toLocaleDateString('sv-SE');
+  var todayLogs=(appData.voiceLogs||[]).filter(function(log){
+    return log&&log.ts&&new Date(log.ts).toLocaleDateString('sv-SE')===today;
+  });
+  var successful={};
+  todayLogs.forEach(function(log){ if(Number(log.score)>=70&&log.zh) successful[log.zh]=true; });
+  document.getElementById('statusPracticeToday').textContent=todayLogs.length+'回';
+  document.getElementById('statusSuccessToday').textContent=Object.keys(successful).length+'個';
   closeOtherPanels('statusPanel');
   document.getElementById('statusPanel').classList.add('open');
 }
@@ -1758,16 +1849,23 @@ function renderRoomList(){
       var title=document.createElement('div'); title.className='room-title'; title.textContent=room.title_ja;
       var desc=document.createElement('div'); desc.className='room-desc'; desc.textContent=room.description_ja||'';
       var meta=document.createElement('div'); meta.className='room-meta';
-      var lv=document.createElement('span'); lv.textContent='親密度 Lv.'+currentLevel();
+      var lv=document.createElement('span');
+      lv.textContent=room.level_label||('親密度 Lv.'+currentLevel());
       var progress=document.createElement('span');
       var episodes=room.episodes||[];
-      var episodeIndex=episodes.indexOf(appData.progress.currentEpId);
-      var current=episodeIndex>=0?episodeIndex:Math.min(dayIdx,Math.max(episodes.length-1,0));
-      progress.textContent='エピソード '+Math.min(current+1,episodes.length)+' / '+episodes.length;
+      if(room.route){
+        var hskkCount=(appData.voiceLogs||[]).filter(function(log){ return log&&log.source==='hskk'; }).length;
+        progress.textContent='発話記録 '+hskkCount+'回';
+      }else{
+        var episodeIndex=episodes.indexOf(appData.progress.currentEpId);
+        var current=episodeIndex>=0?episodeIndex:Math.min(dayIdx,Math.max(episodes.length-1,0));
+        progress.textContent='エピソード '+Math.min(current+1,episodes.length)+' / '+episodes.length;
+      }
       meta.appendChild(lv); meta.appendChild(progress);
       body.appendChild(name); body.appendChild(title); body.appendChild(desc); body.appendChild(meta);
       card.appendChild(face); card.appendChild(body);
       card.addEventListener('click',function(){
+        if(room.route){ location.href=room.route; return; }
         document.getElementById('roomScreen').classList.remove('show');
         startDay(false);
       });

@@ -77,6 +77,11 @@
   .tagline{font-family:"Shippori Mincho",serif; font-size:clamp(13px,3.7vw,16px);
     color:#e6e3f6; line-height:2.15; max-width:330px;
     text-shadow:0 2px 18px rgba(0,0,0,.95); opacity:0; animation:up 1s ease 1.55s forwards;}
+  .service-intro{max-width:340px;margin-top:4px;color:rgba(230,227,246,.82);
+    text-shadow:0 2px 16px rgba(0,0,0,.9);opacity:0;animation:up 1s ease 1.68s forwards;}
+  .service-subtitle{margin:0 0 7px;color:#cbbfff;font-size:12px;font-weight:600;letter-spacing:.08em;}
+  .service-lines{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;
+    font-size:11px;line-height:1.75;}
   @keyframes up{from{opacity:0; transform:translateY(16px)}to{opacity:1; transform:none}}
 
   .markers{display:flex; align-items:center; gap:14px; opacity:0; animation:up 1s ease 1.75s forwards;}
@@ -153,7 +158,7 @@
   }
   @media (prefers-reduced-motion:reduce){
     .rain,.cta::after,.cta a::before,.title::after{animation:none !important;}
-    .cg,.title,.tagline,.eyebrow,.markers,.cta,.hintline{animation:none !important; opacity:1 !important; transform:none !important;}
+    .cg,.title,.tagline,.service-intro,.eyebrow,.markers,.cta,.hintline{animation:none !important; opacity:1 !important; transform:none !important;}
     .spk{animation:none !important;}
     #particles{display:none;}
   }
@@ -195,6 +200,12 @@
         </div>
       </div>
       <p class="tagline">一緒にいるために、<br>今日も少しだけ練習しよう。</p>
+      <div class="service-intro">
+        <p class="service-subtitle">陸と話す、中国語発音練習チャット</p>
+        <p class="service-lines">中国語で陸と会話する、恋愛チャット型の発音練習アプリです。<br>
+          音声を聞いて、真似して、短い返事を中国語で練習します。<br>
+          物語を進めるほど、使える表現が増えていきます。</p>
+      </div>
       <div class="dev-seal" aria-hidden="true">開<br>発<br>中</div>
     </div>
     <div class="btm">

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>秘密の発音練習部屋｜陸</title>
+<link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+<style>
+  :root{--bg-top:#1a1530;--bg-bottom:#0d0a1c;--panel:#2a2342;--accent:#b9a7ff;
+    --heart:#ff8db5;--text:#efeaff;--sub:#a89fce;--line:rgba(255,255,255,.09);--good:#7dde9a;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;margin:0}
+  body{min-height:100dvh;background:#000;color:var(--text);display:flex;justify-content:center;align-items:center;
+    font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP","PingFang SC",sans-serif}
+  button{font:inherit}
+  .phone{width:100%;max-width:420px;height:100vh;height:100dvh;max-height:880px;display:flex;flex-direction:column;
+    overflow:hidden;position:relative;background:linear-gradient(180deg,rgba(26,21,48,.62),rgba(13,10,28,.82)),
+    url("assets/images/bg.jpg") center/cover;box-shadow:0 0 60px rgba(110,80,200,.25)}
+  @media(min-width:440px){.phone{height:92dvh;border-radius:28px}}
+  header{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 14px 11px;
+    background:rgba(20,16,40,.76);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .back{color:var(--sub);font-size:26px;text-decoration:none;line-height:1;padding:4px}
+  .avatar{width:42px;height:42px;border-radius:50%;flex:none;background:url("assets/images/luca-face-default.png") center 15%/cover;
+    box-shadow:0 0 0 2px rgba(185,167,255,.42)}
+  .head-text{min-width:0;flex:1}.head-name{font-weight:700;font-size:15px}.head-title{color:var(--accent);font-size:11px;margin-top:2px}
+  .levels{display:flex;gap:6px;padding:9px 14px;background:rgba(15,11,30,.62);border-bottom:1px solid var(--line)}
+  .level{padding:5px 10px;border-radius:99px;font-size:11px;color:var(--sub);border:1px solid var(--line)}
+  .level.active{color:var(--accent);border-color:rgba(185,167,255,.4);background:rgba(185,167,255,.13)}
+  .level.disabled{opacity:.4}
+  .content{flex:1;overflow-y:auto;padding:13px 14px calc(18px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px}
+  .content::-webkit-scrollbar{width:0}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .stat{padding:9px 11px;border-radius:12px;background:rgba(30,23,58,.74);border:1px solid rgba(185,167,255,.18)}
+  .stat-label{font-size:10px;color:var(--sub)}.stat-value{margin-top:2px;font-size:16px;font-weight:700;color:var(--accent)}
+  .question{padding:17px;border-radius:18px;background:rgba(30,23,58,.9);border:1px solid rgba(185,167,255,.25);
+    box-shadow:0 12px 30px rgba(0,0,0,.25)}
+  .question-no{font-size:11px;color:var(--accent);letter-spacing:.12em}.prompt-label{margin-top:12px;font-size:11px;color:var(--sub)}
+  .question-zh{margin-top:5px;font-size:22px;line-height:1.5;font-weight:700}.question-ja{margin-top:7px;color:var(--sub);font-size:13px;line-height:1.55}
+  .hints{display:flex;flex-wrap:wrap;gap:6px;margin-top:13px}.hint{padding:5px 9px;border-radius:9px;background:rgba(185,167,255,.1);
+    color:var(--accent);font-size:12px;border:1px solid rgba(185,167,255,.18)}
+  .state{min-height:38px;padding:9px 11px;border-radius:11px;background:rgba(8,6,18,.36);border:1px solid var(--line);
+    color:var(--sub);font-size:12px;line-height:1.55}
+  .state[data-state="playing"],.state[data-state="judging"]{color:#ffd27d}.state[data-state="recording"]{color:var(--heart)}
+  .state[data-state="success"]{color:var(--good)}.state[data-state="failure"]{color:#ffbd82}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .action{min-height:43px;border-radius:12px;border:1px solid rgba(185,167,255,.28);background:rgba(185,167,255,.12);
+    color:var(--text);cursor:pointer;padding:8px 4px;font-size:12px;white-space:nowrap}
+  .action.primary{background:#6d5cc4;border-color:#7e6ed0}.action.stop{background:rgba(255,141,181,.22);color:#ffc2d8}
+  .action:disabled{opacity:.42;cursor:not-allowed}.action:active:not(:disabled){transform:scale(.98)}
+  .heard,.feedback{display:none;padding:14px;border-radius:15px;background:rgba(30,23,58,.82);border:1px solid rgba(185,167,255,.2)}
+  .heard.show,.feedback.show{display:block}.section-title{font-size:11px;color:var(--accent);margin-bottom:7px}
+  .heard-text{font-size:16px;line-height:1.55}.feedback p{margin:0 0 8px;font-size:13px;line-height:1.65}
+  .feedback p:last-child{margin-bottom:0}.model{padding-top:8px;border-top:1px dashed var(--line);color:var(--text)}
+  .model-ja{display:block;color:var(--sub);font-size:11px;margin-top:3px}
+  .fallback{display:none;padding:10px;border-radius:11px;background:rgba(255,190,120,.1);border:1px solid rgba(255,190,120,.25);
+    color:var(--sub);font-size:11px;line-height:1.6}.fallback.show{display:block}
+  .loading{padding:24px;color:var(--sub);text-align:center}
+</style>
+</head>
+<body>
+<main class="phone">
+  <header>
+    <a class="back" href="chat.html" aria-label="トークルームへ戻る">‹</a>
+    <div class="avatar" aria-hidden="true"></div>
+    <div class="head-text"><div class="head-name">陸（ルー）</div><div class="head-title">秘密の発音練習部屋</div></div>
+  </header>
+  <div class="levels" aria-label="練習レベル">
+    <span class="level active">HSKK 初級</span><span class="level disabled">中級</span><span class="level disabled">自由練習</span>
+  </div>
+  <section class="content" id="content">
+    <div class="loading" id="loading">練習問題を読み込み中…</div>
+    <div class="stats" id="stats" hidden>
+      <div class="stat"><div class="stat-label">今日練習した回数</div><div class="stat-value" id="todayCount">0回</div></div>
+      <div class="stat"><div class="stat-label">この部屋で言えた回数</div><div class="stat-value" id="totalCount">0回</div></div>
+    </div>
+    <article class="question" id="questionCard" hidden>
+      <div class="question-no" id="questionNo">题目 01</div>
+      <div class="prompt-label">请用中文回答：</div>
+      <div class="question-zh" id="questionZh"></div>
+      <div class="question-ja" id="questionJa"></div>
+      <div class="hints" id="hints"></div>
+    </article>
+    <div class="fallback" id="audioFallback">音が出ない時は、中国語のお手本を読んで、ピンインなしでも自分のペースで練習できます。</div>
+    <div class="state" id="state" data-state="idle" role="status">未開始：お手本を聞くか、録音して答えてください。</div>
+    <div class="actions" id="actions" hidden>
+      <button class="action" id="modelBtn">▶ お手本を聞く</button>
+      <button class="action primary" id="recordBtn">🎙 録音して答える</button>
+      <button class="action" id="retryBtn" disabled>🔁 もう一度試す</button>
+      <button class="action" id="nextBtn">⏭ 次の問題</button>
+      <a class="action" href="chat.html" style="grid-column:1/-1;text-align:center;text-decoration:none;padding-top:12px">💬 通常チャットへ戻る</a>
+    </div>
+    <section class="heard" id="heard"><div class="section-title">聞き取れた内容</div><div class="heard-text" id="heardText"></div></section>
+    <section class="feedback" id="feedback"><div class="section-title" id="feedbackTitle">フィードバック</div><div id="feedbackBody"></div></section>
+  </section>
+</main>
+<script>
+(function(){
+  'use strict';
+  var questions=[],questionIndex=0,manifest={},audio=null,audioButton=null,activeRecognition=null;
+  var Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  var speechSupported=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
+  var stateEl=document.getElementById('state'),recordBtn=document.getElementById('recordBtn');
+
+  function makeUuid(){
+    if(window.crypto&&crypto.randomUUID) return crypto.randomUUID();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){
+      var r=Math.random()*16|0,v=c==='x'?r:(r&3|8);return v.toString(16);
+    });
+  }
+  function loadData(){
+    var data;
+    try{data=JSON.parse(localStorage.getItem('luca_data')||'null');}catch(e){data=null;}
+    if(!data||typeof data!=='object') data={userId:makeUuid(),createdAt:new Date().toISOString()};
+    if(!data.progress) data.progress={currentEpId:'episode1',currentIdx:0,completedEps:['prologue']};
+    if(!data.affection) data.affection={love:0,level:1};
+    ['words','giftLog','voiceLogs','awards','choices'].forEach(function(key){if(!Array.isArray(data[key])) data[key]=[];});
+    return data;
+  }
+  var appData=loadData();
+  function save(){try{localStorage.setItem('luca_data',JSON.stringify(appData));}catch(e){}}
+  function localDay(ts){return new Date(ts).toLocaleDateString('sv-SE');}
+  function updateStats(){
+    var logs=appData.voiceLogs.filter(function(log){return log&&log.source==='hskk';});
+    var today=new Date().toLocaleDateString('sv-SE');
+    document.getElementById('todayCount').textContent=logs.filter(function(log){return log.ts&&localDay(log.ts)===today;}).length+'回';
+    document.getElementById('totalCount').textContent=logs.length+'回';
+  }
+  function setState(state,text){stateEl.dataset.state=state;stateEl.textContent=text;}
+  function stopAudio(){
+    if(audio){audio.pause();audio.currentTime=0;audio=null;}
+    if(speechSupported) try{speechSynthesis.cancel();}catch(e){}
+    if(audioButton){audioButton.textContent='▶ お手本を聞く';audioButton=null;}
+  }
+  function showAudioFallback(){
+    document.getElementById('audioFallback').classList.add('show');
+  }
+  function speak(text){
+    if(!speechSupported){showAudioFallback();return Promise.resolve(false);}
+    try{
+      speechSynthesis.cancel();
+      var utterance=new SpeechSynthesisUtterance(text);utterance.lang='zh-CN';utterance.rate=.9;
+      speechSynthesis.speak(utterance);return Promise.resolve(true);
+    }catch(e){showAudioFallback();return Promise.resolve(false);}
+  }
+  function playModel(){
+    var question=questions[questionIndex],filename=manifest[question.model];
+    if(audio||audioButton){stopAudio();setState('idle','お手本を停止しました。');return;}
+    audioButton=document.getElementById('modelBtn');audioButton.textContent='🛑 停止';
+    setState('playing','お手本再生中…');
+    if(filename){
+      audio=new Audio('assets/audio/'+filename);
+      audio.addEventListener('ended',function(){stopAudio();setState('idle','お手本を聞き終わりました。声に出してみて。');});
+      audio.play().catch(function(){audio=null;speak(question.model).then(finishModel);});
+    }else speak(question.model).then(finishModel);
+  }
+  function finishModel(started){
+    if(!started) showAudioFallback();
+    setTimeout(function(){stopAudio();setState('idle',started?'お手本を聞き終わりました。声に出してみて。':'中国語のお手本を読んで練習できます。');},1200);
+  }
+  function releaseActiveRecognition(){
+    if(!activeRecognition)return;
+    var rec=activeRecognition;activeRecognition=null;rec._stoppedByUser=true;
+    try{rec.abort();}catch(e){}try{rec.stop();}catch(e){}
+  }
+  window.addEventListener('pagehide',releaseActiveRecognition);
+  window.addEventListener('beforeunload',releaseActiveRecognition);
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')releaseActiveRecognition();});
+
+  function resetRecordButton(){
+    recordBtn.textContent='🎙 録音して答える';recordBtn.classList.remove('stop');
+  }
+  function showMicFailure(message){
+    setState('failure',message);
+    document.getElementById('retryBtn').disabled=false;
+  }
+  function startRecording(){
+    if(activeRecognition){activeRecognition._stoppedByUser=true;try{activeRecognition.stop();}catch(e){}return;}
+    if(!Recognition){
+      showMicFailure('マイクが使えない時は、お手本を聞いて次へ進めます。');
+      return;
+    }
+    stopAudio();
+    var recognition=new Recognition();recognition.lang='zh-CN';recognition.interimResults=false;recognition.maxAlternatives=1;
+    recognition._hasOutcome=false;activeRecognition=recognition;
+    recordBtn.textContent='🛑 停止';recordBtn.classList.add('stop');
+    setState('recording','録音中：話し終わったら停止を押してください。');
+    recognition.onresult=function(event){
+      recognition._hasOutcome=true;
+      var text=(event.results[0][0].transcript||'').trim();
+      setState('judging','判定中：聞き取れた内容を確認しています…');
+      showResult(text);
+    };
+    recognition.onerror=function(event){
+      recognition._hasOutcome=true;
+      showMicFailure(event.error==='not-allowed'
+        ?'マイクが使えない時は、お手本を聞いて次へ進めます。'
+        :'今回はうまく聞き取れませんでした。もう一度試す？');
+    };
+    recognition.onnomatch=function(){
+      recognition._hasOutcome=true;
+      showMicFailure('今回はうまく聞き取れませんでした。もう一度試す？');
+    };
+    recognition.onend=function(){
+      if(activeRecognition===recognition)activeRecognition=null;
+      resetRecordButton();
+      if(recognition._stoppedByUser&&!recognition._hasOutcome)setState('idle','録音を停止しました。もう一度試して大丈夫です。');
+    };
+    try{recognition.start();}catch(e){
+      if(activeRecognition===recognition)activeRecognition=null;
+      resetRecordButton();showMicFailure('録音を開始できませんでした。お手本を聞いて次へ進めます。');
+    }
+  }
+  function templateFeedback(question,text){
+    return '<p>言えてるよ。聞き取れた言葉を使って、もう一回言ってみる？</p>'+
+      '<p class="model">より自然な言い方：'+escapeHtml(question.model)+
+      '<span class="model-ja">'+escapeHtml(question.model_ja)+'</span></p>';
+  }
+  function escapeHtml(value){
+    var div=document.createElement('div');div.textContent=String(value||'');return div.innerHTML;
+  }
+  async function nanoFeedback(question,text){
+    var LM=window.LanguageModel;
+    if(!LM||typeof LM.create!=='function')return null;
+    try{
+      if(typeof LM.availability==='function'){
+        var availability=await LM.availability();
+        if(availability==='unavailable'||availability==='no')return null;
+      }
+      var session=await LM.create({systemPrompt:'あなたは中国語学習を手伝う陸。短く、ぶっきらぼうだが優しい日本語で返す。'});
+      var answer=await session.prompt('質問：'+question.zh+'\n学習者の回答：'+text+
+        '\nよかった点を1文、より自然な中国語を1文、短い励ましを1文で返してください。');
+      if(session.destroy)session.destroy();
+      return '<p>'+escapeHtml(answer).replace(/\n/g,'<br>')+'</p>';
+    }catch(e){return null;}
+  }
+  async function showResult(text){
+    var question=questions[questionIndex];
+    document.getElementById('heardText').textContent=text||'（聞き取り結果なし）';
+    document.getElementById('heard').classList.add('show');
+    document.getElementById('feedback').classList.add('show');
+    document.getElementById('feedbackTitle').textContent='フィードバック（標準）';
+    document.getElementById('feedbackBody').innerHTML=templateFeedback(question,text);
+    setState('success','聞き取れました。声に出せた、それで十分。');
+    document.getElementById('retryBtn').disabled=false;
+    appData.voiceLogs.push({ts:new Date().toISOString(),source:'hskk',roomId:'hskk_basic',
+      questionId:question.id,zh:question.zh,recognized:text,score:null});
+    save();updateStats();
+    var enhanced=await nanoFeedback(question,text);
+    if(enhanced){
+      document.getElementById('feedbackTitle').textContent='フィードバック（AI補助）';
+      document.getElementById('feedbackBody').innerHTML=enhanced+
+        '<p class="model">お手本：'+escapeHtml(question.model)+'<span class="model-ja">'+escapeHtml(question.model_ja)+'</span></p>';
+    }
+  }
+  function renderQuestion(){
+    var q=questions[questionIndex];
+    releaseActiveRecognition();stopAudio();resetRecordButton();
+    document.getElementById('questionNo').textContent='题目 '+String(questionIndex+1).padStart(2,'0');
+    document.getElementById('questionZh').textContent=q.zh;
+    document.getElementById('questionJa').textContent='（日本語）'+q.ja;
+    var hints=document.getElementById('hints');hints.innerHTML='';
+    q.hints.forEach(function(text){var chip=document.createElement('span');chip.className='hint';chip.textContent=text;hints.appendChild(chip);});
+    document.getElementById('heard').classList.remove('show');
+    document.getElementById('feedback').classList.remove('show');
+    document.getElementById('retryBtn').disabled=true;
+    setState('idle','未開始：お手本を聞くか、録音して答えてください。');
+    document.getElementById('nextBtn').textContent=questionIndex===questions.length-1?'⏭ 最初の問題へ':'⏭ 次の問題';
+  }
+  function bootstrap(){
+    Promise.all([
+      fetch('data/hskk.json').then(function(r){if(!r.ok)throw new Error('hskk');return r.json();}),
+      fetch('assets/audio/lu_audio_manifest.json').then(function(r){return r.ok?r.json():{};}).catch(function(){return {};})
+    ]).then(function(values){
+      questions=values[0].rooms[0].questions;manifest=values[1]||{};
+      document.getElementById('loading').hidden=true;
+      document.getElementById('stats').hidden=false;
+      document.getElementById('questionCard').hidden=false;
+      document.getElementById('actions').hidden=false;
+      if(!speechSupported)showAudioFallback();
+      updateStats();renderQuestion();
+      if(!Recognition){
+        recordBtn.disabled=true;
+        recordBtn.textContent='🎙 マイク非対応';
+        showMicFailure('マイクが使えない時は、お手本を聞いて次へ進めます。');
+      }
+    }).catch(function(){
+      document.getElementById('loading').textContent='練習問題を読み込めませんでした。通常チャットへ戻って、もう一度開いてください。';
+    });
+  }
+  document.getElementById('modelBtn').addEventListener('click',playModel);
+  recordBtn.addEventListener('click',startRecording);
+  document.getElementById('retryBtn').addEventListener('click',startRecording);
+  document.getElementById('nextBtn').addEventListener('click',function(){questionIndex=(questionIndex+1)%questions.length;renderQuestion();});
+  bootstrap();
+})();
+</script>
+</body>
+</html>
