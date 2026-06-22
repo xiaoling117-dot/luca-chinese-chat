@@ -941,6 +941,22 @@ var SpeechRecognitionCtor=window.SpeechRecognition||window.webkitSpeechRecogniti
 var recognitionSupported=!!SpeechRecognitionCtor;
 var zhVoice=null;
 var speechRequestId=0;
+var activeRecognition=null;
+// iOS Safari は認識を握ったままページを離れるとマイク使用中(黄色)が残る。
+// 離脱・非表示時に走行中のセッションを強制解放する。
+function releaseActiveRecognition(){
+  if(!activeRecognition) return;
+  var rec=activeRecognition;
+  activeRecognition=null;
+  rec._stoppedByUser=true;
+  try{ rec.abort(); }catch(e){}
+  try{ rec.stop(); }catch(e){}
+}
+window.addEventListener('pagehide',releaseActiveRecognition);
+window.addEventListener('beforeunload',releaseActiveRecognition);
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='hidden') releaseActiveRecognition();
+});
 function pickZhVoice(vs){
   vs=vs||[];
   for(var i=0;i<vs.length;i++){
@@ -1072,6 +1088,7 @@ function startPronunciation(targetZh,button,resultEl,diffEl){
   recognition.maxAlternatives=1;
   recognition._hasOutcome=false;
   button._recognition=recognition;
+  activeRecognition=recognition;
   button.textContent='🛑 停止';
   button.classList.add('listening');
   button.setAttribute('aria-label','発音の録音を停止');
@@ -1104,6 +1121,7 @@ function startPronunciation(targetZh,button,resultEl,diffEl){
     showPronunciationFailure('認識できませんでした',targetZh,button,resultEl,diffEl);
   };
   recognition.onend=function(){
+    if(activeRecognition===recognition) activeRecognition=null;
     resetPronunciationButton(button,recognition);
     if(recognition._stoppedByUser&&!recognition._hasOutcome){
       resultEl.className='voice-score';
@@ -1114,6 +1132,7 @@ function startPronunciation(targetZh,button,resultEl,diffEl){
     recognition.start();
   }catch(e){
     recognition._hasOutcome=true;
+    if(activeRecognition===recognition) activeRecognition=null;
     resetPronunciationButton(button,recognition);
     showPronunciationFailure('録音を開始できませんでした',targetZh,button,resultEl,diffEl);
   }
