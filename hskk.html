@@ -184,13 +184,19 @@
     recognition._hasOutcome=false;activeRecognition=recognition;
     recordBtn.textContent='🛑 停止';recordBtn.classList.add('stop');
     setState('recording','録音中：話し終わったら停止を押してください。');
+    recognition.onstart=function(){console.log('[HSKK] recognition start');};
+    recognition.onaudiostart=function(){console.log('[HSKK] audio start');};
+    recognition.onspeechstart=function(){console.log('[HSKK] speech start');};
+    recognition.onspeechend=function(){console.log('[HSKK] speech end');};
     recognition.onresult=function(event){
+      console.log('[HSKK] result',event.results);
       recognition._hasOutcome=true;
       var text=(event.results[0][0].transcript||'').trim();
       setState('judging','判定中：聞き取れた内容を確認しています…');
       showResult(text);
     };
     recognition.onerror=function(event){
+      console.warn('[HSKK] recognition error:',event.error,event);
       recognition._hasOutcome=true;
       showMicFailure(event.error==='not-allowed'
         ?'マイクが使えない時は、お手本を聞いて次へ進めます。'
@@ -201,6 +207,8 @@
       showMicFailure('今回はうまく聞き取れませんでした。もう一度試す？');
     };
     recognition.onend=function(){
+      var stoppedByUser=!!recognition._stoppedByUser,hasOutcome=!!recognition._hasOutcome;
+      console.log('[HSKK] recognition end',{stoppedByUser:stoppedByUser,hasOutcome:hasOutcome});
       if(activeRecognition===recognition)activeRecognition=null;
       resetRecordButton();
       if(recognition._stoppedByUser&&!recognition._hasOutcome)setState('idle','録音を停止しました。もう一度試して大丈夫です。');
@@ -226,7 +234,17 @@
         var availability=await LM.availability();
         if(availability==='unavailable'||availability==='no')return null;
       }
-      var session=await LM.create({systemPrompt:'あなたは中国語学習を手伝う陸。短く、ぶっきらぼうだが優しい日本語で返す。'});
+      var systemPrompt='あなたは中国語学習を手伝う陸。短く、ぶっきらぼうだが優しい日本語で返す。';
+      var session;
+      try{
+        session=await LM.create({
+          systemPrompt:systemPrompt,
+          expectedInputs:[{type:'text',languages:['ja','zh']}],
+          expectedOutputs:[{type:'text',languages:['ja']}]
+        });
+      }catch(e){
+        session=await LM.create({systemPrompt:systemPrompt});
+      }
       var answer=await session.prompt('質問：'+question.zh+'\n学習者の回答：'+text+
         '\nよかった点を1文、より自然な中国語を1文、短い励ましを1文で返してください。');
       if(session.destroy)session.destroy();
