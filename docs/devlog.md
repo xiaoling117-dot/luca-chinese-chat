@@ -8,6 +8,7 @@
 - 褒め・提案前・再促しの文言を、陸の声に合わせたテンプレートからランダム表示するようにした。
 - 提案文には `pinyin-pro` を使って声調記号付きピンインを表示するようにした。
 - Nano rephrase 経路を残し、先に `question.model` を表示してから、短いタイムアウト内に有効な中文1文が返った場合のみ提案文を差し替える方式にした。
+- HSKK の録音時間を `ANSWER_WINDOW_MS = 7000` で明示管理し、1回目回答と2回目「言ってみる」の両方に残り時間バーを表示するようにした。
 
 ### 修正理由
 - Chrome の `LanguageModel` は `zh` を出力言語として指定できず、公開版で `Unsupported LanguageModel API languages...aborted` が出ていたため。
@@ -19,6 +20,7 @@
 - `availability()` は 2.5 秒、`create()` と `prompt()` は 3 秒でタイムアウトし、失敗時は `question.model` を使う。
 - 2回目の音声認識は既存の `SpeechRecognition` フローを再利用し、厳密一致ではなく緩い一致または発話ありで成功扱いにする。
 - `voiceLogs` には `phase:'answer'` / `phase:'practice'` を保存して、自由回答と提案文練習を区別できるようにした。
+- 録音中は `recognition.continuous = true` を使い、`no-speech` は即失敗にせず、7秒ウィンドウ内で再待機する。7秒経過時にアプリ側から `stop()` して結果処理へ進める。
 
 ### 確認方法
 - `node` で `hskk.html` 内の JavaScript を構文チェックし、`JS parse OK` を確認した。

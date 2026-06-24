@@ -42,6 +42,10 @@
     color:var(--sub);font-size:12px;line-height:1.55}
   .state[data-state="playing"],.state[data-state="judging"]{color:#ffd27d}.state[data-state="recording"]{color:var(--heart)}
   .state[data-state="success"]{color:var(--good)}.state[data-state="failure"]{color:#ffbd82}
+  .record-meter{display:none;padding:8px 10px;border-radius:11px;background:rgba(255,141,181,.1);border:1px solid rgba(255,141,181,.22)}
+  .record-meter.show{display:block}.record-meter-top{display:flex;justify-content:space-between;gap:10px;color:#ffc2d8;font-size:11px}
+  .record-track{height:6px;margin-top:7px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
+  .record-fill{height:100%;width:100%;border-radius:inherit;background:linear-gradient(90deg,#ff8db5,#b9a7ff);transition:width .16s linear}
   .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .action{min-height:43px;border-radius:12px;border:1px solid rgba(185,167,255,.28);background:rgba(185,167,255,.12);
     color:var(--text);cursor:pointer;padding:8px 4px;font-size:12px;white-space:nowrap}
@@ -87,6 +91,10 @@
     </article>
     <div class="fallback" id="audioFallback">音が出ない時は、中国語のお手本を読んで、ピンインなしでも自分のペースで練習できます。</div>
     <div class="state" id="state" data-state="idle" role="status">未開始：お手本を聞くか、録音して答えてください。</div>
+    <div class="record-meter" id="recordMeter" aria-live="polite">
+      <div class="record-meter-top"><span id="recordMeterLabel">録音中</span><span id="recordCountdown">7.0秒</span></div>
+      <div class="record-track"><div class="record-fill" id="recordFill"></div></div>
+    </div>
     <div class="actions" id="actions" hidden>
       <button class="action" id="modelBtn">▶ お手本を聞く</button>
       <button class="action primary" id="recordBtn">🎙 録音して答える</button>
@@ -106,7 +114,9 @@
   var Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
   var speechSupported=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
   var stateEl=document.getElementById('state'),recordBtn=document.getElementById('recordBtn');
+  var ANSWER_WINDOW_MS=7000;
   var recordMode='answer',practiceTarget=null,lastTemplate={praise:'',lead:'',retry:''},resultToken=0;
+  var recordTimer=null,recordTick=null,recordStartedAt=0,pendingNoSpeech=false;
   var LU_TEMPLATES={
     praise:['お、言えてる','いい音だ','悪くない、その調子','ちゃんと届いたぞ'],
     lead:['お前の言い方、こう直すと自然だ。言ってみ','じゃあ、こう言ってみろ','ついでに、これも覚えとけ'],
@@ -176,6 +186,7 @@
   }
   function releaseActiveRecognition(){
     if(!activeRecognition)return;
+    stopRecordMeter();
     var rec=activeRecognition;activeRecognition=null;rec._stoppedByUser=true;
     try{rec.abort();}catch(e){}try{rec.stop();}catch(e){}
   }
@@ -186,6 +197,31 @@
   function resetRecordButton(){
     recordBtn.textContent=recordMode==='practice'?'🎙 言ってみる':'🎙 録音して答える';recordBtn.classList.remove('stop');
   }
+  function stopRecordMeter(){
+    if(recordTimer){clearTimeout(recordTimer);recordTimer=null;}
+    if(recordTick){clearInterval(recordTick);recordTick=null;}
+    document.getElementById('recordMeter').classList.remove('show');
+  }
+  function updateRecordMeter(){
+    var elapsed=Date.now()-recordStartedAt;
+    var remain=Math.max(0,ANSWER_WINDOW_MS-elapsed);
+    document.getElementById('recordCountdown').textContent=(remain/1000).toFixed(1)+'秒';
+    document.getElementById('recordFill').style.width=(remain/ANSWER_WINDOW_MS*100)+'%';
+  }
+  function startRecordWindow(recognition){
+    stopRecordMeter();
+    pendingNoSpeech=false;
+    recordStartedAt=Date.now();
+    document.getElementById('recordMeterLabel').textContent=recordMode==='practice'?'言ってみる時間':'答える時間';
+    document.getElementById('recordMeter').classList.add('show');
+    updateRecordMeter();
+    recordTick=setInterval(updateRecordMeter,100);
+    recordTimer=setTimeout(function(){
+      recognition._timedStop=true;
+      try{recognition.stop();}catch(e){}
+      stopRecordMeter();
+    },ANSWER_WINDOW_MS);
+  }
   function showMicFailure(message){
     setState('failure',message);
     document.getElementById('retryBtn').disabled=false;
@@ -193,31 +229,41 @@
   function startRecording(mode){
     if(mode)recordMode=mode;
     if(recordMode==='practice')resultToken++;
-    if(activeRecognition){activeRecognition._stoppedByUser=true;try{activeRecognition.stop();}catch(e){}return;}
+    if(activeRecognition){activeRecognition._stoppedByUser=true;stopRecordMeter();try{activeRecognition.stop();}catch(e){}return;}
     if(!Recognition){
       showMicFailure('マイクが使えない時は、お手本を聞いて次へ進めます。');
       return;
     }
     stopAudio();
     var recognition=new Recognition();recognition.lang='zh-CN';recognition.interimResults=false;recognition.maxAlternatives=1;
-    recognition._hasOutcome=false;activeRecognition=recognition;
+    recognition.continuous=true;
+    recognition._hasOutcome=false;recognition._restartAfterEnd=false;activeRecognition=recognition;
     recordBtn.textContent='🛑 停止';recordBtn.classList.add('stop');
     setState('recording',recordMode==='practice'?'録音中：提案文を声に出して。':'録音中：話し終わったら停止を押してください。');
-    recognition.onstart=function(){console.log('[HSKK] recognition start');};
+    recognition.onstart=function(){console.log('[HSKK] recognition start');if(!recordTimer)startRecordWindow(recognition);};
     recognition.onaudiostart=function(){console.log('[HSKK] audio start');};
     recognition.onspeechstart=function(){console.log('[HSKK] speech start');};
     recognition.onspeechend=function(){console.log('[HSKK] speech end');};
     recognition.onresult=function(event){
       console.log('[HSKK] result',event.results);
       recognition._hasOutcome=true;
-      var text=(event.results[0][0].transcript||'').trim();
+      stopRecordMeter();
+      var resultIndex=event.resultIndex||0;
+      var text=(event.results[resultIndex][0].transcript||'').trim();
       setState('judging','判定中：聞き取れた内容を確認しています…');
       if(recordMode==='practice')showPracticeResult(text);
       else showResult(text);
     };
     recognition.onerror=function(event){
       console.warn('[HSKK] recognition error:',event.error,event);
+      if(event.error==='no-speech'&&!recognition._timedStop){
+        pendingNoSpeech=true;
+        recognition._restartAfterEnd=true;
+        setState('recording','まだ聞いています。残り時間で、ゆっくり話して。');
+        return;
+      }
       recognition._hasOutcome=true;
+      stopRecordMeter();
       if(recordMode==='practice'&&event.error!=='not-allowed'){showPracticeResult('');return;}
       showMicFailure(event.error==='not-allowed'
         ?'マイクが使えない時は、お手本を聞いて次へ進めます。'
@@ -225,18 +271,40 @@
     };
     recognition.onnomatch=function(){
       recognition._hasOutcome=true;
+      stopRecordMeter();
       if(recordMode==='practice'){showPracticeResult('');return;}
       showMicFailure('今回はうまく聞き取れませんでした。もう一度試す？');
     };
     recognition.onend=function(){
       var stoppedByUser=!!recognition._stoppedByUser,hasOutcome=!!recognition._hasOutcome;
       console.log('[HSKK] recognition end',{stoppedByUser:stoppedByUser,hasOutcome:hasOutcome});
+      if(recognition._restartAfterEnd&&!hasOutcome&&!stoppedByUser&&!recognition._timedStop&&
+          Date.now()-recordStartedAt<ANSWER_WINDOW_MS-250){
+        recognition._restartAfterEnd=false;
+        activeRecognition=recognition;
+        try{recognition.start();return;}catch(e){
+          recognition._hasOutcome=true;
+          if(activeRecognition===recognition)activeRecognition=null;
+          stopRecordMeter();resetRecordButton();
+          if(recordMode==='practice')showPracticeResult('');
+          else showMicFailure('今回はうまく聞き取れませんでした。もう一度試す？');
+          return;
+        }
+      }
       if(activeRecognition===recognition)activeRecognition=null;
+      stopRecordMeter();
       resetRecordButton();
+      if(!hasOutcome&&recognition._timedStop){
+        recognition._hasOutcome=true;
+        if(recordMode==='practice')showPracticeResult('');
+        else showMicFailure(pendingNoSpeech?'今回はうまく聞き取れませんでした。もう一度試す？':'7秒たちました。聞き取れなかったら、もう一度で大丈夫。');
+        return;
+      }
       if(recognition._stoppedByUser&&!recognition._hasOutcome)setState('idle','録音を停止しました。もう一度試して大丈夫です。');
     };
     try{recognition.start();}catch(e){
       if(activeRecognition===recognition)activeRecognition=null;
+      stopRecordMeter();
       resetRecordButton();showMicFailure('録音を開始できませんでした。お手本を聞いて次へ進めます。');
     }
   }
