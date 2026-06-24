@@ -394,6 +394,14 @@
   }
   async function showResult(text){
     var token=++resultToken,question=questions[questionIndex];
+    if(!isSubstantiveAnswer(text)){
+      document.getElementById('heard').classList.remove('show');
+      document.getElementById('feedback').classList.remove('show');
+      document.getElementById('retryBtn').disabled=false;
+      setState('failure','ん、聞こえなかった。もう一回いいか？');
+      recordMode='answer';resetRecordButton();
+      return;
+    }
     document.getElementById('heardText').textContent=text||'（聞き取り結果なし）';
     document.getElementById('heard').classList.add('show');
     document.getElementById('feedback').classList.add('show');
@@ -407,6 +415,9 @@
     save();updateStats();
     var ai=text?await nanoRephrase(question,text):null;
     if(ai&&token===resultToken)refreshSuggestion(ai);
+  }
+  function isSubstantiveAnswer(text){
+    return String(text||'').replace(/[\s\u3000、。，．！？!?…・「」『』"'“”‘’（）()]/g,'').length>0;
   }
   function normalizeZh(text){
     return String(text||'').replace(/[，。！？、；：“”‘’（）\s,.!?;:'"()\[\]{}]/g,'').toLowerCase();
