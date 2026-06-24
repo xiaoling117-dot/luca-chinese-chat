@@ -92,7 +92,7 @@
     <div class="fallback" id="audioFallback">音が出ない時は、中国語のお手本を読んで、ピンインなしでも自分のペースで練習できます。</div>
     <div class="state" id="state" data-state="idle" role="status">未開始：お手本を聞くか、録音して答えてください。</div>
     <div class="record-meter" id="recordMeter" aria-live="polite">
-      <div class="record-meter-top"><span id="recordMeterLabel">録音中</span><span id="recordCountdown">7.0秒</span></div>
+      <div class="record-meter-top"><span id="recordMeterLabel">録音中</span><span id="recordCountdown">10.0秒</span></div>
       <div class="record-track"><div class="record-fill" id="recordFill"></div></div>
     </div>
     <div class="actions" id="actions" hidden>
@@ -114,7 +114,7 @@
   var Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
   var speechSupported=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
   var stateEl=document.getElementById('state'),recordBtn=document.getElementById('recordBtn');
-  var ANSWER_WINDOW_MS=7000;
+  var ANSWER_WINDOW_MS=10000;
   var recordMode='answer',practiceTarget=null,lastTemplate={praise:'',lead:'',retry:''},resultToken=0;
   var recordTimer=null,recordTick=null,recordStartedAt=0,pendingNoSpeech=false;
   var LU_TEMPLATES={
@@ -297,7 +297,7 @@
       if(!hasOutcome&&recognition._timedStop){
         recognition._hasOutcome=true;
         if(recordMode==='practice')showPracticeResult('');
-        else showMicFailure(pendingNoSpeech?'今回はうまく聞き取れませんでした。もう一度試す？':'7秒たちました。聞き取れなかったら、もう一度で大丈夫。');
+        else showMicFailure(pendingNoSpeech?'今回はうまく聞き取れませんでした。もう一度試す？':'10秒たちました。聞き取れなかったら、もう一度で大丈夫。');
         return;
       }
       if(recognition._stoppedByUser&&!recognition._hasOutcome)setState('idle','録音を停止しました。もう一度試して大丈夫です。');
