@@ -10,6 +10,7 @@
 - Nano rephrase 経路を残し、先に `question.model` を表示してから、短いタイムアウト内に有効な中文1文が返った場合のみ提案文を差し替える方式にした。
 - HSKK の回答録音時間を `ANSWER_WINDOW_MS = 10000` で明示管理し、1回目回答と2回目「言ってみる」の両方に残り時間バーを表示するようにした。
 - 1回目の回答で聞き取り結果が空の場合は、褒めや提案カードを出さず、やさしく再促しして録音し直せるようにした。
+- HSKK ヘッダーの陸アイコンを `chat.html` と同じ疑似要素拡大表示に揃え、画像由来の白縁が円内に出ないようにした。
 
 ### 修正理由
 - Chrome の `LanguageModel` は `zh` を出力言語として指定できず、公開版で `Unsupported LanguageModel API languages...aborted` が出ていたため。
@@ -23,6 +24,7 @@
 - `voiceLogs` には `phase:'answer'` / `phase:'practice'` を保存して、自由回答と提案文練習を区別できるようにした。
 - 録音中は `recognition.continuous = true` を使い、`no-speech` は即失敗にせず、10秒ウィンドウ内で再待機する。10秒経過時にアプリ側から `stop()` して結果処理へ進める。
 - 2回目の「言ってみる」は従来どおり発話があれば緩く成功扱いにするが、1回目回答は実質的な認識テキストがある場合だけ往復練習へ進める。
+- 陸アイコンは `.avatar::before { inset:-10%; background:... center 15%/cover; }` で本体チャットの表示方式と合わせる。
 
 ### 確認方法
 - `node` で `hskk.html` 内の JavaScript を構文チェックし、`JS parse OK` を確認した。
