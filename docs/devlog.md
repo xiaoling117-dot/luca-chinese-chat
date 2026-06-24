@@ -1,5 +1,29 @@
 # 開発日誌
 
+## 2026-06-24（Codex）
+
+### 実施内容
+- `hskk.html` の Chrome 組み込み AI `LanguageModel` 呼び出しで、出力言語指定を `ja` に固定した。
+- HSKK 部屋を v1.5 仕様に更新し、自由回答から提案文の読み上げへつなぐ往復練習ループを追加した。
+- 褒め・提案前・再促しの文言を、陸の声に合わせたテンプレートからランダム表示するようにした。
+- 提案文には `pinyin-pro` を使って声調記号付きピンインを表示するようにした。
+- Nano rephrase 経路を残し、先に `question.model` を表示してから、短いタイムアウト内に有効な中文1文が返った場合のみ提案文を差し替える方式にした。
+
+### 修正理由
+- Chrome の `LanguageModel` は `zh` を出力言語として指定できず、公開版で `Unsupported LanguageModel API languages...aborted` が出ていたため。
+- AI にフィードバック全文を作らせると語り口が崩れるため、陸の声はテンプレートで固定し、AI は自然な中文への言い換えだけに役割を絞るため。
+- Nano が無応答・未準備でも練習体験が止まらないように、常に既存のお手本文へ即時フォールバックする必要があったため。
+
+### 実装メモ
+- `expectedOutputs:[{type:'text',languages:['ja']}]` を維持し、中国語文はプロンプト内の文字列として扱う。
+- `availability()` は 2.5 秒、`create()` と `prompt()` は 3 秒でタイムアウトし、失敗時は `question.model` を使う。
+- 2回目の音声認識は既存の `SpeechRecognition` フローを再利用し、厳密一致ではなく緩い一致または発話ありで成功扱いにする。
+- `voiceLogs` には `phase:'answer'` / `phase:'practice'` を保存して、自由回答と提案文練習を区別できるようにした。
+
+### 確認方法
+- `node` で `hskk.html` 内の JavaScript を構文チェックし、`JS parse OK` を確認した。
+- ローカル HTTP サーバー経由で `hskk.html` を開き、`data/hskk.json` の読み込みと1問目の描画を headless Chrome で確認した。
+
 ## 2026-06-18（夕方・Claude Code）
 
 ### 実施内容

@@ -52,6 +52,11 @@
   .heard-text{font-size:16px;line-height:1.55}.feedback p{margin:0 0 8px;font-size:13px;line-height:1.65}
   .feedback p:last-child{margin-bottom:0}.model{padding-top:8px;border-top:1px dashed var(--line);color:var(--text)}
   .model-ja{display:block;color:var(--sub);font-size:11px;margin-top:3px}
+  .suggestion{margin-top:10px;padding:12px;border-radius:13px;background:rgba(185,167,255,.1);border:1px solid rgba(185,167,255,.2)}
+  .suggestion-zh{font-size:17px;line-height:1.55;font-weight:700}.suggestion-py{margin-top:5px;color:var(--accent);font-size:13px;line-height:1.55}
+  .suggestion-ja{margin-top:4px;color:var(--sub);font-size:12px;line-height:1.5}.suggestion-src{margin-top:7px;color:rgba(168,159,206,.78);font-size:10px}
+  .say-btn{width:100%;margin-top:11px;min-height:40px;border-radius:10px;border:1px solid rgba(185,167,255,.3);
+    background:#6d5cc4;color:#fff;cursor:pointer}.say-btn:disabled{opacity:.45;cursor:not-allowed}
   .fallback{display:none;padding:10px;border-radius:11px;background:rgba(255,190,120,.1);border:1px solid rgba(255,190,120,.25);
     color:var(--sub);font-size:11px;line-height:1.6}.fallback.show{display:block}
   .loading{padding:24px;color:var(--sub);text-align:center}
@@ -93,6 +98,7 @@
     <section class="feedback" id="feedback"><div class="section-title" id="feedbackTitle">フィードバック</div><div id="feedbackBody"></div></section>
   </section>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.26.0/dist/index.min.js"></script>
 <script>
 (function(){
   'use strict';
@@ -100,6 +106,12 @@
   var Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
   var speechSupported=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
   var stateEl=document.getElementById('state'),recordBtn=document.getElementById('recordBtn');
+  var recordMode='answer',practiceTarget=null,lastTemplate={praise:'',lead:'',retry:''},resultToken=0;
+  var LU_TEMPLATES={
+    praise:['お、言えてる','いい音だ','悪くない、その調子','ちゃんと届いたぞ'],
+    lead:['お前の言い方、こう直すと自然だ。言ってみ','じゃあ、こう言ってみろ','ついでに、これも覚えとけ'],
+    retry:['惜しい、もう一回','焦んなくていい、ゆっくり','もう一度だけ、いけるか']
+  };
 
   function makeUuid(){
     if(window.crypto&&crypto.randomUUID) return crypto.randomUUID();
@@ -126,6 +138,11 @@
     document.getElementById('totalCount').textContent=logs.length+'回';
   }
   function setState(state,text){stateEl.dataset.state=state;stateEl.textContent=text;}
+  function pickTemplate(kind){
+    var list=LU_TEMPLATES[kind],pool=list.filter(function(text){return text!==lastTemplate[kind];});
+    var text=(pool.length?pool:list)[Math.floor(Math.random()*(pool.length?pool.length:list.length))];
+    lastTemplate[kind]=text;return text;
+  }
   function stopAudio(){
     if(audio){audio.pause();audio.currentTime=0;audio=null;}
     if(speechSupported) try{speechSynthesis.cancel();}catch(e){}
@@ -167,13 +184,15 @@
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')releaseActiveRecognition();});
 
   function resetRecordButton(){
-    recordBtn.textContent='🎙 録音して答える';recordBtn.classList.remove('stop');
+    recordBtn.textContent=recordMode==='practice'?'🎙 言ってみる':'🎙 録音して答える';recordBtn.classList.remove('stop');
   }
   function showMicFailure(message){
     setState('failure',message);
     document.getElementById('retryBtn').disabled=false;
   }
-  function startRecording(){
+  function startRecording(mode){
+    if(mode)recordMode=mode;
+    if(recordMode==='practice')resultToken++;
     if(activeRecognition){activeRecognition._stoppedByUser=true;try{activeRecognition.stop();}catch(e){}return;}
     if(!Recognition){
       showMicFailure('マイクが使えない時は、お手本を聞いて次へ進めます。');
@@ -183,7 +202,7 @@
     var recognition=new Recognition();recognition.lang='zh-CN';recognition.interimResults=false;recognition.maxAlternatives=1;
     recognition._hasOutcome=false;activeRecognition=recognition;
     recordBtn.textContent='🛑 停止';recordBtn.classList.add('stop');
-    setState('recording','録音中：話し終わったら停止を押してください。');
+    setState('recording',recordMode==='practice'?'録音中：提案文を声に出して。':'録音中：話し終わったら停止を押してください。');
     recognition.onstart=function(){console.log('[HSKK] recognition start');};
     recognition.onaudiostart=function(){console.log('[HSKK] audio start');};
     recognition.onspeechstart=function(){console.log('[HSKK] speech start');};
@@ -193,17 +212,20 @@
       recognition._hasOutcome=true;
       var text=(event.results[0][0].transcript||'').trim();
       setState('judging','判定中：聞き取れた内容を確認しています…');
-      showResult(text);
+      if(recordMode==='practice')showPracticeResult(text);
+      else showResult(text);
     };
     recognition.onerror=function(event){
       console.warn('[HSKK] recognition error:',event.error,event);
       recognition._hasOutcome=true;
+      if(recordMode==='practice'&&event.error!=='not-allowed'){showPracticeResult('');return;}
       showMicFailure(event.error==='not-allowed'
         ?'マイクが使えない時は、お手本を聞いて次へ進めます。'
         :'今回はうまく聞き取れませんでした。もう一度試す？');
     };
     recognition.onnomatch=function(){
       recognition._hasOutcome=true;
+      if(recordMode==='practice'){showPracticeResult('');return;}
       showMicFailure('今回はうまく聞き取れませんでした。もう一度試す？');
     };
     recognition.onend=function(){
@@ -219,56 +241,135 @@
     }
   }
   function templateFeedback(question,text){
-    return '<p>言えてるよ。聞き取れた言葉を使って、もう一回言ってみる？</p>'+
-      '<p class="model">より自然な言い方：'+escapeHtml(question.model)+
-      '<span class="model-ja">'+escapeHtml(question.model_ja)+'</span></p>';
+    practiceTarget={zh:question.model,ja:question.model_ja,source:'お手本'};
+    return '<p>'+escapeHtml(pickTemplate('praise'))+'</p><p>'+escapeHtml(pickTemplate('lead'))+'</p>'+
+      suggestionHtml(practiceTarget);
   }
   function escapeHtml(value){
     var div=document.createElement('div');div.textContent=String(value||'');return div.innerHTML;
   }
-  async function nanoFeedback(question,text){
+  function pinyinFor(text){
+    var api=window.pinyinPro||window.pinyin;
+    try{
+      if(window.pinyinPro&&typeof window.pinyinPro.pinyin==='function')return window.pinyinPro.pinyin(text,{toneType:'symbol',type:'array'}).join(' ');
+      if(typeof api==='function')return api(text,{toneType:'symbol',type:'array'}).join(' ');
+    }catch(e){}
+    return '';
+  }
+  function suggestionHtml(target){
+    return '<div class="suggestion" id="suggestionBox">'+
+      '<div class="suggestion-zh" id="suggestionZh">'+escapeHtml(target.zh)+'</div>'+
+      '<div class="suggestion-py" id="suggestionPy">'+escapeHtml(pinyinFor(target.zh)||'pinyin 読み込み中…')+'</div>'+
+      (target.ja?'<div class="suggestion-ja" id="suggestionJa">'+escapeHtml(target.ja)+'</div>':'')+
+      '<div class="suggestion-src" id="suggestionSrc">'+escapeHtml(target.source||'お手本')+'</div>'+
+      '<button class="say-btn" id="practiceBtn" type="button">🎤 言ってみる</button>'+
+    '</div>';
+  }
+  function refreshSuggestion(target){
+    practiceTarget=target;
+    var zh=document.getElementById('suggestionZh'),py=document.getElementById('suggestionPy');
+    var ja=document.getElementById('suggestionJa'),src=document.getElementById('suggestionSrc');
+    if(zh)zh.textContent=target.zh;
+    if(py)py.textContent=pinyinFor(target.zh)||'';
+    if(ja)ja.textContent=target.ja||'';else if(target.ja){
+      var node=document.createElement('div');node.className='suggestion-ja';node.id='suggestionJa';node.textContent=target.ja;
+      var box=document.getElementById('suggestionBox');if(box)box.insertBefore(node,src);
+    }
+    if(src)src.textContent=target.source||'AI提案';
+  }
+  function bindPracticeButton(){
+    var btn=document.getElementById('practiceBtn');
+    if(btn)btn.addEventListener('click',function(){startRecording('practice');});
+  }
+  function withTimeout(promise,ms){
+    var timer;
+    return Promise.race([
+      promise,
+      new Promise(function(_,reject){timer=setTimeout(function(){reject(new Error('timeout'));},ms);})
+    ]).finally(function(){clearTimeout(timer);});
+  }
+  function extractChineseSentence(value){
+    var text=String(value||'').replace(/[「」『』"']/g,'').split(/\n/)[0].trim();
+    var match=text.match(/[\u3400-\u9fff][\u3400-\u9fff，。！？、；：“”‘’（）…\s0-9A-Za-z]+/);
+    if(!match)return '';
+    var sentence=match[0].replace(/\s+/g,'').replace(/[。！？].*$/,'$&');
+    return /[\u3400-\u9fff]{2,}/.test(sentence)?sentence:'';
+  }
+  async function nanoRephrase(question,text){
     var LM=window.LanguageModel;
     if(!LM||typeof LM.create!=='function')return null;
+    var session=null;
     try{
       if(typeof LM.availability==='function'){
-        var availability=await LM.availability();
+        var availability=await withTimeout(LM.availability(),2500);
         if(availability==='unavailable'||availability==='no')return null;
       }
-      var systemPrompt='あなたは中国語学習を手伝う陸。短く、ぶっきらぼうだが優しい日本語で返す。';
-      var session;
+      var systemPrompt='あなたは中国語ネイティブの陸。ユーザーが言おうとした中文を、意味を保ったまま自然な口語の中文1文に直す。返答は中文1文だけ。説明や日本語は書かない。';
       try{
-        session=await LM.create({
+        session=await withTimeout(LM.create({
           systemPrompt:systemPrompt,
-          expectedInputs:[{type:'text',languages:['ja','zh']}],
+          expectedInputs:[{type:'text',languages:['ja']}],
           expectedOutputs:[{type:'text',languages:['ja']}]
-        });
+        }),3000);
       }catch(e){
-        session=await LM.create({systemPrompt:systemPrompt});
+        session=await withTimeout(LM.create({
+          systemPrompt:systemPrompt,
+          expectedOutputs:[{type:'text',languages:['ja']}]
+        }),3000);
       }
-      var answer=await session.prompt('質問：'+question.zh+'\n学習者の回答：'+text+
-        '\nよかった点を1文、より自然な中国語を1文、短い励ましを1文で返してください。');
-      if(session.destroy)session.destroy();
-      return '<p>'+escapeHtml(answer).replace(/\n/g,'<br>')+'</p>';
+      var answer=await withTimeout(session.prompt('元の発話：'+text+'\n自然な中文に直して、中文1文だけ返す。'),3000);
+      var zh=extractChineseSentence(answer);
+      if(!zh)return null;
+      return {zh:zh,ja:'',source:'AI提案'};
     }catch(e){return null;}
+    finally{if(session&&session.destroy)try{session.destroy();}catch(e){}}
   }
   async function showResult(text){
-    var question=questions[questionIndex];
+    var token=++resultToken,question=questions[questionIndex];
     document.getElementById('heardText').textContent=text||'（聞き取り結果なし）';
     document.getElementById('heard').classList.add('show');
     document.getElementById('feedback').classList.add('show');
-    document.getElementById('feedbackTitle').textContent='フィードバック（標準）';
+    document.getElementById('feedbackTitle').textContent='往復練習';
     document.getElementById('feedbackBody').innerHTML=templateFeedback(question,text);
+    bindPracticeButton();
     setState('success','聞き取れました。声に出せた、それで十分。');
     document.getElementById('retryBtn').disabled=false;
     appData.voiceLogs.push({ts:new Date().toISOString(),source:'hskk',roomId:'hskk_basic',
-      questionId:question.id,zh:question.zh,recognized:text,score:null});
+      questionId:question.id,phase:'answer',zh:question.zh,recognized:text,score:null});
     save();updateStats();
-    var enhanced=await nanoFeedback(question,text);
-    if(enhanced){
-      document.getElementById('feedbackTitle').textContent='フィードバック（AI補助）';
-      document.getElementById('feedbackBody').innerHTML=enhanced+
-        '<p class="model">お手本：'+escapeHtml(question.model)+'<span class="model-ja">'+escapeHtml(question.model_ja)+'</span></p>';
+    var ai=text?await nanoRephrase(question,text):null;
+    if(ai&&token===resultToken)refreshSuggestion(ai);
+  }
+  function normalizeZh(text){
+    return String(text||'').replace(/[，。！？、；：“”‘’（）\s,.!?;:'"()\[\]{}]/g,'').toLowerCase();
+  }
+  function looseScore(recognized,target){
+    var a=normalizeZh(recognized),b=normalizeZh(target);
+    if(!a||!b)return 0;
+    var hits=0,used={};
+    for(var i=0;i<b.length;i++){
+      for(var j=0;j<a.length;j++){
+        if(!used[j]&&b[i]===a[j]){used[j]=true;hits++;break;}
+      }
     }
+    return hits/Math.max(a.length,b.length);
+  }
+  function showPracticeResult(text){
+    var target=practiceTarget||{zh:questions[questionIndex].model,source:'お手本'};
+    var ok=!!text&&(looseScore(text,target.zh)>=0.6||normalizeZh(text).length>=2);
+    document.getElementById('heardText').textContent=text||'（聞き取り結果なし）';
+    document.getElementById('heard').classList.add('show');
+    document.getElementById('feedback').classList.add('show');
+    document.getElementById('feedbackTitle').textContent='言ってみた結果';
+    document.getElementById('feedbackBody').innerHTML=ok
+      ? '<p>'+escapeHtml(pickTemplate('praise'))+'</p><p class="model">練習した文：'+escapeHtml(target.zh)+'<span class="model-ja">'+escapeHtml(pinyinFor(target.zh))+'</span></p>'
+      : '<p>'+escapeHtml(pickTemplate('retry'))+'</p>'+suggestionHtml(target);
+    if(!ok)bindPracticeButton();
+    setState(ok?'success':'failure',ok?'ちゃんと声に出せた。今日はそれで十分。':'惜しい。もう一回だけ、ゆっくり。');
+    appData.voiceLogs.push({ts:new Date().toISOString(),source:'hskk',roomId:'hskk_basic',
+      questionId:questions[questionIndex].id,phase:'practice',zh:target.zh,recognized:text,score:Math.round(looseScore(text,target.zh)*100)});
+    save();updateStats();
+    recordMode='answer';resetRecordButton();
   }
   function renderQuestion(){
     var q=questions[questionIndex];
@@ -281,6 +382,7 @@
     document.getElementById('heard').classList.remove('show');
     document.getElementById('feedback').classList.remove('show');
     document.getElementById('retryBtn').disabled=true;
+    recordMode='answer';practiceTarget=null;resultToken++;
     setState('idle','未開始：お手本を聞くか、録音して答えてください。');
     document.getElementById('nextBtn').textContent=questionIndex===questions.length-1?'⏭ 最初の問題へ':'⏭ 次の問題';
   }
@@ -306,8 +408,8 @@
     });
   }
   document.getElementById('modelBtn').addEventListener('click',playModel);
-  recordBtn.addEventListener('click',startRecording);
-  document.getElementById('retryBtn').addEventListener('click',startRecording);
+  recordBtn.addEventListener('click',function(){startRecording('answer');});
+  document.getElementById('retryBtn').addEventListener('click',function(){startRecording('answer');});
   document.getElementById('nextBtn').addEventListener('click',function(){questionIndex=(questionIndex+1)%questions.length;renderQuestion();});
   bootstrap();
 })();
