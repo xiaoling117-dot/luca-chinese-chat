@@ -54,6 +54,9 @@
   .daychip{align-self:center; font-size:11px; color:var(--accent);
     background:rgba(185,167,255,.10); border:1px solid rgba(185,167,255,.25);
     padding:3px 12px; border-radius:20px; margin:2px 0;}
+  .narration-card{align-self:center;max-width:88%;margin:8px auto 14px;padding:12px 14px;
+    border:1px solid rgba(185,167,255,.18);border-radius:14px;background:rgba(26,21,48,.72);
+    color:var(--sub);font-size:13px;line-height:1.75;white-space:pre-wrap;}
 
   .row{display:flex; gap:8px; align-items:flex-end; max-width:100%;}
   .row.me{flex-direction:row-reverse;}
@@ -850,6 +853,7 @@ const chat = document.getElementById('chat');
 const choicesEl = document.getElementById('choices');
 const EPISODE_IDS = ['episode1','episode2','episode3','episode4','episode5'];
 var EPISODE_MANIFEST={episodes:[]};
+var currentEpisode=null;
 var ROOMS=[];
 var GIFTS=[];
 var CALL=[];
@@ -954,7 +958,34 @@ function load(){ try{
 
 const sleep = ms => new Promise(r=>setTimeout(r, ms));
 function scrollDown(){ chat.scrollTop = chat.scrollHeight; }
-function curStory(){ return DAYS[dayIdx].story; }
+function currentEpId(){ return (appData&&appData.progress&&appData.progress.currentEpId)||EPISODE_IDS[dayIdx]||'episode1'; }
+function getEpisodeMeta(epId){
+  epId=epId||currentEpId();
+  return (EPISODE_MANIFEST.episodes||[]).find(function(ep){ return ep&&ep.id===epId; })||null;
+}
+function isJsonEpisode(epId){
+  var meta=getEpisodeMeta(epId);
+  return !!(meta&&meta.source==='json'&&meta.path);
+}
+function curStory(){
+  if(currentEpisode&&Array.isArray(currentEpisode.steps)) return currentEpisode.steps;
+  return DAYS[dayIdx].story;
+}
+function episodeLabel(){
+  return currentEpisode&&currentEpisode.title ? currentEpisode.title : DAYS[dayIdx].label;
+}
+function toBubbleStep(step){
+  step=step||{};
+  return {
+    type:step.type,
+    zh:step.zh||'',
+    py:step.py||step.pinyin||'',
+    ja:step.ja||'',
+    time:step.time,
+    sec:step.sec||step.seconds,
+    transcript:step.transcript
+  };
+}
 
 let shownLv = 1;
 const LUCA_FACES = ['assets/images/luca-face-0.png','assets/images/luca-face-1.png','assets/images/luca-face-2.png','assets/images/luca-face-3.png','assets/images/luca-face-4.png','assets/images/luca-face-5.png'];
@@ -1258,7 +1289,8 @@ function makeVoiceBubble(node){
   var pyDiv=document.createElement('div'); pyDiv.className='py'; pyDiv.textContent=node.py;
   var jaDiv=document.createElement('div'); jaDiv.className='ja'; jaDiv.textContent=node.ja;
   textDiv.appendChild(zhDiv); textDiv.appendChild(pyDiv); textDiv.appendChild(jaDiv);
-  wrap.appendChild(playDiv); wrap.appendChild(tenBtn); wrap.appendChild(textDiv);
+  wrap.appendChild(playDiv);
+  if(node.transcript!==false){ wrap.appendChild(tenBtn); wrap.appendChild(textDiv); }
   pbtn.addEventListener('click',function(){
     var filename=luAudioManifest[node.zh];
     if(filename){
@@ -1330,8 +1362,15 @@ function makeBubble(node,isLuca){
   if(practice) b.appendChild(practice);
   return b;
 }
-function addDayChip(){ const c=document.createElement('div'); c.className='daychip'; c.textContent='— '+DAYS[dayIdx].label+' —'; chat.appendChild(c); }
+function addDayChip(){ const c=document.createElement('div'); c.className='daychip'; c.textContent='— '+episodeLabel()+' —'; chat.appendChild(c); }
 function addTimestamp(t){ const d=document.createElement('div'); d.className='timestamp'; d.textContent='深夜 '+t; chat.appendChild(d); }
+function addNarration(text){
+  const c=document.createElement('div');
+  c.className='narration-card';
+  c.textContent=text||'';
+  chat.appendChild(c);
+  scrollDown();
+}
 function addLuca(node){
   const row=document.createElement('div'); row.className='row luca';
   const mini=document.createElement('div'); mini.className='mini';
@@ -1375,6 +1414,17 @@ function renderChoices(options){
   });
   requestAnimationFrame(function(){ scrollDown(); setTimeout(scrollDown, 80); });
 }
+function renderJsonChoices(step){
+  choicesEl.innerHTML='';
+  (step.options||[]).forEach(function(opt,optionIdx){
+    var send=opt.send||opt;
+    const b=document.createElement('button'); b.className='choice';
+    b.innerHTML=escapeHtml(send.zh||'')+'<span class="cgloss">'+escapeHtml(send.ja||'')+'</span>';
+    b.onclick=function(){ pickJsonChoice(opt,optionIdx); };
+    choicesEl.appendChild(b);
+  });
+  requestAnimationFrame(function(){ scrollDown(); setTimeout(scrollDown, 80); });
+}
 async function pick(opt,optionIdx){
   choicesEl.innerHTML=''; addUser(opt);
   const stepIdx=idx;
@@ -1385,6 +1435,37 @@ async function pick(opt,optionIdx){
   idx++; save();
   if(opt.reply){ await sleep(350); await showTyping(800); addLuca(opt.reply); await sleep(300); }
   run();
+}
+async function pickJsonChoice(opt,optionIdx){
+  choicesEl.innerHTML='';
+  var send=toBubbleStep(opt.send||opt);
+  addUser(send);
+  const stepIdx=idx;
+  const epId=currentEpId();
+  const key=epId+'-'+stepIdx;
+  if(recordAward(key,'choice',opt.love||0)){ love+=(opt.love||0); updateLove(true); }
+  appData.choices.push({epId:epId,stepIdx:stepIdx,optionIdx:optionIdx||0,sentZh:send.zh,ts:new Date().toISOString()});
+  idx++;
+  save();
+  var replies=Array.isArray(opt.reply)?opt.reply:(opt.reply?[opt.reply]:[]);
+  for(var i=0;i<replies.length;i++){
+    var reply=replies[i];
+    if(reply.type==='line'||reply.type==='msg'){
+      await showTyping(700+(reply.zh||'').length*35);
+      addLuca(toBubbleStep(reply));
+      await sleep(350);
+    }else if(reply.type==='voice'){
+      await showTyping(600);
+      addLuca(toBubbleStep(reply));
+      await sleep(350);
+    }else if(reply.type==='narration'){
+      addNarration(reply.text);
+      await sleep(250);
+    }else if(reply.type==='pause'){
+      await sleep(reply.ms||600);
+    }
+  }
+  runJsonEpisode();
 }
 function ending(){
   const lv=Math.min(6, Math.floor(Math.min(love,100)/17)+1);
@@ -1544,6 +1625,56 @@ function unlockStory(card){
   card.classList.add('opened');
   idx++; save(); run();
 }
+function loadCurrentJsonEpisode(){
+  var meta=getEpisodeMeta(currentEpId());
+  if(!meta||meta.source!=='json'||!meta.path){
+    currentEpisode=null;
+    return Promise.resolve(null);
+  }
+  return fetchJson(meta.path).then(function(episode){
+    currentEpisode=episode||null;
+    return currentEpisode;
+  });
+}
+async function runJsonEpisode(){
+  if(!currentEpisode||!Array.isArray(currentEpisode.steps)){ run(); return; }
+  while(idx < currentEpisode.steps.length){
+    const node=currentEpisode.steps[idx]||{};
+    if(node.type==='scene'){
+      if(node.time) addTimestamp(node.time);
+      idx++; save();
+      await sleep(150);
+    }else if(node.type==='narration'){
+      addNarration(node.text);
+      idx++; save();
+      await sleep(350);
+    }else if(node.type==='line'||node.type==='msg'){
+      var bubble=toBubbleStep(node);
+      if(node.speaker==='主人公'||node.speaker==='荳ｻ莠ｺ蜈ｬ') addUser(bubble);
+      else { await showTyping(700+(bubble.zh||'').length*35); addLuca(bubble); }
+      idx++; save();
+      await sleep(450);
+    }else if(node.type==='voice'){
+      await showTyping(600);
+      addLuca(toBubbleStep(node));
+      idx++; save();
+      await sleep(450);
+    }else if(node.type==='choice'){
+      renderJsonChoices(node);
+      return;
+    }else if(node.type==='pause'){
+      idx++; save();
+      await sleep(node.ms||600);
+    }else if(node.type==='end'){
+      idx++; save();
+      ending();
+      return;
+    }else{
+      idx++; save();
+    }
+  }
+  ending();
+}
 async function run(){
   while(idx < curStory().length){
     const node=curStory()[idx];
@@ -1558,6 +1689,19 @@ async function run(){
 function startDay(resetProgress){
   chat.innerHTML=''; choicesEl.innerHTML='';
   if(resetProgress){ idx=0; save(); }
+  if(isJsonEpisode(currentEpId())){
+    loadCurrentJsonEpisode()
+      .then(function(){
+        addDayChip();
+        runJsonEpisode();
+      })
+      .catch(function(error){
+        console.error(error);
+        addFcChip('— episode data load error —');
+      });
+    return;
+  }
+  currentEpisode=null;
   addDayChip();
   const t = curStory()[0].time || '23:00';
   addTimestamp(t);
