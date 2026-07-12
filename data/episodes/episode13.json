@@ -1,0 +1,36 @@
+{
+  "_readme": "step型仕様は prologue.json / episode3_5.json の _readme と同じ。第13話のポイント：春节（農暦の正月＝フォーマル・家族の儀式）。陸は親戚で热闹の実家からスマホで連絡（PC前提でなくスマホ）。『比起热闹，我更想跟你说话』。★進路の岐路の種：『过完年我得决定一些事…我去哪』＝空港クライマックスの燃料。『不想让你只活在屏幕里』で“会う”が現実の目標に。第4幕（決意の長文→空港）への助走完了。next=episode14。",
+  "id": "episode13",
+  "title": "第13話「春节」（家族の時期・進路の岐路の種）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_night", "note": "春节（農暦の正月）。陸の実家は親戚で热闹。陸は人の輪を抜けて自室／ベランダからスマホで連絡＝家族といながら君を選ぶ。背景は夜景＋赤い飾り。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "春节快乐。恭喜发财。", "pinyin": "chūnjié kuàilè. gōngxǐ fācái.", "ja": "春節おめでとう。お金に恵まれますように。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……家里全是人，太吵了，我躲出来了。", "pinyin": "jiālǐ quán shì rén, tài chǎo le, wǒ duǒ chūlái le.", "ja": "……家中、人だらけで、うるさくて、抜け出してきた。", "note": "スマホ片手に、人の輪を離れて" },
+    {
+      "type": "choice",
+      "prompt": "家族と過ごす春节に、陸はなぜ抜け出して？",
+      "options": [
+        { "send": { "zh": "你不用陪家人吗？", "pinyin": "nǐ búyòng péi jiārén ma?", "ja": "家族と一緒にいなくていいの？" }, "love": 3, "reply": [] },
+        { "send": { "zh": "谢谢你今天还来找我。", "pinyin": "xièxie nǐ jīntiān hái lái zhǎo wǒ.", "ja": "こんな日に来てくれて、ありがとう。" }, "love": 6, "reply": [] },
+        { "send": { "zh": "我也想见你的家人。", "pinyin": "wǒ yě xiǎng jiàn nǐ de jiārén.", "ja": "私も、あなたの家族に会ってみたいな。" }, "love": 5, "reply": [] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……比起热闹，我更想跟你说话。", "pinyin": "bǐqǐ rènao, wǒ gèng xiǎng gēn nǐ shuōhuà.", "ja": "……にぎやかさより、君と話すほうがいい。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……过完年，我得决定一些事。", "pinyin": "guò wán nián, wǒ děi juédìng yìxiē shì.", "ja": "……年が明けたら、決めなきゃいけないことがある。", "note": "★進路の岐路の種。春节は人生の節目を家族と話す時期" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "关于以后。关于……我去哪。", "pinyin": "guānyú yǐhòu. guānyú… wǒ qù nǎ.", "ja": "この先のこと。俺が……どこへ行くか。", "note": "進路＝空港クライマックスの燃料" },
+    {
+      "type": "choice",
+      "prompt": "「どこへ行くか決めなきゃ」と言う陸に",
+      "options": [
+        { "send": { "zh": "不管你去哪，我都想跟你在一起。", "pinyin": "bùguǎn nǐ qù nǎ, wǒ dōu xiǎng gēn nǐ zài yìqǐ.", "ja": "どこへ行っても、一緒にいたい。" }, "love": 8, "reply": [] },
+        { "send": { "zh": "你想去哪？", "pinyin": "nǐ xiǎng qù nǎ?", "ja": "あなたは、どこへ行きたいの？" }, "love": 6, "reply": [] },
+        { "send": { "zh": "那……我们能见面吗？", "pinyin": "nà… wǒmen néng jiànmiàn ma?", "ja": "じゃあ……私たち、会える？" }, "love": 8, "reply": [], "note": "「会う」を初めて口に" }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……还不知道。", "pinyin": "hái bù zhīdào.", "ja": "……まだ、わからない。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "但是——我不想让你，只活在屏幕里。", "pinyin": "dànshì— wǒ bù xiǎng ràng nǐ, zhǐ huó zài píngmù lǐ.", "ja": "でも――君を、画面の中だけの存在にしたくない。", "note": "会いたい＝一期ラストへの助走。第15話で回収" },
+    { "type": "narration", "text": "画面の中だけの、わたし。\n彼は、それを変えたいと言った。\n――会いたい。声だけじゃなくて、本当に。\n春が、近づいていた。" },
+    { "type": "effect", "name": "blackout", "note": "暗転。第4幕（決意の長文→空港）へ。" },
+    { "type": "end", "next": "episode14" }
+  ]
+}

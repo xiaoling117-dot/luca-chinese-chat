@@ -849,6 +849,7 @@ const DAYS = [
 const chat = document.getElementById('chat');
 const choicesEl = document.getElementById('choices');
 const EPISODE_IDS = ['episode1','episode2','episode3','episode4','episode5'];
+var EPISODE_MANIFEST={episodes:[]};
 var ROOMS=[];
 var GIFTS=[];
 var CALL=[];
@@ -890,6 +891,12 @@ function normalizeData(d){
     if(!Array.isArray(d[key])) d[key]=[];
   });
   return d;
+}
+function normalizeEpisodeId(epId){
+  var legacyMap={prologue:'episode1',day1:'episode1',day2:'episode2',day3:'episode3',day4:'episode4',day5:'episode5'};
+  var id=legacyMap[epId]||epId||'episode1';
+  var known=EPISODE_IDS.indexOf(id)>=0||(EPISODE_MANIFEST.episodes||[]).some(function(ep){ return ep&&ep.id===id; });
+  return known?id:'episode1';
 }
 function migrateLegacyGiftLogs(d){
   for(var i=0;i<localStorage.length;i++){
@@ -935,6 +942,7 @@ function load(){ try{
     });
   }
   migrateLegacyGiftLogs(appData);
+  appData.progress.currentEpId=normalizeEpisodeId(appData.progress.currentEpId);
   love=Number(appData.affection.love)||0;
   var epIndex=EPISODE_IDS.indexOf(appData.progress.currentEpId);
   dayIdx=Math.min(epIndex>=0?epIndex:0,DAYS.length-1);
@@ -1883,9 +1891,9 @@ function fetchJson(path){
   });
 }
 function bootstrap(){
-  Promise.all([fetchJson('data/rooms.json'),fetchJson('data/gifts.json'),fetchJson('data/call.json')])
+  Promise.all([fetchJson('data/rooms.json'),fetchJson('data/gifts.json'),fetchJson('data/call.json'),fetchJson('data/episodes/manifest.json')])
     .then(function(values){
-      ROOMS=values[0]; GIFTS=values[1]; CALL=values[2];
+      ROOMS=values[0]; GIFTS=values[1]; CALL=values[2]; EPISODE_MANIFEST=values[3]||{episodes:[]};
       load();
       updateLove(false);
       renderRoomList();

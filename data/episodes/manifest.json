@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "episodes": [
+    { "id": "episode1", "source": "legacy-days", "dayIndex": 0 },
+    { "id": "episode1_5", "source": "json", "path": "data/episodes/episode1_5.json" },
+    { "id": "episode2", "source": "legacy-days", "dayIndex": 1 },
+    { "id": "episode2_5", "source": "json", "path": "data/episodes/episode2_5.json" },
+    { "id": "episode3", "source": "json", "path": "data/episodes/episode3.json" },
+    { "id": "episode3_5", "source": "json", "path": "data/episodes/episode3_5.json" },
+    { "id": "episode4", "source": "json", "path": "data/episodes/episode4.json" },
+    { "id": "episode5", "source": "json", "path": "data/episodes/episode5.json" },
+    { "id": "episode6", "source": "json", "path": "data/episodes/episode6.json" },
+    { "id": "episode7", "source": "json", "path": "data/episodes/episode7.json" },
+    { "id": "episode7_5", "source": "json", "path": "data/episodes/episode7_5.json" },
+    { "id": "episode8", "source": "json", "path": "data/episodes/episode8.json" },
+    { "id": "episode8_5", "source": "json", "path": "data/episodes/episode8_5.json" },
+    { "id": "episode9", "source": "json", "path": "data/episodes/episode9.json" },
+    { "id": "episode10", "source": "json", "path": "data/episodes/episode10.json" },
+    { "id": "episode11", "source": "json", "path": "data/episodes/episode11.json" },
+    { "id": "episode11_5", "source": "json", "path": "data/episodes/episode11_5.json" },
+    { "id": "episode12", "source": "json", "path": "data/episodes/episode12.json" },
+    { "id": "episode13", "source": "json", "path": "data/episodes/episode13.json" },
+    { "id": "episode14", "source": "json", "path": "data/episodes/episode14.json" },
+    { "id": "episode15", "source": "json", "path": "data/episodes/episode15.json" },
+    { "id": "episode16", "source": "json", "path": "data/episodes/episode16.json" },
+    { "id": "ending", "source": "json", "path": "data/episodes/ending.json" }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "_readme": "step型仕様は prologue.json / episode3_5.json の _readme と同じ。第15話＝通話ギミック解禁(ずっと温存した声の頂点／第8.5話『等一个值得的时候』の回収)。★この回で type:'call' を使用：{type:'call', direction:'incoming', from:'陸'} で着信演出→応答。通話中の陸の発話は voice(transcript 不要/falseでよい=リアルタイム通話)。陸は『我没选离你近的那条路，我选了我该走的那条』=羽ばたく決断(行き先の中身は二期)。『来上海，我要见你』で物語が空港へ動く。next=episode16。",
+  "id": "episode15",
+  "title": "第15話「电话」（渡航前夜・初の通話）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_night", "note": "数日後の夜。背景は夜景。やがてスマホの着信画面へ。" },
+    { "type": "narration", "text": "数日後。\n陸から、短い一言が届いた。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "我决定了。", "pinyin": "wǒ juédìng le.", "ja": "決めた。" },
+    { "type": "call", "direction": "incoming", "from": "陸", "note": "★通話ギミック解禁。画面に着信『陸（ルー）』。文字でもボイスでもない、初めての“通話”。プレイヤーが応答する。" },
+    { "type": "narration", "text": "電話……？\n声だけは、ずっと、特別に取っておいたみたいに。\n――ううん。彼が、そうしてきた。" },
+    {
+      "type": "choice",
+      "prompt": "震える指で、通話に出る",
+      "options": [
+        { "send": { "zh": "……喂？", "pinyin": "wéi?", "ja": "……もしもし？" }, "love": 5, "reply": [] },
+        { "send": { "zh": "……是你。", "pinyin": "shì nǐ.", "ja": "……あなたなんだ。" }, "love": 5, "reply": [] },
+        { "send": { "zh": "", "pinyin": "", "ja": "（緊張で何も言えない）" }, "love": 5, "reply": [], "note": "応答するが言葉が出ない" }
+      ]
+    },
+    { "type": "voice", "speaker": "陸", "zh": "……终于，听到你的声音了。", "pinyin": "zhōngyú, tīngdào nǐ de shēngyīn le.", "ja": "……やっと、君の声が聞けた。", "seconds": 3, "transcript": false, "note": "通話中のリアルタイム音声。少し掠れて、緊張している" },
+    { "type": "voice", "speaker": "陸", "zh": "我没选离你近的那条路。", "pinyin": "wǒ méi xuǎn lí nǐ jìn de nà tiáo lù.", "ja": "君に近いほうの道は、選ばなかった。", "seconds": 3, "transcript": false },
+    { "type": "voice", "speaker": "陸", "zh": "我选了……我该走的那条。", "pinyin": "wǒ xuǎn le… wǒ gāi zǒu de nà tiáo.", "ja": "選んだのは……俺が進むべき、そっちの道だ。", "seconds": 3, "transcript": false, "note": "羽ばたく決断。具体的な行き先は明言せず（中身は二期）" },
+    { "type": "voice", "speaker": "陸", "zh": "……可是，我有个条件。", "pinyin": "kěshì, wǒ yǒu ge tiáojiàn.", "ja": "……でも、ひとつ、条件がある。", "seconds": 2, "transcript": false, "note": "声だからこそ伝わる震え。初めて声で弱さを見せる" },
+    {
+      "type": "choice",
+      "prompt": "「条件」って？",
+      "options": [
+        { "send": { "zh": "什么条件？", "pinyin": "shénme tiáojiàn?", "ja": "どんな条件？" }, "love": 4, "reply": [] },
+        { "send": { "zh": "你说。", "pinyin": "nǐ shuō.", "ja": "言って。" }, "love": 4, "reply": [] },
+        { "send": { "zh": "……我有点紧张。", "pinyin": "wǒ yǒudiǎn jǐnzhāng.", "ja": "……ちょっと、緊張する。" }, "love": 5, "reply": [], "note": "プロローグ「别紧张」の反転＝今度は主人公が紧张" }
+      ]
+    },
+    { "type": "voice", "speaker": "陸", "zh": "来上海。", "pinyin": "lái shànghǎi.", "ja": "上海に、来い。", "seconds": 2, "transcript": false },
+    { "type": "voice", "speaker": "陸", "zh": "我要见你。真的见你。不是在屏幕里。", "pinyin": "wǒ yào jiàn nǐ. zhēn de jiàn nǐ. bú shì zài píngmù lǐ.", "ja": "会いたい。本当に、会いたい。画面の中じゃなく。", "seconds": 4, "transcript": false, "note": "第13話「不想让你只活在屏幕里」の回収" },
+    { "type": "narration", "text": "声が、震えていた。\nいつも余裕そうなこの人が、こんなに。\n――行こう。会いに、行こう。" },
+    { "type": "effect", "name": "blackout", "note": "暗転。物語が画面の外（空港）へ。次は第16話・フィナーレ。" },
+    { "type": "end", "next": "episode16" }
+  ]
+}

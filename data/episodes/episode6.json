@@ -1,0 +1,29 @@
+{
+  "_readme": "step型仕様は prologue.json / episode3_5.json の _readme と同じ。第6話のポイント：第5話の溝を、七夕（牛郎织女＝年に一度の恋人）が引き戻す。陸の方から用件のフリで戻ってくる＝和解“のきっかけ”（完全には戻らない／中秋へ持ち越し）。選択肢①は分岐（①我有事／②我没有不理你／③我们不一样）→合流。詫びは『那天…是我不好』＝“对不起”とは言えない男の精一杯。next=episode7。",
+  "id": "episode6",
+  "title": "第6話「七夕」（牛郎织女）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_night", "note": "第5話の数日後。陸からの連絡は途絶えたまま。主人公はずっと既読のあとを見ている。日付が少し飛んでいる。背景は夜景。" },
+    { "type": "narration", "text": "あれから、三日。\n「我先下了」のあと、陸は、来なかった。\n既読のまま、止まった会話を、何度も開いては閉じた。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "今天七夕。", "pinyin": "jīntiān qīxī.", "ja": "今日は七夕だ。", "note": "陸の方から。素直じゃない、用件のフリ" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……牛郎织女，一年只能见一次。", "pinyin": "niúláng zhīnǚ, yì nián zhǐ néng jiàn yí cì.", "ja": "牛郎と織女は、一年に一度しか会えない。", "note": "自分たちを神話に重ねている" },
+    { "type": "narration", "text": "三日も黙ってたくせに。\n今さら、七夕？\n……でも、来てくれた。" },
+    {
+      "type": "choice",
+      "prompt": "戻ってきた陸に、なんて返す？",
+      "options": [
+        { "send": { "zh": "你终于出现了。", "pinyin": "nǐ zhōngyú chūxiàn le.", "ja": "やっと、現れたね。" }, "love": 3,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……我有事。", "pinyin": "wǒ yǒu shì.", "ja": "……用があっただけだ。", "note": "見え透いた言い訳" } ], "note": "ちょっと拗ねる" },
+        { "send": { "zh": "我以为你不理我了。", "pinyin": "wǒ yǐwéi nǐ bù lǐ wǒ le.", "ja": "もう無視されたかと思った。" }, "love": 3,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……我没有不理你。", "pinyin": "wǒ méiyǒu bù lǐ nǐ.", "ja": "……無視してない。", "note": "小声の否定" } ], "note": "本音" },
+        { "send": { "zh": "那我们呢？", "pinyin": "nà wǒmen ne?", "ja": "じゃあ、私たちは？" }, "love": 5,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……我们不一样。", "pinyin": "wǒmen bù yíyàng.", "ja": "……俺たちは、違う。", "note": "何が違うかは言わない" } ], "note": "神話に乗っかって切り込む" }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "那天……是我不好。", "pinyin": "nà tiān… shì wǒ bù hǎo.", "ja": "あの日は……俺が悪かった。", "note": "「对不起」とは言えない男の精一杯の詫び" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "别多想。明天，照常。", "pinyin": "bié duō xiǎng. míngtiān, zhàocháng.", "ja": "深く考えるな。明日も、いつも通り。", "note": "「また来い」を遠回りに" },
+    { "type": "narration", "text": "牛郎织女は、一年に一度。\nでもこの人は、三日で戻ってきてくれた。\n……たぶん、自分でも戻りたかったんだ。" },
+    { "type": "effect", "name": "blackout", "note": "暗転。和解“のきっかけ”まで。中秋へ持ち越し。" },
+    { "type": "end", "next": "episode7" }
+  ]
+}

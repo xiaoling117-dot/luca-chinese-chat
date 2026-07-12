@@ -1,0 +1,43 @@
+{
+  "_readme": "step型・hint・voice・choice・explain の仕様は prologue.json / episode3_5.json の _readme と同じ。第5話のポイント：突き放し回。★この回は選択肢の love を全て 0（停滞・下げない）にする＝確定仕様。陸の冷たさは『失う前に自分から手を離す恐怖』。effect『hesitation』＝入力中の点が出ては消える“撤回演出”で、冷酷でなく葛藤に見せる。未解決のまま暗転→第6話へ。next=episode6（A方針・一直線）。",
+  "id": "episode5",
+  "title": "第5話「练习而已」（突き放し）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_night", "note": "夜。ここ数日いい空気が続いた“あと”（時間が少し飛んでいる）。主人公はリラックス。背景は夜景。" },
+    { "type": "narration", "text": "あの「我不喜欢」の夜から、何日か。\n陸の「晚安」が、少しだけ、やわらかくなった気がして。\n――だから、油断してた。" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "跟你聊天，是我每天最开心的事。", "pinyin": "gēn nǐ liáotiān, shì wǒ měitiān zuì kāixīn de shì.", "ja": "あなたと話すのが、毎日いちばんの楽しみなの。", "note": "“依存”がにじむ一言（固定）。これが陸の恐怖の引き金" },
+    { "type": "effect", "name": "hesitation", "note": "既読。入力中の点が出て、消える。長い沈黙。陸の中で何かが固まる。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……是吗。", "pinyin": "shì ma.", "ja": "……そう。", "note": "温度が、すっと下がる" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "今天就到这儿吧。", "pinyin": "jīntiān jiù dào zhèr ba.", "ja": "今日は、もう終わりにしよう。", "note": "いつもより早く切る＝異変" },
+    { "type": "narration", "text": "また、あの感じ。\n……ううん。あの時より、ずっと冷たい。", "note": "第4話冒頭と同型の反応を、二度目として書く（漸増反復）。単純な使い回しに見せないための言い換え。" },
+    {
+      "type": "choice",
+      "prompt": "様子のおかしい陸に、どうする？",
+      "options": [
+        { "send": { "zh": "你怎么了？", "pinyin": "nǐ zěnme le?", "ja": "どうしたの？" }, "love": 0, "reply": [] },
+        { "send": { "zh": "我说错什么了吗？", "pinyin": "wǒ shuō cuò shénme le ma?", "ja": "私、何か悪いこと言った？" }, "love": 0, "reply": [] },
+        { "send": { "zh": "那……晚安？", "pinyin": "nà… wǎn'ān?", "ja": "じゃあ……おやすみ？" }, "love": 0, "reply": [] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "你不用每天都来。", "pinyin": "nǐ búyòng měitiān dōu lái.", "ja": "毎日、来なくていい。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "本来就是练习而已。", "pinyin": "běnlái jiùshì liànxí éryǐ.", "ja": "もともと、ただの練習だろ。", "note": "プロローグで“自分に”言い聞かせた言葉を、彼女に向ける＝最も効く一撃" },
+    { "type": "effect", "name": "hesitation", "note": "★陸側で「入力中…」が出ては消える、を2回（撤回演出）。冷たさの裏で葛藤＝プレイヤーにだけ見える。" },
+    { "type": "narration", "text": "「练习而已」。\n出会いの夜、彼が“自分に”言い聞かせた言葉。\nそれを今、わたしに、向けている。\n――画面の向こうで、彼が何度も打っては消していることを、わたしは、まだ知らない。" },
+    {
+      "type": "choice",
+      "prompt": "「ただの練習」と言われて、なんて返す？",
+      "options": [
+        { "send": { "zh": "我知道了。", "pinyin": "wǒ zhīdào le.", "ja": "……わかった。" }, "love": 0,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……嗯。", "pinyin": "ng.", "ja": "……ん。", "note": "突き放せてしまって、逆に苦しい" } ], "note": "引く。傷ついて" },
+        { "send": { "zh": "对我来说，不只是练习。", "pinyin": "duì wǒ lái shuō, bù zhǐshì liànxí.", "ja": "私にとっては、ただの練習じゃない。" }, "love": 0,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……别说了。", "pinyin": "bié shuō le.", "ja": "……もう、言うな。", "note": "壁が崩れかけて、慌てて止める" } ], "note": "勇気＝和解の種（数値では報わず第7話で回収）" },
+        { "send": { "zh": "那我明天还来。", "pinyin": "nà wǒ míngtiān hái lái.", "ja": "それでも、明日も来る。" }, "love": 0,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……随你。", "pinyin": "suí nǐ.", "ja": "……勝手にしろ。", "note": "拒まない＝本心では来てほしい" } ], "note": "意地＋優しさ" }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "我先下了。", "pinyin": "wǒ xiān xià le.", "ja": "先に、落ちる。", "note": "オフラインにする＝逃げる" },
+    { "type": "narration", "text": "もう一言送っても、既読のまま、返事は来ない。\n薄い関係は、いつでも消えられる。\n――今夜は、彼の方が、消えそうだった。\n「失う前に、自分から手を離そうとしている」ことに、わたしはまだ、気づかない。" },
+    { "type": "effect", "name": "blackout", "note": "暗転。距離感のまま終わる。次回（七夕）へ。" },
+    { "type": "end", "next": "episode6" }
+  ]
+}

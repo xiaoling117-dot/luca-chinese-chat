@@ -1,0 +1,48 @@
+{
+  "_readme": "step型仕様は prologue.json / episode3_5.json の _readme と同じ。第12話のポイント：西暦（阳历）の年越し＝カジュアル（春节=农历=フォーマルとは別物）。(1)主人公が反射で“学校言葉”『请多多关照』→陸が『关照？我们又不是今天才认识』と戸惑う→explain(请多关照は自己紹介の言葉・日本語由来)→陸が自然な年越し挨拶を教える(実物のWeChat文面準拠)。(2)『你没有消失』＝伏線の核を回収。傷のコア(消えた誰か)に最接近(誰かは明かさない)。next=episode13。",
+  "id": "episode12",
+  "title": "第12話「跨年」（西暦の年越し・你没有消失）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_night", "time": "23:59", "note": "12月31日、大晦日の深夜。西暦の年越し。離れた二つの場所で同じカウントダウン。背景は夜景＋花火。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "还有一分钟，跨年了。", "pinyin": "hái yǒu yì fēnzhōng, kuànián le.", "ja": "あと一分で、年が変わる。" },
+    {
+      "type": "explain",
+      "title": "ことばの解説：跨年（西暦）と春节（農暦）は別物",
+      "rows": [
+        { "zh": "跨年", "pinyin": "kuànián", "ja": "（西暦の）年越し。カジュアル" },
+        { "zh": "元旦", "pinyin": "yuándàn", "ja": "1月1日" },
+        { "zh": "春节", "pinyin": "chūnjié", "ja": "農暦の正月（1〜2月頃）。フォーマル（第13話）" }
+      ],
+      "note": "中国では「跨年」は西暦の若者向けカウントダウン、「春节」は農暦の家族の儀式で、別の行事。"
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……陪我一起倒数。", "pinyin": "péi wǒ yìqǐ dàoshǔ.", "ja": "……一緒に、カウントダウンしよう。", "note": "「陪我」＝出会いの「陪我练习」と同じ動詞" },
+    { "type": "effect", "name": "datestamp", "note": "3…2…1… のカウントダウン演出。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "新年快乐。", "pinyin": "xīnnián kuàilè.", "ja": "あけましておめでとう。" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "新年快乐！新的一年也请你多多关照。", "pinyin": "xīnnián kuàilè! xīn de yì nián yě qǐng nǐ duōduō guānzhào.", "ja": "あけおめ！今年もよろしくね。", "note": "★反射的に日本の語学教室の“学校言葉”を送ってしまう（固定）。本人は「今年もよろしく」のつもり" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……关照？", "pinyin": "guānzhào?", "ja": "……关照、だって？" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "我们又不是今天才认识。", "pinyin": "wǒmen yòu bú shì jīntiān cái rènshi.", "ja": "俺たち、今日初めて会ったわけじゃないだろ。", "note": "やわらかく戸惑う" },
+    {
+      "type": "explain",
+      "title": "ことばの解説：「请多关照」は“はじめまして”の言葉",
+      "intro": "请多关照〔qǐng duō guānzhào〕は、日本語の「（はじめまして）よろしくお願いします」にあたる、自己紹介や新しく仲間入りしたときの決まり文句。もともと日本語の「よろしく」由来で、中国本土では日常の挨拶にはあまり使わない（主に台湾や、かしこまった初対面で）。",
+      "note": "日本人は語学教室で最初にこれを習うので、つい「今年もよろしく」のつもりで使いがち。でも1年来の相手に言うと「なんで今さら？」と一瞬戸惑わせる。年越しの「今年もよろしく」は、中国では“相手を思う温かい言葉”で表す。"
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "这种时候，说这个就行——", "pinyin": "zhèzhǒng shíhou, shuō zhège jiù xíng——", "ja": "こういう時は、こう言えばいい――", "note": "決まり文句でなく“気持ちの言葉”を教える＝形式を嫌う人物像と重なる" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "很开心，又跟你多过了一年。希望你新的一年，身体健康，开开心心。", "pinyin": "hěn kāixīn, yòu gēn nǐ duō guò le yì nián. xīwàng nǐ xīn de yì nián, shēntǐ jiànkāng, kāikāixīnxīn.", "ja": "また君と一年を過ごせて、すごく嬉しい。新しい年も、体に気をつけて、楽しく過ごせますように。", "note": "実際の中国の年越しメッセージ（认识了一年/身体健康/开心快乐）に即した言い方" },
+    {
+      "type": "choice",
+      "prompt": "今度は“気持ちの言葉”で、返してみる",
+      "options": [
+        { "send": { "zh": "我也很开心，又多认识你一年。", "pinyin": "wǒ yě hěn kāixīn, yòu duō rènshi nǐ yì nián.", "ja": "私も嬉しい、また一年あなたを知れて。" }, "love": 6, "reply": [], "note": "自然な年越し挨拶" },
+        { "send": { "zh": "去年，我遇到了你。", "pinyin": "qùnián, wǒ yùdào le nǐ.", "ja": "去年、わたしはあなたに出会った。" }, "love": 6, "reply": [] },
+        { "send": { "zh": "今年，想离你更近一点。", "pinyin": "jīnnián, xiǎng lí nǐ gèng jìn yìdiǎn.", "ja": "今年は、あなたにもっと近づきたい。" }, "love": 8, "reply": [] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "去年这个时候，我一个人跨年。", "pinyin": "qùnián zhège shíhou, wǒ yí ge rén kuànián.", "ja": "去年の今頃は、一人で年を越した。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "我以为……你也会像别人一样，消失。", "pinyin": "wǒ yǐwéi… nǐ yě huì xiàng biéren yíyàng, xiāoshī.", "ja": "思ってた……君も、他の人みたいに、消えるって。", "note": "傷のコアに最接近（“誰を”は言わない＝二期へ温存）" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "可是你没有。你没有消失。", "pinyin": "kěshì nǐ méiyǒu. nǐ méiyǒu xiāoshī.", "ja": "でも、君は違った。君は、消えなかった。", "note": "伏線「你没有消失」回収の核" },
+    { "type": "narration", "text": "「他の人みたいに」。\nその一言の奥に、彼がまだ話していない誰かがいる。\nでも今は、それでいい。\n――わたしは、ここにいる。消えてない。" },
+    { "type": "effect", "name": "blackout", "note": "暗転。次は春节（第13話）へ。" },
+    { "type": "end", "next": "episode13" }
+  ]
+}

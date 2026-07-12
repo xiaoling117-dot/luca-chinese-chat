@@ -1,0 +1,64 @@
+{
+  "_readme": "step型仕様は prologue.json / episode3_5.json の _readme と同じ。explain型＝学習解説カード。第7.5話のポイント：食の南北論争（甜咸之争）の小話。陸＝上海＝咸党で、月餅の話だけ早口になるギャップ萌え。explain を2枚（五仁が嫌われる理由／南咸北甜）。『咸蛋黄…像个小月亮』で第7話の月を回収。『等你来上海，我带你吃』＝会いたいの種。next=episode8。",
+  "id": "episode7_5",
+  "title": "第7.5話「南咸北甜」（月餅の南北論争）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_night", "note": "中秋の数日後の夜。月餅を大量に贈り合う文化で、家に月饼が余っている。軽い空気。背景は夜景。" },
+    { "type": "narration", "text": "中秋が過ぎても、月饼はまだ家に山ほどあった。\n（中国の人って、ほんと大量に贈り合うんだなぁ。）" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "月饼还没吃完。", "pinyin": "yuèbǐng hái méi chī wán.", "ja": "月餅、まだ食べ終わらない。" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "月饼……就是那种甜的吧？", "pinyin": "yuèbǐng… jiùshì nà zhǒng tián de ba?", "ja": "月餅って……あの甘いやつでしょ？", "note": "日本人は月餅＝甘い、と思いがち。これが陸のスイッチを押す" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "甜的？", "pinyin": "tián de?", "ja": "甘いやつ？" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……你说五仁那种？", "pinyin": "nǐ shuō wǔrén nà zhǒng?", "ja": "……あの五仁ってやつのこと？" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "五仁里那个红红绿绿的丝，你知道是什么吗？", "pinyin": "wǔrén lǐ nàge hónghóng lǜlǜ de sī, nǐ zhīdào shì shénme ma?", "ja": "五仁の中の、あの赤と緑のひも、何だか知ってるか？", "note": "クール男の数少ない早口スイッチ" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "染色的橘子皮。被叫做\"月饼界的黑暗料理\"。", "pinyin": "rǎnsè de júzi pí. bèi jiàozuò \"yuèbǐng jiè de hēi'àn liàolǐ\".", "ja": "着色したミカンの皮だ。\"月餅界の闇料理\"って呼ばれてる。" },
+    {
+      "type": "explain",
+      "title": "ことばの解説：なぜ五仁月饼はネタにされるのか",
+      "intro": "五仁月饼は、5種のナッツ（核桃仁＝くるみ／杏仁／橄榄仁／瓜子仁／芝麻仁）＋氷砂糖＋ラードを餡にした、月餅の“元祖・活化石”。唐代の月餅の原型に連なり、紅楼夢では貴族の高級菓子だった由緒正しい一品。なのに今いちばん嫌われている。理由は——\n① 红绿丝（青红丝）＝着色したミカンの皮の細切り。安く作る代物で“黑暗料理（闇料理）”と呼ばれる元凶。\n② 重い食感＝ナッツ＋砂糖＋脂で粘り、甘いか塩っぱいか曖昧で高カロリー。スニッカーズのヌガーのような“古くさい重さ”で現代っ子に不評。\n③ 量産で劣化＝本来いちばん手間と材料費がかかる高級餡なのに、工場が手抜き→不味い安物が氾濫。\n④ ミーム＝2012年「五仁月饼滚出月饼界」がバズり、嫌いな相手に贈る“嫌がらせギフト”ネタにも。",
+      "rows": [
+        { "zh": "五仁月饼", "pinyin": "wǔrén yuèbǐng", "ja": "5種のナッツ餡の月餅（元祖）" },
+        { "zh": "红绿丝", "pinyin": "hóng lǜ sī", "ja": "着色した果皮の細切り（戦犯）" },
+        { "zh": "黑暗料理", "pinyin": "hēi'àn liàolǐ", "ja": "闇料理・ゲテモノ" }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "我们上海，吃鲜肉月饼。咸的。", "pinyin": "wǒmen shànghǎi, chī xiānròu yuèbǐng. xián de.", "ja": "俺たち上海は、鲜肉月饼を食う。しょっぱいやつだ。" },
+    {
+      "type": "explain",
+      "title": "ことばの解説：南咸北甜（甜咸之争）",
+      "intro": "中国には「甜咸之争〔tián xián zhī zhēng〕＝甘い派 vs しょっぱい派の論争」という、毎年ネットで盛り上がる風物詩がある。月饼・粽子は「南咸北甜」：南＝しょっぱい（鲜肉・咸蛋黄）、北＝甘い（豆沙・五仁・枣泥）。陸は上海（南）＝咸党。だから「月饼＝甘い」と言われると黙っていられない。",
+      "rows": [
+        { "zh": "南咸北甜", "pinyin": "nán xián běi tián", "ja": "南はしょっぱく、北は甘い" },
+        { "zh": "甜党", "pinyin": "tián dǎng", "ja": "甘い派" },
+        { "zh": "咸党", "pinyin": "xián dǎng", "ja": "しょっぱい派" }
+      ],
+      "note": "※豆腐脑など一部は逆（南甘・北咸）になる食べ物もある。"
+    },
+    {
+      "type": "choice",
+      "prompt": "月餅の流派、どう返す？",
+      "options": [
+        { "send": { "zh": "甜的才正宗吧？", "pinyin": "tián de cái zhèngzōng ba?", "ja": "甘いほうが本場でしょ？" }, "love": 3,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "正宗？……你先吃过鲜肉月饼再说。", "pinyin": "zhèngzōng? nǐ xiān chī guò xiānròu yuèbǐng zài shuō.", "ja": "本場？……まず鲜肉月饼を食ってから言え。" } ], "note": "あえて煽る" },
+        { "send": { "zh": "咸的月饼？没吃过…", "pinyin": "xián de yuèbǐng? méi chī guò…", "ja": "しょっぱい月餅？食べたことない…" }, "love": 2, "reply": [] },
+        { "send": { "zh": "那你是咸党咯？", "pinyin": "nà nǐ shì xián dǎng lo?", "ja": "じゃあ、あなたは\"しょっぱい派\"なんだ？" }, "love": 3, "reply": [] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "鲜肉月饼，刚出炉的，外面酥，里面全是肉汁。", "pinyin": "xiānròu yuèbǐng, gāng chūlú de, wàimiàn sū, lǐmiàn quán shì ròuzhī.", "ja": "鲜肉月饼はな、焼きたては、外がサクッ、中は肉汁たっぷりなんだ。", "note": "月餅にだけ全力＝ギャップ萌え" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "还有咸蛋黄的。咬一口，中间黄黄的——", "pinyin": "hái yǒu xián dànhuáng de. yǎo yì kǒu, zhōngjiān huánghuáng de——", "ja": "あと、塩卵黄のもある。ひと口かじると、真ん中が黄色くて――" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……像个小月亮。", "pinyin": "xiàng ge xiǎo yuèliang.", "ja": "……小さい月、みたいなんだ。", "note": "第7話「同じ月」を月餅でそっと回収" },
+    {
+      "type": "choice",
+      "prompt": "月餅で熱くなる陸に",
+      "options": [
+        { "send": { "zh": "你认真的？为了月饼。", "pinyin": "nǐ rènzhēn de? wèile yuèbǐng.", "ja": "本気で言ってる？ 月餅のために。" }, "love": 3,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……闭嘴。月饼很严肃的。", "pinyin": "bì zuǐ. yuèbǐng hěn yánsù de.", "ja": "……黙れ。月餅は真剣な話だ。", "note": "真顔。じわる" } ], "note": "からかう" },
+        { "send": { "zh": "那我想尝尝。", "pinyin": "nà wǒ xiǎng chángchang.", "ja": "じゃあ、食べてみたい。" }, "love": 5, "reply": [] },
+        { "send": { "zh": "小月亮……好可爱。", "pinyin": "xiǎo yuèliang… hǎo kě'ài.", "ja": "小さい月……かわいいね。" }, "love": 5, "reply": [], "note": "彼の比喩を拾う" }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……等你来上海，我带你吃。", "pinyin": "děng nǐ lái shànghǎi, wǒ dài nǐ chī.", "ja": "……上海に来たら、連れてって食わせてやる。", "note": "“会いたい/会う”の種" },
+    { "type": "narration", "text": "甜党か、咸党か。\n中国の人が毎年、本気でやり合う、おいしい喧嘩。\n――いつか上海で、彼の“しょっぱい月餅”を、一緒に食べる日が来るのかな。" },
+    { "type": "effect", "name": "blackout", "note": "暗転。甘い箸休め。次は国庆へ。" },
+    { "type": "end", "next": "episode8" }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "_readme": "step型仕様は prologue.json / episode3_5.json の _readme と同じ。第11話は物語の感情的支柱。テーマ『消える(消失)の反対は帰ってくる(回来)』。(1)主人公が反射で重い『对不起』→陸が『告别(別れ)か』と身構える→explain(对不起/不好意思/抱歉)で解消＆陸を安心。(2)『这早就不是练习了』＝练习而已の最終回収。(3)おかえり二段目＝explain(我回来了/你回来了)＋主人公が日本語ただいま/おかえりを教え、陸『我记下了。おかえり』(16話空港で回収)。主人公の日本語セリフは lang:'ja'。next=episode11_5。",
+  "id": "episode11",
+  "title": "第11話「不好意思，还是对不起？」（练习而已の最終回収）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_night", "note": "主人公が現実で忙しく数日来られなかった“あと”。陸の短いメッセージが既読にならず溜まっている。時間飛ばし。背景は夜景。" },
+    { "type": "narration", "text": "その週は、ばたばたしていて。\n三日、来られなかった。四日目も。\n……気づいたら、陸からのメッセージが、止まっていた。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……你这几天，去哪了。", "pinyin": "nǐ zhè jǐ tiān, qù nǎ le.", "ja": "……ここ何日か、どこ行ってた。", "note": "責めるような、不安なような。今度は陸が“消えられる側”" },
+    { "type": "narration", "text": "心配させた。早く、謝らなきゃ。" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "对不起。", "pinyin": "duìbuqǐ.", "ja": "ごめんなさい。", "note": "★反射的に、日本人がいちばん使いたがる重い詫び（固定）。本人は真摯に詫びたいだけ" },
+    { "type": "pause", "ms": 1500 },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……对不起？", "pinyin": "duìbuqǐ?", "ja": "……对不起、だって？", "note": "すでに怯えていた所に重い言葉が最悪の方向に響く" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "你要跟我说什么。", "pinyin": "nǐ yào gēn wǒ shuō shénme.", "ja": "何を、言おうとしてる。", "note": "別れ話か、と身構える" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "别用这个词。", "pinyin": "bié yòng zhège cí.", "ja": "その言葉、使うな。", "note": "鋭く聞こえるが、正体は恐怖" },
+    { "type": "narration", "text": "あれ。「ごめんね」のつもりだったのに。\n陸の空気が、固まった。\n……「对不起」って、そんなに、重い言葉だったの？" },
+    {
+      "type": "explain",
+      "title": "ことばの解説：中国語の“ごめん”は、重さで使い分ける",
+      "intro": "日本語の「すみません／ごめんなさい」は1語で広くカバーするけど、中国語は気持ちの重さで変わる。",
+      "rows": [
+        { "zh": "不好意思", "pinyin": "bù hǎoyìsi", "ja": "いちばん軽い。遅れた・忙しかった等、日常のほとんど" },
+        { "zh": "抱歉", "pinyin": "bàoqiàn", "ja": "きちんと詫びる「申し訳ない」。歉意を表すならこれ" },
+        { "zh": "对不起", "pinyin": "duìbuqǐ", "ja": "いちばん重い。罪を認める響き。軽い場面で多用すると“不真诚”に聞こえる" }
+      ],
+      "note": "日本人は真摯に詫びたくて 对不起 を選びがち。でも軽い場面は 不好意思 が自然。関係の中で急に言うと「別れ話？」と身構えさせてしまう。"
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "你只是忙吧。", "pinyin": "nǐ zhǐshì máng ba.", "ja": "ただ、忙しかっただけだろ。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "那说『不好意思』就行。『对不起』太重了。", "pinyin": "nà shuō 'bù hǎoyìsi' jiù xíng. 'duìbuqǐ' tài zhòng le.", "ja": "なら『不好意思』でいい。『对不起』は重すぎる。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……听起来，像要跟我告别。", "pinyin": "tīng qǐlái, xiàng yào gēn wǒ gàobié.", "ja": "……まるで、俺に別れを告げるみたいに、聞こえる。", "note": "恐怖を打ち明けることで、逆に距離が縮まる" },
+    {
+      "type": "choice",
+      "prompt": "言葉の重さを知って、陸を安心させる",
+      "options": [
+        { "send": { "zh": "不好意思，我只是太忙了。", "pinyin": "bù hǎoyìsi, wǒ zhǐshì tài máng le.", "ja": "ごめん、ただ忙しすぎただけ。" }, "love": 6, "reply": [], "note": "正しい言葉で言い直す" },
+        { "send": { "zh": "我不是要告别！", "pinyin": "wǒ bú shì yào gàobié!", "ja": "別れようとしてるんじゃない！" }, "love": 6, "reply": [] },
+        { "send": { "zh": "学到了。是『不好意思』。", "pinyin": "xué dào le. shì 'bù hǎoyìsi'.", "ja": "覚えた。『不好意思』だね。" }, "love": 5, "reply": [], "note": "学習者らしい返し" }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……吓我一跳。", "pinyin": "xià wǒ yí tiào.", "ja": "……びっくりさせるな。", "note": "安心がにじむ" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "我以为……你不来了。", "pinyin": "wǒ yǐwéi… nǐ bù lái le.", "ja": "もう……来ないかと思った。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "我跟自己说，这只是练习。", "pinyin": "wǒ gēn zìjǐ shuō, zhè zhǐshì liànxí.", "ja": "自分に言い聞かせてた、これはただの練習だって。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……可这早就不是练习了。", "pinyin": "kě zhè zǎojiù bú shì liànxí le.", "ja": "……でも、こんなの、とっくに練習なんかじゃない。", "note": "プロローグ「练习而已」の最終回収" },
+    {
+      "type": "choice",
+      "prompt": "壁を壊した陸に",
+      "options": [
+        { "send": { "zh": "我知道。早就不是了。", "pinyin": "wǒ zhīdào. zǎojiù bú shì le.", "ja": "知ってる。とっくに、違うよ。" }, "love": 8, "reply": [] },
+        { "send": { "zh": "那，现在是什么？", "pinyin": "nà, xiànzài shì shénme?", "ja": "じゃあ、今は、何なの？" }, "love": 6,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……现在？等我想好怎么说。", "pinyin": "xiànzài? děng wǒ xiǎng hǎo zěnme shuō.", "ja": "今……？ 言い方を、考えさせてくれ。", "note": "告白は16話へ温存" } ], "note": "告白を促す" },
+        { "send": { "zh": "以后我会回来。一定。", "pinyin": "yǐhòu wǒ huì huílái. yídìng.", "ja": "これからは、ちゃんと帰ってくる。きっと。" }, "love": 8, "reply": [], "note": "“回来”を初めて口に" }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "以后你回来，跟我说一声。", "pinyin": "yǐhòu nǐ huílái, gēn wǒ shuō yì shēng.", "ja": "これからは、帰ってきたら、一言ちょうだい。", "note": "★おかえり二段目へ。陸は“消えるな”でなく“帰ってきて”を欲しがる" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "我说『你回来了』，你说『我回来了』。", "pinyin": "wǒ shuō 'nǐ huílái le', nǐ shuō 'wǒ huílái le'.", "ja": "俺が『你回来了』、君が『我回来了』。" },
+    {
+      "type": "explain",
+      "title": "ことばの解説：「ただいま」と「おかえり」",
+      "rows": [
+        { "zh": "我回来了", "pinyin": "wǒ huílái le", "ja": "ただいま（＝私が帰ってきた）" },
+        { "zh": "你回来了", "pinyin": "nǐ huílái le", "ja": "おかえり（＝あなたが帰ってきた）" },
+        { "zh": "回来", "pinyin": "huílái", "ja": "帰る・戻る（消える=消失 の反対）" }
+      ],
+      "note": "日本語は「ただいま」「おかえり」とまったく違う言葉を言い合う。中国語はどちらも『回来了』で、頭の 我／你 が変わるだけ。二人とも“帰ってきた”同じ事実を、見る角度を変えて言っているだけ。"
+    },
+    { "type": "line", "speaker": "主人公", "lang": "ja", "ja": "日本語だと「ただいま」と「おかえり」。違う言葉なんだよ。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……不一样的词啊。那，『おかえり』是哪个？", "pinyin": "bù yíyàng de cí a. nà, 'okaeri' shì nǎ ge?", "ja": "……違う言葉なのか。じゃあ、『おかえり』は、どっち？" },
+    { "type": "line", "speaker": "主人公", "lang": "ja", "ja": "「あなたが帰ってきた」＝你回来了＝「おかえり」。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……我记下了。『おかえり』。", "pinyin": "wǒ jì xià le.", "ja": "……覚えた。『おかえり』。", "note": "ep10「おめでとう」に続く二段目。16話・空港で回収" },
+    { "type": "narration", "text": "消える、の反対は。\n――帰ってくる、なんだ。\n彼は、わたしが消えないことより、わたしが“帰ってくる”ことを、覚えようとしている。\nいつか、本当に会えた日。彼は、なんて言うんだろう。" },
+    { "type": "effect", "name": "blackout", "note": "暗転。次は平安夜（小話）→跨年へ。" },
+    { "type": "end", "next": "episode11_5" }
+  ]
+}

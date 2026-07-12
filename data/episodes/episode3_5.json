@@ -1,0 +1,50 @@
+{
+  "_readme": "step型・hint・voice・choiceのlove の仕様は prologue.json の _readme と同じ。★この回で新しいステップ型『explain』を追加（学習解説ポップアップ）。explain の構造：{ type:'explain', title:見出し, intro:導入文(改行は\\n), rows:[{zh,pinyin,ja,note?}](語彙・段階の表), note:補足・注意(任意) }。UIは『吹き出し内の解説カード』or『ポップアップ』で表示する想定。第3.5話のポイント：ネイティブの“OK評価”＝『差不多』のズレ。陸が差不多で褒める→主人公しょんぼり→OKと分かって安心。評価語のグラデーション(差不多/可以/还可以/不错、※很好は教室語)を学ぶ。next は episode4（A方針・小話インライン）。",
+  "id": "episode3_5",
+  "title": "第3.5話「差不多」（OK評価のズレ）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_night", "note": "夜の発音練習。主人公が難しい発音（四声や zh/ch/sh）を何度も声に出している。緊張感。背景は夜景。" },
+    { "type": "narration", "text": "発音、難しい。\n何度も言い直して、やっと、それっぽくなった……気がする。\n陸は、どう思ってるかな。ちゃんと、言えてる？" },
+    { "type": "narration", "text": "覚えた発音を、ボイスで送ってみる。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "嗯……差不多。", "pinyin": "ng… chàbuduō.", "ja": "ん……差不多。", "note": "ネイティブらしく、あっさりOK評価。だが字面は“足りない”風" },
+    { "type": "narration", "text": "差不多……。\n「だいたい」って、ことだよね。\n……やっぱり、まだ、ダメなのかな。\nちょっと、しょんぼり。" },
+    {
+      "type": "choice",
+      "prompt": "「差不多」に、どう反応する？",
+      "options": [
+        { "send": { "zh": "还是不行吗……", "pinyin": "háishi bùxíng ma…", "ja": "やっぱり、ダメか……" }, "love": 2, "reply": [], "note": "落ち込む" },
+        { "send": { "zh": "哪里不对？", "pinyin": "nǎlǐ bú duì?", "ja": "どこが違う？" }, "love": 3, "reply": [], "note": "直そうとする" },
+        { "send": { "zh": "差不多……是好还是不好？", "pinyin": "chàbuduō… shì hǎo háishi bù hǎo?", "ja": "差不多って……いいの、悪いの？" }, "love": 3, "reply": [], "note": "ストレートに聞く" }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "诶——别这种表情。", "pinyin": "éi—— bié zhèzhǒng biǎoqíng.", "ja": "おい――そんな顔するな。", "note": "しょんぼりに気づいて慌てる" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "\"差不多\"是夸你。意思是，可以了，能听懂。", "pinyin": "\"chàbuduō\" shì kuā nǐ. yìsi shì, kěyǐ le, néng tīngdǒng.", "ja": "\"差不多\"は褒めてるんだ。意味は、もういい、ちゃんと聞き取れる、ってこと。" },
+    {
+      "type": "explain",
+      "title": "ことばの解説：「差不多」は、実はOK",
+      "intro": "差不多〔chàbuduō〕＝「だいたい同じ・ほぼいける」。字面は“足りない”風だけど、ネイティブは「OK・通じるよ」のつもりで使う。外国人の発音への評価は、だいたいこれ。日本人は「ダメなの？」と受け取りがちだけど、褒め言葉寄り。\n〈実生活の自然なOK評価〉",
+      "rows": [
+        { "zh": "差不多", "pinyin": "chàbuduō", "ja": "ほぼいける・OK" },
+        { "zh": "可以", "pinyin": "kěyǐ", "ja": "いける・大丈夫" },
+        { "zh": "还可以", "pinyin": "hái kěyǐ", "ja": "まあまあ良い（60点くらい）" },
+        { "zh": "不错", "pinyin": "búcuò", "ja": "なかなか良い（80点くらい）", "note": "还可以より上" }
+      ],
+      "note": "〈注意〉很好〔hěn hǎo〕は“教室で先生が使う言葉”。生活で素人が「很好！」と評すると、上から目線・居丈高に響くことがある。素人同士は 差不多／可以／不错 が自然。"
+    },
+    {
+      "type": "choice",
+      "prompt": "「差不多」がOKだと分かって",
+      "options": [
+        { "send": { "zh": "原来是夸我！", "pinyin": "yuánlái shì kuā wǒ!", "ja": "なんだ、褒めてたんだ！" }, "love": 5, "reply": [] },
+        { "send": { "zh": "那再说一次，给我\"不错\"！", "pinyin": "nà zài shuō yí cì, gěi wǒ \"búcuò\"!", "ja": "じゃあもう一回言うから、\"不错\"ちょうだい！" }, "love": 5,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……行。这次\"不错\"。", "pinyin": "xíng. zhè cì \"búcuò\".", "ja": "……よし。今回は\"不错\"だ。", "note": "もう一度言い直したあと、一段上の評価をくれる" } ],
+          "note": "上の評価を狙う" },
+        { "send": { "zh": "中文好难，但好有意思。", "pinyin": "zhōngwén hǎo nán, dàn hǎo yǒu yìsi.", "ja": "中国語、難しい。でも面白い。" }, "love": 4, "reply": [] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……其实，外国人能说到\"差不多\"，已经很厉害了。", "pinyin": "qíshí, wàiguó rén néng shuō dào \"chàbuduō\", yǐjīng hěn lìhai le.", "ja": "……本当はな、外国人が\"差不多\"まで言えたら、もう十分すごいんだ。", "note": "さらっと本音の励まし。第3.5話の山" },
+    { "type": "narration", "text": "差不多。\n「だいたい、いける」。\n――足りない、じゃなくて。ちゃんと、届いてた。\n言葉の温度を一個知るたび、この人との距離も、ちょっと近くなる。" },
+    { "type": "effect", "name": "blackout", "note": "暗転。" },
+    { "type": "end", "next": "episode4" }
+  ]
+}

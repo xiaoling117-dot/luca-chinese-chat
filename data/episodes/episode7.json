@@ -1,0 +1,37 @@
+{
+  "_readme": "step型仕様は prologue.json / episode3_5.json の _readme と同じ。第7話のポイント：和解の本番（中秋・同じ月）。陸が voice(transcript:true=转文字可) で『你那边能看到月亮吗』。蘇軾の詞『但愿人长久，千里共婵娟』を陸が口語で言い直す（丸暗記させない）。第5話突き放しの“逆”＝『其实，是我怕你不来』で初めて恐怖を言語化。『消失』が二人共通の怖れに（終盤の布石）。next=episode7_5（A方針＝小話・南咸北甜を挟む）。",
+  "id": "episode7",
+  "title": "第7話「但愿人长久」（同じ月）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_night", "note": "中秋节の夜。背景は夜景に大きな満月。陸の写真で彼の側の月が届く演出があってもよい。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "中秋节快乐。", "pinyin": "zhōngqiū jié kuàilè.", "ja": "中秋節おめでとう。" },
+    { "type": "voice", "speaker": "陸", "zh": "你那边，能看到月亮吗？", "pinyin": "nǐ nàbiān, néng kàndào yuèliang ma?", "ja": "そっちから、月は見える？", "seconds": 4, "transcript": true, "note": "日本と中国、別々の窓から同じ月を見上げる構図。聞く→必要なら转文字。" },
+    {
+      "type": "choice",
+      "prompt": "月、見える？",
+      "options": [
+        { "send": { "zh": "看到了。好圆。", "pinyin": "kàndào le. hǎo yuán.", "ja": "見えるよ。まんまる。" }, "love": 3, "reply": [] },
+        { "send": { "zh": "我们看的是同一个月亮。", "pinyin": "wǒmen kàn de shì tóng yí ge yuèliang.", "ja": "私たちが見てるの、同じ月だね。" }, "love": 6, "reply": [] },
+        { "send": { "zh": "你呢？你在看吗？", "pinyin": "nǐ ne? nǐ zài kàn ma?", "ja": "あなたは？見てる？" }, "love": 3, "reply": [] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "「但愿人长久，千里共婵娟。」", "pinyin": "dàn yuàn rén chángjiǔ, qiānlǐ gòng chánjuān.", "ja": "願わくは人が長く在り、千里を隔てても同じ月を分かち合えますように。", "note": "蘇軾の詞。初心者には難しいので次行で口語に言い直す（丸暗記させない）" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……意思是，离得再远，也能看着同一个月亮。", "pinyin": "yìsi shì, lí de zài yuǎn, yě néng kànzhe tóng yí ge yuèliang.", "ja": "意味は……どんなに離れてても、同じ月を見ていられる、ってこと。", "note": "先生モードで照れを隠す" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "那天我说……你不用每天来。", "pinyin": "nà tiān wǒ shuō… nǐ búyòng měitiān lái.", "ja": "あの日、毎日来なくていいって言った。", "note": "第5話突き放しの“逆”へ" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……其实，是我怕你不来。", "pinyin": "qíshí, shì wǒ pà nǐ bù lái.", "ja": "……本当は、来なくなるのが、怖かった。", "note": "初めて“恐怖”を言葉にする。第7話の山。第5話の回収" },
+    {
+      "type": "choice",
+      "prompt": "初めて弱音を見せた陸に",
+      "options": [
+        { "send": { "zh": "我不会不来。", "pinyin": "wǒ bú huì bù lái.", "ja": "来なくなったりしない。" }, "love": 6, "reply": [] },
+        { "send": { "zh": "我也怕你消失。", "pinyin": "wǒ yě pà nǐ xiāoshī.", "ja": "私も、あなたが消えるのが怖い。" }, "love": 8, "reply": [], "note": "消失＝伏線の核に触れる" },
+        { "send": { "zh": "那你就别赶我走。", "pinyin": "nà nǐ jiù bié gǎn wǒ zǒu.", "ja": "じゃあ、もう追い払わないで。" }, "love": 6, "reply": [] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……嗯。", "pinyin": "ng.", "ja": "……ん。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "不赶了。", "pinyin": "bù gǎn le.", "ja": "もう、追い払わない。", "note": "短いけど、これが和解の完成" },
+    { "type": "narration", "text": "千里を隔てて、同じ月。\n三日前まで消えそうだった人が、いま、「追い払わない」と言った。\n月が、にじんで見えた。" },
+    { "type": "effect", "name": "blackout", "note": "暗転。和解の本番。次は南咸北甜（小話）→国庆へ。" },
+    { "type": "end", "next": "episode7_5" }
+  ]
+}

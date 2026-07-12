@@ -1,0 +1,47 @@
+{
+  "_readme": "step型仕様は prologue.json / episode3_5.json の _readme と同じ。第8.5話のポイント：通話の存在を“植える”小話。explain で電話の語彙（打电话/接电话/喂）。陸が voice で日本語『もしもし』を言い、主人公が驚く（日本語は読めない設定だが超有名語だけ音で知ってる＝プロローグの谢谢/お茶目の発展）。だが陸は通話を避け『等一个值得的时候』＝第15話の通話を予約（“遅すぎ”解消）。next=episode9。",
+  "id": "episode8_5",
+  "title": "第8.5話「喂？」（電話・通話の予約）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_night", "note": "ボイスのやりとりにも慣れた頃。ふと通話の話題に。背景は夜景。" },
+    { "type": "narration", "text": "文字も、ボイスも、もうすっかり慣れた。\n……ふと、思った。\n声、録音じゃなくて、リアルタイムで聞けたら。" },
+    {
+      "type": "choice",
+      "prompt": "通話のこと、切り出す？",
+      "options": [
+        { "send": { "zh": "我们……打电话吧？", "pinyin": "wǒmen… dǎ diànhuà ba?", "ja": "私たち……電話、しない？" }, "love": 3, "reply": [] },
+        { "send": { "zh": "你平时打电话吗？", "pinyin": "nǐ píngshí dǎ diànhuà ma?", "ja": "普段、電話する？" }, "love": 2, "reply": [] },
+        { "send": { "zh": "用中文打电话，好难。", "pinyin": "yòng zhōngwén dǎ diànhuà, hǎo nán.", "ja": "中国語で電話、難しそう。" }, "love": 2, "reply": [] }
+      ]
+    },
+    {
+      "type": "explain",
+      "title": "ことばの解説：電話の中国語",
+      "rows": [
+        { "zh": "打电话", "pinyin": "dǎ diànhuà", "ja": "電話をかける" },
+        { "zh": "接电话", "pinyin": "jiē diànhuà", "ja": "電話に出る" },
+        { "zh": "喂", "pinyin": "wéi", "ja": "もしもし" }
+      ],
+      "note": "「喂」は本来4声(wèi)だが、電話では2声(wéi)で言うのが定番。"
+    },
+    { "type": "voice", "speaker": "陸", "zh": "もしもし？", "pinyin": "moshimoshi", "ja": "（日本語で、こなれた感じで）……もしもし？", "seconds": 2, "transcript": false, "note": "★サプライズ。日本語が読めないはずの陸が、もしもしだけやけに上手。プロローグの谢谢/等一下お茶目の発展。" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "你会说\"もしもし\"？！", "pinyin": "nǐ huì shuō \"moshimoshi\"?!", "ja": "「もしもし」言えるの？！" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "这个……谁都知道。", "pinyin": "zhège… shéi dōu zhīdào.", "ja": "これくらい……誰でも知ってる。", "note": "アニメ等で有名。お茶目" },
+    { "type": "narration", "text": "日本語、読めないって言ってたのに。\n「もしもし」だけ、やけに上手。\n……ちょっと、ずるい。" },
+    {
+      "type": "choice",
+      "prompt": "じゃあ、電話してみる？",
+      "options": [
+        { "send": { "zh": "那现在打给你？", "pinyin": "nà xiànzài dǎ gěi nǐ?", "ja": "じゃあ今、かけていい？" }, "love": 2, "reply": [] },
+        { "send": { "zh": "我想听你的真声音。", "pinyin": "wǒ xiǎng tīng nǐ de zhēn shēngyīn.", "ja": "あなたの“生の声”が聞きたい。" }, "love": 3, "reply": [] },
+        { "send": { "zh": "你是不是害羞了？", "pinyin": "nǐ shì bú shì hàixiū le?", "ja": "もしかして、照れてる？" }, "love": 3, "reply": [] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……现在还不行。", "pinyin": "xiànzài hái bùxíng.", "ja": "……今は、まだダメだ。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "打电话……太紧张了。", "pinyin": "dǎ diànhuà… tài jǐnzhāng le.", "ja": "電話は……緊張しすぎる。", "note": "意外な弱さ。録音と違い“生”は逃げ場がない＝通話温存の理由" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……等一个，值得的时候。", "pinyin": "děng yí ge, zhídé de shíhou.", "ja": "……ふさわしい時を、待つ。", "note": "“その時”＝第15話（進路を決めて会いに行くと言う夜）。通話を予約" },
+    { "type": "narration", "text": "ふさわしい時。\nそれが、いつなのかは、言わなかった。\nでも――きっと、来る。\nその時、初めて、この人の“生の声”を聞くんだ。" },
+    { "type": "effect", "name": "blackout", "note": "暗転。第15話の通話への布石。" },
+    { "type": "end", "next": "episode9" }
+  ]
+}

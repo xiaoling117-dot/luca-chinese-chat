@@ -1,0 +1,40 @@
+{
+  "_readme": "step型・hint・voice・choiceのlove の仕様は prologue.json の _readme と同じ。第4話のポイント：(1)嫉妬回。主人公の報告で“他の誰か”の気配→陸が不機嫌に（谁？／随便你）。(2)『练习而已(プロローグ)』の嘘が崩れ、陸が初めて感情のひび『我不喜欢』を見せ、テーマ語『习惯了』で蓋をする。(3)安心させる主人公の固定セリフ『我只想跟你练』のあとに本音が出る。next はナビに合わせ調整可（linearなら'episode5'、ハブ復帰なら'main'）。",
+  "id": "episode4",
+  "title": "第4話「嫉妬」（练习而已、の嘘）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_night", "note": "別の夜。今日は主人公の方が少し弾んでいる。何かいいことがあった様子。背景は夜景。" },
+    { "type": "narration", "text": "今日は、ちょっと報告したいことがあった。\n中国語、すこし通じた気がした日。" },
+    {
+      "type": "choice",
+      "prompt": "陸に、なにを報告する？",
+      "options": [
+        { "send": { "zh": "今天有人夸我中文进步了！", "pinyin": "jīntiān yǒu rén kuā wǒ zhōngwén jìnbù le!", "ja": "今日、中国語上達したって褒められた！" }, "love": 3, "reply": [] },
+        { "send": { "zh": "我今天又去了那个朗读房间。", "pinyin": "wǒ jīntiān yòu qù le nàge lǎngdú fángjiān.", "ja": "今日、またあの朗読の部屋に行ったの。" }, "love": 3, "reply": [], "note": "プロローグの部屋へのコールバック" },
+        { "send": { "zh": "有个人想跟我练习中文。", "pinyin": "yǒu ge rén xiǎng gēn wǒ liànxí zhōngwén.", "ja": "中国語の練習相手になりたいって人がいて。" }, "love": 3, "reply": [] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "谁？", "pinyin": "shéi?", "ja": "誰？", "note": "一言。鋭い" },
+    { "type": "narration", "text": "その人のことを、陸に話した。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……是吗。随便你。", "pinyin": "shì ma. suíbiàn nǐ.", "ja": "……そう。好きにすれば。", "note": "明らかに不機嫌。でも認めない" },
+    { "type": "narration", "text": "あれ。\nなんだか、急に。\n……機嫌、悪い？" },
+    {
+      "type": "choice",
+      "prompt": "そっけなくなった陸に、どうする？",
+      "options": [
+        { "send": { "zh": "你怎么了？", "pinyin": "nǐ zěnme le?", "ja": "どうしたの？" }, "love": 3, "reply": [] },
+        { "send": { "zh": "你…生气了？", "pinyin": "nǐ… shēngqì le?", "ja": "怒ってる…？" }, "love": 3, "reply": [] },
+        { "send": { "zh": "我还是想跟你练习。", "pinyin": "wǒ háishi xiǎng gēn nǐ liànxí.", "ja": "やっぱり、あなたと練習したい。" }, "love": 5, "reply": [] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "我没生气。", "pinyin": "wǒ méi shēngqì.", "ja": "怒ってない。", "note": "あきらかに嘘" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "跟别人练，不行吗。", "pinyin": "gēn biérén liàn, bùxíng ma.", "ja": "他のやつと練習すりゃ、いいだろ。", "note": "とげのある言い方。でも“傷ついた”側の言葉" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "我只想跟你练。", "pinyin": "wǒ zhǐ xiǎng gēn nǐ liàn.", "ja": "あなたとだけ、練習したい。", "note": "安心させる固定セリフ。これで陸が本音を漏らす" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……我不喜欢。", "pinyin": "wǒ bù xǐhuan.", "ja": "……俺は、嫌だ。", "note": "“何が”は言わない。初めての感情のひび。第4話の最高潮" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "别误会。我只是…习惯了。", "pinyin": "bié wùhuì. wǒ zhǐshì… xíguàn le.", "ja": "勘違いするな。俺はただ…慣れただけだ。", "note": "テーマ語『习惯了』で蓋をする＝彼の傷そのもの" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……那就好。", "pinyin": "nà jiù hǎo.", "ja": "……ならいい。", "note": "安心したのを隠す" },
+    { "type": "narration", "text": "「ただ、慣れただけ」。\n彼はそう言った。\n――でも。慣れたものを失うのが怖い人の顔を、わたしは、少しだけ知っている。" },
+    { "type": "effect", "name": "blackout", "note": "暗転。" },
+    { "type": "end", "next": "episode5" }
+  ]
+}

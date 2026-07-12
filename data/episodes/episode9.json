@@ -1,0 +1,37 @@
+{
+  "_readme": "step型仕様は prologue.json / episode3_5.json の _readme と同じ。第9話のポイント：出会いから100日（記念日デレ）。選択肢①は分岐：①②言う→陸『我知道』、③黙る→陸の方から『今天，一百天了』。『数字而已』と言いつつ消さない＝照れ。『下一个一百天，照样陪你』で“未来”を初めて約束。next=episode10。",
+  "id": "episode9",
+  "title": "第9話「一百天」（100日）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_night", "note": "夜。出会いから100日。主人公がふとカレンダーに気づく。背景は夜景。" },
+    { "type": "narration", "text": "ふと気づいた。\nあの朗読ルームの夜から――今日で、ちょうど100日。\n言うほどのことじゃ、ないかな。でも。" },
+    {
+      "type": "choice",
+      "prompt": "100日のこと、陸に言ってみる？",
+      "options": [
+        { "send": { "zh": "你知道吗？今天是我们认识一百天。", "pinyin": "nǐ zhīdào ma? jīntiān shì wǒmen rènshi yìbǎi tiān.", "ja": "知ってる？今日で出会って100日だよ。" }, "love": 3,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……我知道。", "pinyin": "wǒ zhīdào.", "ja": "……知ってる。", "note": "さらっと" } ] },
+        { "send": { "zh": "我们认识，好像有一阵子了。", "pinyin": "wǒmen rènshi, hǎoxiàng yǒu yízhènzi le.", "ja": "私たち、知り合ってけっこう経つよね。" }, "love": 3,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……我知道。", "pinyin": "wǒ zhīdào.", "ja": "……知ってる。" } ] },
+        { "send": { "zh": "", "pinyin": "", "ja": "（言わずにおく）" }, "love": 2,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……今天，一百天了。", "pinyin": "jīntiān, yìbǎi tiān le.", "ja": "……今日で、100日だ。", "note": "黙っていると陸の方から" } ], "note": "何も言わない選択肢（zh空）" }
+      ]
+    },
+    { "type": "narration", "text": "覚えてないと思ってた。\n……ううん。たぶん、わたしより、ちゃんと数えてた。" },
+    {
+      "type": "choice",
+      "prompt": "「ちゃんと覚えてた」陸に",
+      "options": [
+        { "send": { "zh": "你居然记得！", "pinyin": "nǐ jūrán jìde!", "ja": "覚えてたんだ！" }, "love": 6, "reply": [] },
+        { "send": { "zh": "你嘴上不说，其实很在乎吧。", "pinyin": "nǐ zuǐshàng bù shuō, qíshí hěn zàihu ba.", "ja": "口では言わないけど、本当は気にしてるでしょ。" }, "love": 6, "reply": [] },
+        { "send": { "zh": "我也记得。", "pinyin": "wǒ yě jìde.", "ja": "私も覚えてた。" }, "love": 5, "reply": [] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……闭嘴。", "pinyin": "bì zuǐ.", "ja": "……黙れ。", "note": "照れ隠し、図星" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "数字而已。别高兴成这样。", "pinyin": "shùzì éryǐ. bié gāoxìng chéng zhèyàng.", "ja": "ただの数字だろ。そんなに喜ぶな。", "note": "でも消さない＝うれしい" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……下一个一百天，照样陪你。", "pinyin": "xià yí ge yìbǎi tiān, zhàoyàng péi nǐ.", "ja": "……次の100日も、変わらず付き合ってやる。", "note": "未来を約束＝大きな前進" },
+    { "type": "narration", "text": "「ただの数字」って言いながら。\nこの人は、次の100日の話を、してくれた。" },
+    { "type": "effect", "name": "blackout", "note": "暗転。" },
+    { "type": "end", "next": "episode10" }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "_readme": "step型仕様は prologue.json / episode3_5.json の _readme と同じ。第8話のポイント：国庆連休の甘い日常回（习惯了への橋）。★この回で line に任意フィールド『image』を使用：lineが“送られてきた写真”を伴う場合、image にアセットID（例：img_waitan_night）を入れる＝チャットの画像バブルとして表示。マップ等の機能は作らない（既存の画像表示に1枚足すだけ＝擬似デートの芽）。next=episode8_5。",
+  "id": "episode8",
+  "title": "第8話「国庆」（当たり前の完成）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_day", "note": "国庆节の大型連休。肩の力が抜けた、じゃれ合う日常回。少し甘く軽い。背景はカフェや昼でも可（夜以外の時間が増える＝関係の深化）。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "放假了。七天。", "pinyin": "fàngjià le. qī tiān.", "ja": "連休だ。七日間。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……所以你可以多睡会儿。", "pinyin": "suǒyǐ nǐ kěyǐ duō shuì huìr.", "ja": "……だから、ちょっと多めに寝ていいぞ。", "note": "世話焼きが自然に出る" },
+    {
+      "type": "choice",
+      "prompt": "七日間の連休、陸を誘ってみる？",
+      "options": [
+        { "send": { "zh": "那你陪我七天！", "pinyin": "nà nǐ péi wǒ qī tiān!", "ja": "じゃあ、七日間ずっと付き合って！" }, "love": 5,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "七天？……行吧。", "pinyin": "qī tiān? xíng ba.", "ja": "七日？……まあ、いいだろう。", "note": "即OKしてる" } ] },
+        { "send": { "zh": "你有什么计划？", "pinyin": "nǐ yǒu shénme jìhuà?", "ja": "何か予定あるの？" }, "love": 3,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "没什么计划。……陪你算吗？", "pinyin": "méi shénme jìhuà. péi nǐ suàn ma?", "ja": "特にない。……お前に付き合うのは、入る？" } ] },
+        { "send": { "zh": "一起做点什么吧。", "pinyin": "yìqǐ zuò diǎn shénme ba.", "ja": "一緒に、なにかしようよ。" }, "love": 3,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "做什么？教你中文算不算。", "pinyin": "zuò shénme? jiāo nǐ zhōngwén suàn bú suàn.", "ja": "なにを？中国語教えるのは、入るか？" } ] }
+      ]
+    },
+    { "type": "narration", "text": "連休の夜は、いつもより、ゆっくり。\n軽い練習を、何度か。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "我今天出来走走。", "pinyin": "wǒ jīntiān chūlái zǒuzou.", "ja": "今日は、ちょっと出歩いた。", "image": "img_waitan_night", "note": "★擬似デートの芽。夜の外滩（上海）の風景写真を1枚送る＝既存の画像表示に1枚足すだけ。マップ等の機能は作らない。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……你那边呢？", "pinyin": "nǐ nàbiān ne?", "ja": "……そっちは？", "note": "遠回しに“君のことも知りたい”" },
+    {
+      "type": "choice",
+      "prompt": "陸の写真に、なんて返す？",
+      "options": [
+        { "send": { "zh": "我也拍给你看。", "pinyin": "wǒ yě pāi gěi nǐ kàn.", "ja": "私も撮って見せるね。" }, "love": 5,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……嗯，发来看看。", "pinyin": "ng, fā lái kànkan.", "ja": "……ん、送ってみろ。", "note": "見たいのを隠さない" } ], "note": "相互の芽" },
+        { "send": { "zh": "看起来很漂亮。", "pinyin": "kàn qǐlái hěn piàoliang.", "ja": "きれいだね。" }, "love": 3,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……还行。", "pinyin": "hái xíng.", "ja": "……まあまあだ。", "note": "自分の街を褒められて満更でもない" } ] },
+        { "send": { "zh": "真想跟你一起去。", "pinyin": "zhēn xiǎng gēn nǐ yìqǐ qù.", "ja": "一緒に行きたいな。" }, "love": 5,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……以后吧。", "pinyin": "yǐhòu ba.", "ja": "……いつか、な。", "note": "“いつか一緒に”を否定しない＝終盤への布石" } ] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……以前一个人放假，挺好的。", "pinyin": "yǐqián yí ge rén fàngjià, tǐng hǎo de.", "ja": "前は、一人の連休が、よかった。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "现在……有点不一样了。", "pinyin": "xiànzài… yǒudiǎn bù yíyàng le.", "ja": "今は……ちょっと、違う。", "note": "“慣れてしまった”自覚。怖れではなく受け入れ始めている" },
+    { "type": "narration", "text": "毎晩がいつの間にか当たり前になって。\n一人の連休が、少しさみしくなって。\n――これ、たぶん。「习惯了」って、いうんだ。" },
+    { "type": "effect", "name": "blackout", "note": "暗転。第3幕（习惯了）への橋。" },
+    { "type": "end", "next": "episode8_5" }
+  ]
+}

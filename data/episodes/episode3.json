@@ -1,0 +1,41 @@
+{
+  "_readme": "step型・hint・voice・choiceのlove の仕様は prologue.json の _readme と同じ。第3話のポイント：(1)睡不着→失眠 の回収。陸が失眠を voice(transcript:true) でぽつりと明かす（失眠＝新出語）。(2)選択肢②は分岐：①为什么睡不着→陸はドアを閉じる『别问了』(終盤の伏線)、②③いたわり→『嗯』(受け入れ)。(3)山は『有你陪着，好一点』＝感情ではなく“事実の体”で言う本音。next は次に読み込むデータ名。linearに繋ぐなら'episode4'、ハブ復帰なら'main'に変更可。",
+  "id": "episode3",
+  "title": "第3話「秘密」（失眠）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_night", "time": "01:30", "note": "深夜、だいぶ遅い時間。今夜は陸の返事がいつもより遅い。背景は夜景。" },
+    { "type": "narration", "text": "何度目かの夜。\n気づけば、彼と話さない夜の方が、落ち着かなくなっていた。\n（これ、たぶん――もう、習慣になってる。）\nでも今夜は、いつもの返事が、なかなか来ない。" },
+    {
+      "type": "choice",
+      "prompt": "返事が遅い陸に、なんて送る？",
+      "options": [
+        { "send": { "zh": "你还好吗？", "pinyin": "nǐ hái hǎo ma?", "ja": "大丈夫？" }, "love": 3, "reply": [] },
+        { "send": { "zh": "今天很累吗？", "pinyin": "jīntiān hěn lèi ma?", "ja": "今日、疲れてる？" }, "love": 3, "reply": [] },
+        { "send": { "zh": "还没睡？", "pinyin": "hái méi shuì?", "ja": "まだ寝てないの？" }, "love": 4, "reply": [], "note": "第2話で陸が言った言葉を主人公が返す＝立場の逆転" }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "我没事。", "pinyin": "wǒ méi shì.", "ja": "なんでもない。", "note": "そっけない＝何か隠している" },
+    { "type": "narration", "text": "（そっけない。……何か、隠してる気がする。）" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "其实…我每天都在等你。", "pinyin": "qíshí… wǒ měitiān dōu zài děng nǐ.", "ja": "実は…毎日、あなたを待ってるの。", "note": "主人公が先に小さな秘密を打ち明け、陸の警戒をゆるめる（固定）" },
+    { "type": "pause", "ms": 1800 },
+    { "type": "voice", "speaker": "陸", "zh": "我失眠。……很久了。", "pinyin": "wǒ shīmián. … hěn jiǔ le.", "ja": "俺は、不眠症なんだ。……ずっと前から。", "seconds": 3, "transcript": true, "note": "失眠＝新出語。深夜の少し疲れた声でぽつりと。睡不着→失眠の回収。" },
+    { "type": "narration", "text": "――「睡不着」。\nあんなに軽く言ってたあれは、“たまに”じゃなかった。\n“ずっと”だったんだ。\n失眠（しつみん）。彼の夜は、いつも、こんなに長い。" },
+    {
+      "type": "choice",
+      "prompt": "“秘密”を聞いて、なんて返す？",
+      "options": [
+        { "send": { "zh": "为什么睡不着？", "pinyin": "wèishénme shuì bù zháo?", "ja": "どうして眠れないの？" }, "love": 3,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……别问了。没什么好说的。", "pinyin": "bié wèn le. méi shénme hǎo shuō de.", "ja": "……もう聞くな。話すことなんてない。", "note": "ドアを閉じる＝秘密の奥の秘密。終盤の伏線" } ] },
+        { "send": { "zh": "那…我陪你。", "pinyin": "nà… wǒ péi nǐ.", "ja": "じゃあ…わたしが付き合う。" }, "love": 5,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……嗯。", "pinyin": "ng.", "ja": "……ん。", "note": "断らない＝受け入れた" } ] },
+        { "send": { "zh": "难受的话，不用说。", "pinyin": "nánshòu de huà, búyòng shuō.", "ja": "つらいなら、話さなくていいよ。" }, "love": 5,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……嗯。", "pinyin": "ng.", "ja": "……ん。", "note": "断らない＝受け入れた" } ] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……反正，有你陪着，好一点。", "pinyin": "fǎnzhèng, yǒu nǐ péizhe, hǎo yìdiǎn.", "ja": "……まあ、お前がいると、少しマシだ。", "note": "第3話の山。感情ではなく“事実の体”で言う本音。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "行了，说太多了。睡吧。", "pinyin": "xíng le, shuō tài duō le. shuì ba.", "ja": "もういい、喋りすぎた。寝ろ。", "note": "言ったそばから照れて引っ込める" },
+    { "type": "narration", "text": "ドアの向こうに、まだ入れない部屋がある。\nでも今夜――ほんの少しだけ、鍵の回る音が、聞こえた気がした。" },
+    { "type": "effect", "name": "blackout", "note": "暗転。" },
+    { "type": "end", "next": "episode3_5" }
+  ]
+}

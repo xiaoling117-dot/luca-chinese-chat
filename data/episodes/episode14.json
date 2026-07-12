@@ -1,0 +1,39 @@
+{
+  "_readme": "step型仕様は prologue.json / episode3_5.json の _readme と同じ。第14話＝一期最大の山。陸が『修士で就職＝彼女の近くに留まる(羽ばたきを捨てる)』に傾く→主人公が『别呀！不行』と感情的に遮り、『让我说』と許可を求めてから、一年で身につけた中国語で“決意の長文”を一文ずつ送る＝学習の最大の回収＆愛からの突き放し(第5話『到这里吧』の反転)。長文の各文は line を連続で。陸は撤回演出(effect:hesitation)→『给我几天，我自己做个决定』で進路の主体性。next=episode15。",
+  "id": "episode14",
+  "title": "第14話「决心」（決意の長文）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_night", "note": "春节明け。陸の進路に教授の引き止め（“期待された道”）の気配。陸は彼女のそばに留まる＝修士で就職に傾きかけ。重い空気。背景は夜景。" },
+    { "type": "narration", "text": "陸の進路の話。\n聞けば聞くほど、分かってしまった。\n――この人は、わたしのために、夢を小さくしようとしている。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……我可能，硕士毕业就工作。", "pinyin": "wǒ kěnéng, shuòshì bìyè jiù gōngzuò.", "ja": "……俺、修士を出たら、就職するかもしれない。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "离你近一点。", "pinyin": "lí nǐ jìn yìdiǎn.", "ja": "君の、近くにいられるように。", "note": "彼なりの愛。でも羽ばたきを捨てる選択" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "别呀！", "pinyin": "bié ya!", "ja": "だめ！", "note": "★思わず感情的に遮る。ここで初めて“声”が出る" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "不行。你不能为了我这样。", "pinyin": "bùxíng. nǐ bùnéng wèile wǒ zhèyàng.", "ja": "だめだよ。わたしのために、そんなの。" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "……让我说。", "pinyin": "ràng wǒ shuō.", "ja": "……聞いて。", "note": "感情が溢れて一度止まり、許可を求める＝覚悟のスイッチ" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……你说。", "pinyin": "nǐ shuō.", "ja": "……言ってみろ。", "note": "受け止める姿勢" },
+    { "type": "narration", "text": "一年前は、一言も出せなかった。\n……今なら、言える。これだけは、ちゃんと、中国語で。" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "陆，听我说。", "pinyin": "lù, tīng wǒ shuō.", "ja": "陸、聞いて。", "note": "★決意の長文。一文ずつ送る演出（学習の最大の回収）" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "我知道，你想离我近一点。", "pinyin": "wǒ zhīdào, nǐ xiǎng lí wǒ jìn yìdiǎn.", "ja": "あなたが、わたしの近くにいたいって思ってるの、知ってる。" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "但是，如果你为了我，放弃了你该走的路——", "pinyin": "dànshì, rúguǒ nǐ wèile wǒ, fàngqì le nǐ gāi zǒu de lù——", "ja": "でも、もしあなたがわたしのために、進むべき道を諦めたら――" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "那我们，就到这里吧。", "pinyin": "nà wǒmen, jiù dào zhèlǐ ba.", "ja": "わたしたちは、ここまでにしよう。", "note": "愛からの突き放し＝第5話「到这里吧」の回収・反転" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "我不要一个，为我变小的你。", "pinyin": "wǒ bú yào yí ge, wèi wǒ biàn xiǎo de nǐ.", "ja": "わたしのために、小さくなったあなたは、いらない。" },
+    { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "你飞得越远，我越骄傲。", "pinyin": "nǐ fēi de yuè yuǎn, wǒ yuè jiāo'ào.", "ja": "あなたが遠くへ飛ぶほど、わたしは誇らしい。" },
+    { "type": "effect", "name": "hesitation", "note": "送信後、長い沈黙。既読。陸側で「入力中…」が出ては消える（第5話と同じ演出＝今度は陸が言葉を探している）。" },
+    { "type": "narration", "text": "言ってしまった。\n一年前のわたしには、絶対に書けなかった言葉。\n返事は、なかなか、来なかった。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……你这是，在赶我走？", "pinyin": "nǐ zhè shì, zài gǎn wǒ zǒu?", "ja": "……これは、俺を追い払ってるのか？", "note": "第7話「别赶我走」の反転" },
+    {
+      "type": "choice",
+      "prompt": "陸の問いに、どう答える？",
+      "options": [
+        { "send": { "zh": "不是赶你走。是要你飞。", "pinyin": "bú shì gǎn nǐ zǒu. shì yào nǐ fēi.", "ja": "追い払うんじゃない。飛んでほしいの。" }, "love": 8, "reply": [] },
+        { "send": { "zh": "因为我喜欢的，是那个会发光的你。", "pinyin": "yīnwèi wǒ xǐhuan de, shì nàge huì fāguāng de nǐ.", "ja": "わたしが好きなのは、輝いてるあなただから。" }, "love": 8, "reply": [] },
+        { "send": { "zh": "这是我第一次，用中文跟你说这么重要的话。", "pinyin": "zhè shì wǒ dì yī cì, yòng zhōngwén gēn nǐ shuō zhème zhòngyào de huà.", "ja": "中国語で、こんな大事なこと言うの、初めて。" }, "love": 6, "reply": [], "note": "学習の回収を自分で言う" }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……我知道了。", "pinyin": "wǒ zhīdào le.", "ja": "……わかった。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "给我几天。我自己，做个决定。", "pinyin": "gěi wǒ jǐ tiān. wǒ zìjǐ, zuò ge juédìng.", "ja": "何日か、くれ。俺は俺で、決める。", "note": "自分の意志で進路を選ぶ＝傷の克服の入口" },
+    { "type": "narration", "text": "一年前、声も出せなかったわたしが。\n今、いちばん大事なことを、中国語で伝えた。\n――あとは、彼が、彼の足で。" },
+    { "type": "effect", "name": "blackout", "note": "暗転。次は渡航前夜・初の通話（第15話）。" },
+    { "type": "end", "next": "episode15" }
+  ]
+}

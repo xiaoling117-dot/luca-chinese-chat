@@ -1,0 +1,56 @@
+{
+  "_readme": "step型仕様は prologue.json / episode3_5.json の _readme と同じ。第11.5話のポイント：平安夜（クリスマスイブ）の甘い箸休め。explain×2（平安夜＝Silent Night訳／平安果＝苹píngと平安の語呂）。陸が平安果(リンゴ)を画像で贈る（lineにimage）。選択肢②③で失眠の核にそっと触れ、『今年好像，能睡着了』で静かに効く（君がいるからとは言わない）。next=episode12。",
+  "id": "episode11_5",
+  "title": "第11.5話「平安夜」（クリスマスイブ）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_night", "note": "12月24日の夜。街はクリスマスの飾り。少し浮かれた軽い空気。背景は夜景＋イルミネーション。" },
+    { "type": "narration", "text": "12月24日。\n中国でも、街はクリスマスの飾りでいっぱい。\n……陸は、こういうの、興味なさそうだけど。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "平安夜快乐。", "pinyin": "píng'ān yè kuàilè.", "ja": "メリークリスマス・イブ。", "note": "意外と、向こうから" },
+    { "type": "narration", "text": "平安夜？ クリスマスイブのこと、かな。\n（“平安”って、なんだろう。）" },
+    {
+      "type": "explain",
+      "title": "ことばの解説：平安夜＝クリスマスイブ",
+      "rows": [
+        { "zh": "平安夜", "pinyin": "píng'ān yè", "ja": "クリスマスイブ" },
+        { "zh": "圣诞节", "pinyin": "shèngdàn jié", "ja": "クリスマス（当日）" }
+      ],
+      "note": "賛美歌「Silent Night（きよしこの夜）」の中国語訳が「平安夜（＝穏やかな夜）」だから。中国のクリスマスは宗教行事というより、若者・カップルの“イベント”。"
+    },
+    {
+      "type": "choice",
+      "prompt": "平安夜、陸になんて返す？",
+      "options": [
+        { "send": { "zh": "平安夜快乐！你也过节啊？", "pinyin": "píng'ān yè kuàilè! nǐ yě guòjié a?", "ja": "イブおめでとう！あなたも祝うんだ？" }, "love": 3, "reply": [] },
+        { "send": { "zh": "“平安”是什么意思？", "pinyin": "\"píng'ān\" shì shénme yìsi?", "ja": "“平安”って、どういう意味？" }, "love": 2,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "平安……就是平平安安，没事，健康。", "pinyin": "píng'ān… jiùshì píngpíng'ān'ān, méishì, jiànkāng.", "ja": "平安は……無事で、健やかで、ってこと。", "note": "先生モード" } ], "note": "学習者らしい" },
+        { "send": { "zh": "我还以为你不喜欢这种节日。", "pinyin": "wǒ hái yǐwéi nǐ bù xǐhuan zhèzhǒng jiérì.", "ja": "こういうイベント、嫌いだと思ってた。" }, "love": 3, "reply": [] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "今天有个习俗——平安夜送苹果。", "pinyin": "jīntiān yǒu ge xísú—— píng'ān yè sòng píngguǒ.", "ja": "今日は習慣があってな――イブにリンゴを贈る。" },
+    {
+      "type": "explain",
+      "title": "ことばの解説：平安夜に「平安果」",
+      "intro": "苹果〔píngguǒ＝リンゴ〕の「苹 píng」が、「平安 píng'ān（無事・やすらか）」と同じ音。だから平安夜には、きれいに包んだリンゴ＝平安果〔píng'ān guǒ〕を贈り合う。「無事に・健やかに」という願いの語呂合わせ。2000年代以降の、若者・カップルの習慣。",
+      "rows": [
+        { "zh": "习俗", "pinyin": "xísú", "ja": "風習・習慣" },
+        { "zh": "苹果", "pinyin": "píngguǒ", "ja": "リンゴ" },
+        { "zh": "平安果", "pinyin": "píng'ān guǒ", "ja": "（イブに贈る）平安のリンゴ" }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……喏，给你。", "pinyin": "nuò, gěi nǐ.", "ja": "……ほら、お前に。", "image": "img_pingan_apple", "note": "きれいに包装された赤いリンゴ（平安果）を画像で贈る。照れて素っ気なく" },
+    {
+      "type": "choice",
+      "prompt": "平安果をもらって",
+      "options": [
+        { "send": { "zh": "谢谢！我也送你一个。", "pinyin": "xièxie! wǒ yě sòng nǐ yí ge.", "ja": "ありがとう！私もひとつ贈る。" }, "love": 6, "reply": [], "note": "画像を返す" },
+        { "send": { "zh": "你是想我平平安安吗？", "pinyin": "nǐ shì xiǎng wǒ píngpíng'ān'ān ma?", "ja": "私に、無事でいてほしいってこと？" }, "love": 6, "reply": [] },
+        { "send": { "zh": "那……你呢？你平安吗？", "pinyin": "nà… nǐ ne? nǐ píng'ān ma?", "ja": "じゃあ……あなたは？ あなたは、やすらか？" }, "love": 8,
+          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……我？我晚上一直不太『平安』。", "pinyin": "wǒ? wǒ wǎnshang yìzhí bú tài 'píng'ān'.", "ja": "……俺？ 俺の夜は、ずっとあんまり“平安”じゃない。", "note": "失眠＝やすらげない夜、を語呂で言う" } ], "note": "失眠を突く" }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "不过……今年好像，能睡着了。", "pinyin": "búguò… jīnnián hǎoxiàng, néng shuìzháo le.", "ja": "でも……今年は、なんだか、眠れそうだ。", "note": "「君がいるから」とは言わない。でも、そういうこと。失眠の静かな回収" },
+    { "type": "narration", "text": "平安夜。やすらかな、夜。\n夜がいちばん苦手なこの人が、「今年は眠れそう」って、言った。\n――わたしのリンゴ、ちゃんと届いたかな。" },
+    { "type": "effect", "name": "blackout", "note": "暗転 → 一週間後、西暦の年越し（第12話）へ。" },
+    { "type": "end", "next": "episode12" }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "_readme": "step型仕様は prologue.json / episode3_5.json の _readme と同じ。第10話のポイント：陸の誕生日（辰年・秋）。『没什么压力的生日，还是第一次』で龙の子の重圧にそっと触れる。★おかえり仕込み一段目：主人公が日本語『おめでとう』を教え、陸が『我记下了』＝覚えた日本語を集め始める（11話おかえり→16話空港で回収）。主人公の日本語セリフは lang:'ja'。next=episode11。",
+  "id": "episode10",
+  "title": "第10話「生日」（誕生日・おめでとうを教える）",
+  "steps": [
+    { "type": "scene", "location": "dm", "bg": "chat_night", "note": "秋の夜。今日は陸の誕生日（辰年・秋生まれ）。でも陸は自分から言わない。主人公が会話の流れで気づく。背景は夜景。" },
+    { "type": "narration", "text": "偶然、知ってしまった。\n今日が、陸の誕生日だってこと。\n本人は、一言も言わないけど。" },
+    {
+      "type": "choice",
+      "prompt": "誕生日、お祝いする？",
+      "options": [
+        { "send": { "zh": "生日快乐！", "pinyin": "shēngrì kuàilè!", "ja": "お誕生日おめでとう！" }, "love": 4, "reply": [] },
+        { "send": { "zh": "你今天生日，为什么不告诉我？", "pinyin": "nǐ jīntiān shēngrì, wèishénme bù gàosu wǒ?", "ja": "今日誕生日なのに、なんで言わないの？" }, "love": 3, "reply": [] },
+        { "send": { "zh": "我想给你过生日。", "pinyin": "wǒ xiǎng gěi nǐ guò shēngrì.", "ja": "あなたの誕生日、お祝いさせて。" }, "love": 5, "reply": [] }
+      ]
+    },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……谁告诉你的。", "pinyin": "shéi gàosu nǐ de.", "ja": "……誰に聞いた。", "note": "照れ＆少し動揺" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "从小，生日就是……被期待的一天。", "pinyin": "cóngxiǎo, shēngrì jiùshì… bèi qīdài de yì tiān.", "ja": "小さい頃から、誕生日って……期待される日だった。", "note": "望子成龙の影。深掘りしない" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "像今天这样，没什么压力的……还是第一次。", "pinyin": "xiàng jīntiān zhèyàng, méi shénme yālì de… háishi dì yī cì.", "ja": "今日みたいに、プレッシャーのないのは……初めてだ。" },
+    { "type": "line", "speaker": "主人公", "lang": "ja", "ja": "日本語で「おめでとう」、教えてあげる。", "note": "★おかえり仕込み一段目。陸は日本語が読めない＝だからこそ特別。受け取る側になる初めての瞬間。" },
+    { "type": "narration", "text": "「おめでとう」って打って、送る。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……日语啊。", "pinyin": "rìyǔ a.", "ja": "……日本語か。" },
+    { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……我记下了。", "pinyin": "wǒ jì xià le.", "ja": "……覚えた。", "note": "“覚えた日本語”を集め始める。11話へ続く伏線。この『おめでとう』自体は一期では使われず、二期持ち越し" },
+    { "type": "narration", "text": "日本語が読めないこの人が、ひとつだけ、覚えてくれた。\n――いつか、この人の口から、日本語を聞く日が、来るのかな。" },
+    { "type": "effect", "name": "blackout", "note": "暗転。" },
+    { "type": "end", "next": "episode11" }
+  ]
+}
