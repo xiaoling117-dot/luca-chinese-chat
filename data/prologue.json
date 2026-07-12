@@ -84,7 +84,7 @@
     { "type": "line", "speaker": "陸", "lang": "zh", "zh": "慢慢来。习惯了，就不难了。", "pinyin": "màn man lái. xíguàn le, jiù bù nán le.", "ja": "ゆっくりでいい。慣れれば、難しくない。" },
     { "type": "narration", "text": "こうして、毎晩の“練習”が始まった。\n――まだ、ただの練習だったころの話。" },
     { "type": "effect", "name": "blackout", "note": "暗転。" },
-    { "type": "effect", "name": "datestamp", "note": "本編開始の日付スタンプ。" },
+    { "type": "effect", "name": "datestamp", "note": "7月7日" },
     { "type": "end", "next": "episode1" }
   ]
 }

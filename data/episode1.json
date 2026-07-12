@@ -25,7 +25,10 @@
         { "send": { "zh": "还好。", "pinyin": "hái hǎo.", "ja": "まあまあ。" }, "love": 3,
           "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "嗯。", "pinyin": "ng.", "ja": "ん。" } ] },
         { "send": { "zh": "有点累。", "pinyin": "yǒudiǎn lèi.", "ja": "ちょっと疲れた。" }, "love": 5,
-          "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "那今天少练点。", "pinyin": "nà jīntiān shǎo liàn diǎn.", "ja": "じゃあ今日は少なめにしとけ。" } ] },
+          "reply": [
+            { "type": "line", "speaker": "陸", "lang": "zh", "zh": "那今天少练点。", "pinyin": "nà jīntiān shǎo liàn diǎn.", "ja": "じゃあ今日は少なめにしとけ。" },
+            { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……今天辛苦了。", "pinyin": "jīntiān xīnkǔ le.", "ja": "……今日は、お疲れさま。", "note": "ぶっきらぼうに、でも最初にくれた労いの言葉。第16話の告白『一起辛苦吗』の回収元。" }
+          ] },
         { "send": { "zh": "很开心！", "pinyin": "hěn kāixīn!", "ja": "すごく楽しかった！" }, "love": 5,
           "reply": [ { "type": "line", "speaker": "陸", "lang": "zh", "zh": "……是吗。", "pinyin": "shì ma.", "ja": "……そう。", "note": "口角がわずかに上がる演出" } ] }
       ]
