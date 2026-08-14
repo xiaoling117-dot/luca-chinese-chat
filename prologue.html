@@ -39,6 +39,7 @@ header{z-index:4;display:flex;align-items:center;gap:11px;padding:14px;
 .row{display:flex;align-items:flex-end;gap:8px}.row.me{flex-direction:row-reverse}
 .mini{width:29px;height:29px;flex:none;border-radius:50%;background:url("assets/images/luca-face-default.png") center 15%/cover;
   border:1px solid rgba(188,170,255,.35)}
+.mini.generic{background:var(--indigo)}
 .wrap{max-width:76%;min-width:0}.row.me .wrap{text-align:right}
 .speaker{margin:0 4px 4px;color:var(--gold);font-size:10px}
 .bubble{display:inline-block;max-width:100%;padding:10px 13px;border-radius:16px;text-align:left;
@@ -135,7 +136,7 @@ function makeBubble(step){
 function addLine(step){
   const row=document.createElement('div');
   const isUser=step.speaker==='主人公';row.className='row '+(isUser?'me':'luca');
-  if(!isUser){const mini=document.createElement('div');mini.className='mini';row.appendChild(mini)}
+  if(!isUser){const mini=document.createElement('div');mini.className='mini'+(step.speaker==='陸'?'':' generic');row.appendChild(mini)}
   const wrap=document.createElement('div');wrap.className='wrap';
   if(step.speaker&&step.speaker!=='主人公'&&step.speaker!=='陸'){
     const speaker=document.createElement('div');speaker.className='speaker';speaker.textContent=step.speaker;wrap.appendChild(speaker);
@@ -158,7 +159,7 @@ function showTyping(ms=650){
 }
 function addVoice(step){
   const row=document.createElement('div');row.className='row luca';
-  const mini=document.createElement('div');mini.className='mini';
+  const mini=document.createElement('div');mini.className='mini'+(step.speaker==='陸'?'':' generic');
   const wrap=document.createElement('div');wrap.className='wrap';
   const bubble=document.createElement('div');bubble.className='bubble voice';
   const main=document.createElement('div');main.className='voice-main';
@@ -206,13 +207,13 @@ function choose(step){
 }
 function createInitialData(){
   let data=null;
-  try{data=JSON.parse(localStorage.getItem('luca_data')||'null')}catch(error){}
+  try{data=JSON.parse(localStorage.getItem('luca_data_v2')||'null')}catch(error){}
   if(data)return data;
   const uuid=crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{
     const r=Math.random()*16|0;return(c==='x'?r:(r&3|8)).toString(16);
   });
   return{userId:uuid,createdAt:new Date().toISOString(),settings:{lang:'ja',autoPlay:false,hintsSeen:[...hintsSeen]},
-    progress:{currentEpId:'prologue',currentIdx:0,completedEps:['prologue'],unlockedContent:[]},
+    progress:{currentEpId:'episode1_5',currentIdx:0,completedEps:['prologue'],unlockedContent:[]},
     affection:{love:love,level:Math.min(6,Math.floor(Math.min(love,100)/17)+1)},
     awards:[],choices:[],words:[],giftLog:[],voiceLogs:[]};
 }
@@ -230,8 +231,9 @@ async function play(){
       else if(step.type==='effect')await handleEffect(step);
       else if(step.type==='choice')await choose(step);
       else if(step.type==='end'){
-        localStorage.setItem('luca_data',JSON.stringify(createInitialData()));
-        location.href='chat.html';return;
+        localStorage.setItem('luca_data_v2',JSON.stringify(createInitialData()));
+        localStorage.setItem('luca_active_room','luca_v2');
+        location.href='chat.html?room=luca_v2&start=1';return;
       }
     }
   }catch(error){

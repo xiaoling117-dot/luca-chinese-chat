@@ -24,7 +24,7 @@
       ],
       "note": "「喂」は本来4声(wèi)だが、電話では2声(wéi)で言うのが定番。"
     },
-    { "type": "voice", "speaker": "陸", "zh": "もしもし？", "pinyin": "moshimoshi", "ja": "（日本語で、こなれた感じで）……もしもし？", "seconds": 2, "transcript": false, "note": "★サプライズ。日本語が読めないはずの陸が、もしもしだけやけに上手。プロローグの谢谢/等一下お茶目の発展。" },
+    { "type": "voice", "speaker": "陸", "zh": "もしもし？", "pinyin": "moshimoshi", "ja": "（日本語で、こなれた感じで）……もしもし？", "sec": 2, "transcript": false, "note": "★サプライズ。日本語が読めないはずの陸が、もしもしだけやけに上手。プロローグの谢谢/等一下お茶目の発展。" },
     { "type": "line", "speaker": "主人公", "lang": "zh", "zh": "你会说\"もしもし\"？！", "pinyin": "nǐ huì shuō \"moshimoshi\"?!", "ja": "「もしもし」言えるの？！" },
     { "type": "line", "speaker": "陸", "lang": "zh", "zh": "这个……谁都知道。", "pinyin": "zhège… shéi dōu zhīdào.", "ja": "これくらい……誰でも知ってる。", "note": "アニメ等で有名。お茶目" },
     { "type": "narration", "text": "日本語、読めないって言ってたのに。\n「もしもし」だけ、やけに上手。\n……ちょっと、ずるい。" },

@@ -130,6 +130,20 @@
 
 ---
 
+## 2026-08-14（Codex）
+
+### 実施内容
+- `rooms.json` に完全版ルーム `luca_v2` を追加し、`data/episodes/manifest.json` の全エピソードを順序どおり紐づけた。
+- `chat.html` で v1 の `luca_data` と完全版の `luca_data_v2` を分離し、ルーム選択時にアクティブルームを切り替えるようにした。
+- JSON エピソードの `end.next` を使う軽量の次話遷移 UI を追加し、v1 既存の `ending()` は変更対象から分離した。
+- 完全版プロローグ完了後に `episode1_5` から `luca_v2` を開始する導線を追加した。
+- JSON エピソードの `bg` 背景差し替えと `image` 添付表示に対応した。
+- 追加収録済みの日本語音声 2 本を MP3 化し、`lu_audio_manifest.json` に登録した。
+
+### 確認
+- manifest 上の JSON エピソード `next` 鎖が `episode1_5` から `ending` まで途切れないことをスクリプトで確認した。
+- `chat.html` / `prologue.html` の `<script>` 抽出に対して `node --check` を実行し、構文エラーがないことを確認した。
+
 ## 2026-06-17（Claude Code）
 
 ### 実施内容
@@ -151,3 +165,25 @@
 ### なぜ今回できたか
 - Codex Web はバイナリファイルを GitHub API 経由でプッシュできない制約がある。
 - Claude Code はローカルクローン上でバイナリファイルを直接書き出して `git push` できるため、同じ作業を問題なく完了できた。
+
+---
+
+## 2026-08-14（Claude Code・追加分）
+
+上記Codexの完全版ルーム実装を、閣主とブラウザで実プレイ確認しながらその場で3点追い修正した。
+
+### 実施内容
+1. **`prologue.html`のアバター誤表示を修正。** `.mini`（吹き出し横の丸アイコン）が話者に関係なく常に陸の顔画像を背景にしていたため、プロローグ限定NPC「CV蓝郎」の発言にも陸の顔が表示されていた。`step.speaker==='陸'`の時だけ陸の顔を出し、それ以外は`.mini.generic`（無地の丸）にするよう分岐を追加。
+2. **完全版ルームの入口を`prologue.html`から`liveroom.html`に差し替え。** 調査の結果、`liveroom.html`と`prologue.html`（`data/prologue.json`）は同一の朗読ルーム場面を独立に二重実装したものと判明（`liveroom.html`が6/21・実際にv1の初回導線として稼働中、`prologue.html`は6/19・一度もリンクされていない孤立ファイル）。実績のある`liveroom.html`側を両ルーム共通の入口として採用し、`?room=luca_v2`クエリの有無で保存先（`luca_data`/`luca_data_v2`）と終了後の遷移先を分岐する`targetRoomId()`を追加した。`prologue.html`は当面残すが今後未使用。
+3. **`index.html`のルーティングを「常にトークルーム一覧へ」に統一。** 従来は`hasSave`の有無で初回のみ`liveroom.html`（プロローグ）へ強制されていたが、これだとHSKK部屋（v1.5）だけが目的の人まで毎回プロローグに巻き込まれる。ルーム一覧を必ず最初に表示し、各ストーリールーム（v1・完全版）のカード側でセーブの有無を見て個別にプロローグへ誘導する形に変更（`chat.html`の`if(room.id==='luca_v2'&&!roomHasSave(...))`を`if(!roomHasSave(room.id))`に一般化し、v1側にも同じ導線を適用）。物語の導入順はアプリ側で強制せず、トレーラー等の外部コンテンツ側で担保する方針。
+
+### 確認
+- `index.html` / `chat.html` / `liveroom.html` / `prologue.html`の`<script>`抽出に対して`node --check`を実行、構文エラーなし。
+- ローカルサーバー（`python -m http.server`）上でブラウザから実際に確認：トークルーム一覧に3枚のカードが表示され、「陸（完全版）」のエピソード数表示が1/23になっていることを確認。
+- v1の`episodes`配列・保存キー・`ending()`には変更なし（`git diff`で確認済み）。
+
+### 残課題
+- `prologue.html`は重複実装として残置。削除するかどうかは未決定。
+
+### 追加修正（同日）
+- v1側の`liveroom.html`終了処理が`chat.html`（`?start=1`なし）に飛んでいたため、プロローグ完了後に本編へ直接入らずトークルーム一覧に一度戻ってしまう不整合を発見。v2側と同じ`?room=<roomId>&start=1`に統一し、両ルームとも初回プレイでプロローグ→本編へシームレスに接続するよう修正した。実機（ブラウザ）で両ルームの初回導線を通しで確認済み。

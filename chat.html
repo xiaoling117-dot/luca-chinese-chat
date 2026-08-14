@@ -57,6 +57,15 @@
   .narration-card{align-self:center;max-width:88%;margin:8px auto 14px;padding:12px 14px;
     border:1px solid rgba(185,167,255,.18);border-radius:14px;background:rgba(26,21,48,.72);
     color:var(--sub);font-size:13px;line-height:1.75;white-space:pre-wrap;}
+  .explain-card{align-self:center;max-width:88%;margin:8px auto 14px;padding:12px 14px;
+    border:1px solid rgba(185,167,255,.22);border-radius:14px;background:rgba(109,92,196,.14);
+    color:var(--text);font-size:13px;line-height:1.75;}
+  .explain-card h3{margin:0 0 8px;font-size:14px;color:var(--accent);}
+  .explain-card p{margin:8px 0 0;color:var(--sub);white-space:pre-wrap;}
+  .json-image{max-width:74%;border-radius:14px;overflow:hidden;align-self:flex-start;
+    border:1px solid rgba(185,167,255,.18);background:rgba(26,21,48,.72);}
+  .json-image.me{align-self:flex-end;}
+  .json-image img{display:block;width:100%;height:auto;max-height:230px;object-fit:cover;}
 
   .row{display:flex; gap:8px; align-items:flex-end; max-width:100%;}
   .row.me{flex-direction:row-reverse;}
@@ -603,6 +612,10 @@
 </div>
 
 <script>
+if(new URLSearchParams(location.search).get('start')==='1'){
+  var __roomScreenEl=document.getElementById('roomScreen');
+  if(__roomScreenEl) __roomScreenEl.classList.remove('show');
+}
 var luAudioManifest = {};
 var luCurrentAudio = null;
 var luCurrentBtn = null;
@@ -852,12 +865,19 @@ const DAYS = [
 const chat = document.getElementById('chat');
 const choicesEl = document.getElementById('choices');
 const EPISODE_IDS = ['episode1','episode2','episode3','episode4','episode5'];
+const ROOM_SAVE_KEYS = {luca:'luca_data', luca_v2:'luca_data_v2'};
+const ROOM_BG = {
+  chat_day:'assets/images/chat_day.jpg',
+  chat_night:'assets/images/bg.jpg',
+  airport_day:'assets/images/airport_day.jpg'
+};
 var EPISODE_MANIFEST={episodes:[]};
 var currentEpisode=null;
 var ROOMS=[];
 var GIFTS=[];
 var CALL=[];
 var appData=null;
+var activeRoomId='luca';
 let dayIdx = 0;
 let idx = 0;
 let love = 0;
@@ -902,6 +922,23 @@ function normalizeEpisodeId(epId){
   var known=EPISODE_IDS.indexOf(id)>=0||(EPISODE_MANIFEST.episodes||[]).some(function(ep){ return ep&&ep.id===id; });
   return known?id:'episode1';
 }
+function getRoomSaveKey(roomId){
+  return ROOM_SAVE_KEYS[roomId]||'luca_data';
+}
+function readRoomData(roomId){
+  try{ return normalizeData(JSON.parse(localStorage.getItem(getRoomSaveKey(roomId))||'null')); }
+  catch(e){ return normalizeData(null); }
+}
+function roomHasSave(roomId){
+  return !!localStorage.getItem(getRoomSaveKey(roomId));
+}
+function setActiveRoom(roomId){
+  activeRoomId=roomId||'luca';
+  try{ localStorage.setItem('luca_active_room',activeRoomId); }catch(e){}
+}
+function getActiveRoom(){
+  return ROOMS.find(function(room){ return room&&room.id===activeRoomId; })||null;
+}
 function migrateLegacyGiftLogs(d){
   for(var i=0;i<localStorage.length;i++){
     var key=localStorage.key(i);
@@ -921,7 +958,6 @@ function migrateLegacyGiftLogs(d){
 }
 function save(){ try{
   if(!appData) appData=defaultData();
-  appData.progress.currentEpId=EPISODE_IDS[dayIdx]||('day'+(dayIdx+1));
   appData.progress.currentIdx=idx;
   appData.affection.love=love;
   appData.affection.level=levelFromLove(love);
@@ -929,13 +965,14 @@ function save(){ try{
     var existing=appData.awards.find(function(a){ return a.key===key; });
     return existing||{key:key,awardedAt:new Date().toISOString(),source:'event',delta:0};
   });
-  localStorage.setItem('luca_data',JSON.stringify(appData));
+  localStorage.setItem(getRoomSaveKey(activeRoomId),JSON.stringify(appData));
 }catch(e){} }
-function load(){ try{
-  var stored=JSON.parse(localStorage.getItem('luca_data')||'null');
+function load(roomId){ try{
+  setActiveRoom(roomId||activeRoomId||'luca');
+  var stored=JSON.parse(localStorage.getItem(getRoomSaveKey(activeRoomId))||'null');
   var legacy=JSON.parse(localStorage.getItem('luca_save')||'null');
   appData=normalizeData(stored);
-  if(legacy&&!stored){
+  if(activeRoomId==='luca'&&legacy&&!stored){
     appData.affection.love=Number(legacy.love)||0;
     appData.affection.level=levelFromLove(appData.affection.love);
     var legacyDay=Math.min(Number(legacy.dayIdx)||0,DAYS.length-1);
@@ -945,7 +982,7 @@ function load(){ try{
       return {key:String(key),awardedAt:new Date().toISOString(),source:'legacy',delta:0};
     });
   }
-  migrateLegacyGiftLogs(appData);
+  if(activeRoomId==='luca') migrateLegacyGiftLogs(appData);
   appData.progress.currentEpId=normalizeEpisodeId(appData.progress.currentEpId);
   love=Number(appData.affection.love)||0;
   var epIndex=EPISODE_IDS.indexOf(appData.progress.currentEpId);
@@ -953,7 +990,7 @@ function load(){ try{
   idx=Math.min(Number(appData.progress.currentIdx)||0,curStory().length);
   awarded=new Set(appData.awards.map(function(a){ return typeof a==='string'?a:a.key; }).filter(Boolean));
   save();
-  localStorage.removeItem('luca_save');
+  if(activeRoomId==='luca') localStorage.removeItem('luca_save');
 }catch(e){ appData=defaultData(); save(); } }
 
 const sleep = ms => new Promise(r=>setTimeout(r, ms));
@@ -983,7 +1020,8 @@ function toBubbleStep(step){
     ja:step.ja||'',
     time:step.time,
     sec:step.sec||step.seconds,
-    transcript:step.transcript
+    transcript:step.transcript,
+    image:step.image
   };
 }
 
@@ -1195,7 +1233,7 @@ function startPronunciation(targetZh,button,resultEl,diffEl){
     setPracticeState(button,'judging','判定中…',resultEl);
     var recognized=event.results[0][0].transcript||'';
     var score=similarityScore(targetZh,recognized);
-    var log={ts:new Date().toISOString(),epId:EPISODE_IDS[dayIdx]||('day'+(dayIdx+1)),
+    var log={ts:new Date().toISOString(),epId:currentEpId(),
       stepIdx:idx,zh:targetZh,recognized:recognized,score:score};
     appData.voiceLogs.push(log);
     save();
@@ -1371,18 +1409,75 @@ function addNarration(text){
   chat.appendChild(c);
   scrollDown();
 }
+function addExplain(node){
+  var card=document.createElement('div');
+  card.className='explain-card';
+  var title=document.createElement('h3');
+  title.textContent=node.title||'Tips';
+  card.appendChild(title);
+  (node.rows||[]).forEach(function(row){
+    var div=document.createElement('div');
+    div.innerHTML='<b>'+escapeHtml(row.zh||'')+'</b> <span style="color:var(--accent)">'+escapeHtml(row.pinyin||'')+'</span> <span style="color:var(--sub)">'+escapeHtml(row.ja||'')+'</span>';
+    card.appendChild(div);
+  });
+  if(node.note){
+    var note=document.createElement('p');
+    note.textContent=node.note;
+    card.appendChild(note);
+  }
+  chat.appendChild(card);
+  scrollDown();
+}
+async function applyJsonEffect(node){
+  if(node.name==='hesitation'){
+    await showTyping(450);
+    await sleep(180);
+    await showTyping(650);
+  }else if(node.name==='datestamp'){
+    addFcChip(node.text||'—');
+  }else if(node.name==='blackout'){
+    await sleep(900);
+  }
+}
+function resolveImagePath(id){
+  if(!id) return '';
+  if(/\.(png|jpe?g|webp|gif)$/i.test(id)) return id.indexOf('/')>=0?id:'assets/images/'+id;
+  return 'assets/images/'+id+'.png';
+}
+function applySceneBg(bg){
+  var phone=document.querySelector('.phone');
+  if(!phone) return;
+  var path=ROOM_BG[bg]||'assets/images/bg.jpg';
+  phone.style.background='linear-gradient(180deg, rgba(26,21,48,.50), rgba(13,10,28,.74)), url("'+path+'") center/cover no-repeat';
+}
+function addImageAttachment(imageId,isMe){
+  var src=resolveImagePath(imageId);
+  if(!src) return;
+  var box=document.createElement('div');
+  box.className='json-image'+(isMe?' me':'');
+  var img=document.createElement('img');
+  img.src=src;
+  img.alt='';
+  img.loading='lazy';
+  img.onerror=function(){ box.remove(); };
+  box.appendChild(img);
+  chat.appendChild(box);
+  scrollDown();
+}
 function addLuca(node){
   const row=document.createElement('div'); row.className='row luca';
   const mini=document.createElement('div'); mini.className='mini';
   const wrap=document.createElement('div'); wrap.className='bwrap'; wrap.appendChild(node.type==='voice' ? makeVoiceBubble(node) : makeBubble(node,true));
   if(node.time){ const m=document.createElement('div'); m.className='meta'; m.textContent=node.time; wrap.appendChild(m);}
   row.appendChild(mini); row.appendChild(wrap); chat.appendChild(row); scrollDown();
+  if(node.image) addImageAttachment(node.image,false);
 }
 function addUser(opt){
   const row=document.createElement('div'); row.className='row me';
   const wrap=document.createElement('div'); wrap.className='bwrap'; wrap.appendChild(makeBubble(opt));
   const m=document.createElement('div'); m.className='meta'; m.style.textAlign='right'; m.textContent='既読'; wrap.appendChild(m);
   row.appendChild(wrap); chat.appendChild(row); scrollDown();
+  if(opt.image) addImageAttachment(opt.image,true);
 }
 function recordAward(key,source,delta){
   if(awarded.has(key)) return false;
@@ -1396,7 +1491,7 @@ function recordWord(v){
   if(found){ found.seenCount=(found.seenCount||0)+1; }
   else{
     appData.words.push({zh:v[0],pinyin:v[1],ja:v[2],
-      firstSeenEp:EPISODE_IDS[dayIdx]||('day'+(dayIdx+1)),firstSeenAt:new Date().toISOString(),seenCount:1});
+      firstSeenEp:currentEpId(),firstSeenAt:new Date().toISOString(),seenCount:1});
   }
   save();
 }
@@ -1428,9 +1523,10 @@ function renderJsonChoices(step){
 async function pick(opt,optionIdx){
   choicesEl.innerHTML=''; addUser(opt);
   const stepIdx=idx;
-  const key=(EPISODE_IDS[dayIdx]||('day'+(dayIdx+1)))+'-'+stepIdx;
+  const epId=currentEpId();
+  const key=epId+'-'+stepIdx;
   if(recordAward(key,'choice',opt.love||0)){ love+=(opt.love||0); updateLove(true); }
-  appData.choices.push({epId:EPISODE_IDS[dayIdx]||('day'+(dayIdx+1)),stepIdx:stepIdx,
+  appData.choices.push({epId:epId,stepIdx:stepIdx,
     optionIdx:optionIdx||0,sentZh:opt.zh,ts:new Date().toISOString()});
   idx++; save();
   if(opt.reply){ await sleep(350); await showTyping(800); addLuca(opt.reply); await sleep(300); }
@@ -1466,6 +1562,40 @@ async function pickJsonChoice(opt,optionIdx){
     }
   }
   runJsonEpisode();
+}
+function jsonEpisodeIndex(epId){
+  var room=getActiveRoom();
+  var list=room&&Array.isArray(room.episodes)&&room.episodes.length ? room.episodes : (EPISODE_MANIFEST.episodes||[]).map(function(ep){ return ep.id; });
+  return list.indexOf(epId);
+}
+function advanceJsonEpisode(nextEpId){
+  if(!nextEpId) return;
+  appData.progress.currentEpId=nextEpId;
+  appData.progress.currentIdx=0;
+  var epIndex=EPISODE_IDS.indexOf(nextEpId);
+  if(epIndex>=0) dayIdx=Math.min(epIndex,DAYS.length-1);
+  idx=0;
+  save();
+  updateLove(false);
+  startDay(false);
+}
+function jsonEnding(node){
+  var epId=currentEpId();
+  if(appData.progress.completedEps.indexOf(epId)<0) appData.progress.completedEps.push(epId);
+  save();
+  var next=node&&node.next;
+  var nextExists=next&&jsonEpisodeIndex(next)>=0;
+  const card=document.createElement('div');
+  card.className='ending';
+  card.innerHTML='<h3>'+escapeHtml(episodeLabel())+'</h3>'+
+    '<div class="lv">Lv.'+currentLevel()+' / '+Math.min(love,100)+'%</div>'+
+    (nextExists
+      ? '<button class="again" type="button" data-next="'+escapeHtml(next)+'">次のエピソードへ</button>'
+      : '<button class="sub-btn" type="button" onclick="restartAll()">最初から読み返す</button>');
+  var btn=card.querySelector('[data-next]');
+  if(btn) btn.addEventListener('click',function(){ advanceJsonEpisode(btn.dataset.next); });
+  chat.appendChild(card);
+  scrollDown();
 }
 function ending(){
   const lv=Math.min(6, Math.floor(Math.min(love,100)/17)+1);
@@ -1636,11 +1766,15 @@ function loadCurrentJsonEpisode(){
     return currentEpisode;
   });
 }
+function isUserSpeaker(speaker){
+  return speaker==='\u4e3b\u4eba\u516c'||speaker==='荳ｻ莠ｺ蜈ｬ'||speaker==='闕ｳ・ｻ闔・ｺ陷茨ｽｬ';
+}
 async function runJsonEpisode(){
   if(!currentEpisode||!Array.isArray(currentEpisode.steps)){ run(); return; }
   while(idx < currentEpisode.steps.length){
     const node=currentEpisode.steps[idx]||{};
     if(node.type==='scene'){
+      applySceneBg(node.bg);
       if(node.time) addTimestamp(node.time);
       idx++; save();
       await sleep(150);
@@ -1648,9 +1782,13 @@ async function runJsonEpisode(){
       addNarration(node.text);
       idx++; save();
       await sleep(350);
+    }else if(node.type==='explain'){
+      addExplain(node);
+      idx++; save();
+      await sleep(350);
     }else if(node.type==='line'||node.type==='msg'){
       var bubble=toBubbleStep(node);
-      if(node.speaker==='主人公'||node.speaker==='荳ｻ莠ｺ蜈ｬ') addUser(bubble);
+      if(isUserSpeaker(node.speaker)) addUser(bubble);
       else { await showTyping(700+(bubble.zh||'').length*35); addLuca(bubble); }
       idx++; save();
       await sleep(450);
@@ -1665,15 +1803,22 @@ async function runJsonEpisode(){
     }else if(node.type==='pause'){
       idx++; save();
       await sleep(node.ms||600);
+    }else if(node.type==='effect'){
+      idx++; save();
+      await applyJsonEffect(node);
+    }else if(node.type==='call'){
+      addFcChip('— call —');
+      idx++; save();
+      await sleep(450);
     }else if(node.type==='end'){
       idx++; save();
-      ending();
+      jsonEnding(node);
       return;
     }else{
       idx++; save();
     }
   }
-  ending();
+  jsonEnding({});
 }
 async function run(){
   while(idx < curStory().length){
@@ -1702,15 +1847,31 @@ function startDay(resetProgress){
     return;
   }
   currentEpisode=null;
+  applySceneBg(null);
   addDayChip();
   const t = curStory()[0].time || '23:00';
   addTimestamp(t);
   run();
 }
 function nextDay(){
-  if(dayIdx<DAYS.length-1){
+  if(activeRoomId==='luca_v2'){
+    var room=getActiveRoom();
+    var episodes=(room&&room.episodes)||[];
+    var current=currentEpId();
+    var pos=episodes.indexOf(current);
+    var next=pos>=0?episodes[pos+1]:null;
+    if(next){
+      if(appData.progress.completedEps.indexOf(current)<0) appData.progress.completedEps.push(current);
+      appData.progress.currentEpId=next;
+      appData.progress.currentIdx=0;
+      var epIndex=EPISODE_IDS.indexOf(next);
+      if(epIndex>=0) dayIdx=Math.min(epIndex,DAYS.length-1);
+      idx=0; save(); startDay(false);
+    }
+  }else if(dayIdx<DAYS.length-1){
     var completed=EPISODE_IDS[dayIdx]||('day'+(dayIdx+1));
     if(appData.progress.completedEps.indexOf(completed)<0) appData.progress.completedEps.push(completed);
+    appData.progress.currentEpId=EPISODE_IDS[dayIdx+1]||('day'+(dayIdx+2));
     dayIdx++; idx=0; save(); startDay(false);
   }
 }
@@ -1719,7 +1880,7 @@ function restartAll(){
   idx=0;
   love=0;
   awarded=new Set();
-  appData.progress.currentEpId='prologue';
+  appData.progress.currentEpId=activeRoomId==='luca_v2'?'episode1_5':'episode1';
   appData.progress.currentIdx=0;
   appData.progress.completedEps=[];
   save();
@@ -1993,7 +2154,9 @@ function renderRoomList(){
   ROOMS.filter(function(room){ return room.is_active; })
     .sort(function(a,b){ return (a.sort_order||0)-(b.sort_order||0); })
     .forEach(function(room){
-      var locked=love<(room.unlock_love_required||0);
+      var roomData=room.route?appData:readRoomData(room.id);
+      var roomLove=Number(roomData.affection&&roomData.affection.love)||0;
+      var locked=roomLove<(room.unlock_love_required||0);
       var card=document.createElement('button'); card.className='room-card'; card.disabled=locked;
       var face=document.createElement('img'); face.className='room-face'; face.src=room.face_image; face.alt=room.character_name;
       var body=document.createElement('div');
@@ -2002,14 +2165,14 @@ function renderRoomList(){
       var desc=document.createElement('div'); desc.className='room-desc'; desc.textContent=room.description_ja||'';
       var meta=document.createElement('div'); meta.className='room-meta';
       var lv=document.createElement('span');
-      lv.textContent=room.level_label||('親密度 Lv.'+currentLevel());
+      lv.textContent=room.level_label||('\u89aa\u5bc6\u5ea6 Lv.'+levelFromLove(roomLove));
       var progress=document.createElement('span');
       var episodes=room.episodes||[];
       if(room.route){
         var hskkCount=(appData.voiceLogs||[]).filter(function(log){ return log&&log.source==='hskk'; }).length;
         progress.textContent='発話記録 '+hskkCount+'回';
       }else{
-        var episodeIndex=episodes.indexOf(appData.progress.currentEpId);
+        var episodeIndex=episodes.indexOf(roomData.progress.currentEpId);
         var current=episodeIndex>=0?episodeIndex:Math.min(dayIdx,Math.max(episodes.length-1,0));
         progress.textContent='エピソード '+Math.min(current+1,episodes.length)+' / '+episodes.length;
       }
@@ -2018,6 +2181,13 @@ function renderRoomList(){
       card.appendChild(face); card.appendChild(body);
       card.addEventListener('click',function(){
         if(room.route){ location.href=room.route; return; }
+        if(!roomHasSave(room.id)){
+          setActiveRoom(room.id);
+          location.href='liveroom.html?room='+encodeURIComponent(room.id);
+          return;
+        }
+        load(room.id);
+        updateLove(false);
         document.getElementById('roomScreen').classList.remove('show');
         startDay(false);
       });
@@ -2038,9 +2208,16 @@ function bootstrap(){
   Promise.all([fetchJson('data/rooms.json'),fetchJson('data/gifts.json'),fetchJson('data/call.json'),fetchJson('data/episodes/manifest.json')])
     .then(function(values){
       ROOMS=values[0]; GIFTS=values[1]; CALL=values[2]; EPISODE_MANIFEST=values[3]||{episodes:[]};
-      load();
+      var params=new URLSearchParams(location.search);
+      var requestedRoom=params.get('room')||'luca';
+      if(!ROOM_SAVE_KEYS[requestedRoom]) requestedRoom='luca';
+      load(requestedRoom);
       updateLove(false);
       renderRoomList();
+      if(params.get('start')==='1'){
+        document.getElementById('roomScreen').classList.remove('show');
+        startDay(false);
+      }
     })
     .catch(function(error){
       var list=document.getElementById('roomList');

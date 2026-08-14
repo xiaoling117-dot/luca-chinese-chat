@@ -302,8 +302,7 @@
 // ===== スタートボタン =====
 document.getElementById('start').addEventListener('click', function(e){
   e.preventDefault();
-  var hasSave = !!localStorage.getItem('luca_data');
-  location.href = hasSave ? 'chat.html' : 'liveroom.html';
+  location.href = 'chat.html';
 });
 </script>
 </body>

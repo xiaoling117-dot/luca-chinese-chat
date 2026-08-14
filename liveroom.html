@@ -689,15 +689,20 @@ function makeUserId(){
     const r=Math.random()*16|0; return (c==='x'?r:(r&3|8)).toString(16);
   });
 }
+function targetRoomId(){
+  return new URLSearchParams(location.search).get('room')==='luca_v2' ? 'luca_v2' : 'luca';
+}
 function savePrologueData(){
+  const isV2=targetRoomId()==='luca_v2';
   const data={
     userId:makeUserId(),
     createdAt:new Date().toISOString(),
-    progress:{currentEpId:'episode1',completedEps:['prologue']},
+    progress:{currentEpId:isV2?'episode1_5':'episode1',completedEps:['prologue']},
     affection:{love:dmLove,level:1},
     words:[],giftLog:[],voiceLogs:[]
   };
-  localStorage.setItem('luca_data',JSON.stringify(data));
+  localStorage.setItem(isV2?'luca_data_v2':'luca_data',JSON.stringify(data));
+  if(isV2){ try{localStorage.setItem('luca_active_room','luca_v2');}catch(e){} }
 }
 async function runDM(){
   for(const step of DM_STEPS){
@@ -710,7 +715,11 @@ async function runDM(){
     else if(step.type==='choice'){ await dmChoose(step); }
     else if(step.type==='effect'){ await dmEffect(step); }
     else if(step.type==='pause'){ await wait(step.ms||0); }
-    else if(step.type==='end'){ savePrologueData(); window.location.href='chat.html'; return; }
+    else if(step.type==='end'){
+      savePrologueData();
+      window.location.href = 'chat.html?room='+encodeURIComponent(targetRoomId())+'&start=1';
+      return;
+    }
   }
 }
 document.getElementById('goDM').addEventListener('click',()=>{

@@ -8,7 +8,46 @@
     "unlock_love_required": 0,
     "sort_order": 0,
     "is_active": true,
-    "episodes": ["prologue", "episode1", "episode2"]
+    "episodes": [
+      "prologue",
+      "episode1",
+      "episode2"
+    ]
+  },
+  {
+    "id": "luca_v2",
+    "character_name": "陸（ルー）",
+    "title_ja": "陸との日々（完全版）",
+    "description_ja": "朗読ライブルームの出会いから続く、地の文つき完全版ストーリー。",
+    "face_image": "assets/images/luca-face-default.png",
+    "unlock_love_required": 0,
+    "sort_order": 0.5,
+    "is_active": true,
+    "episodes": [
+      "episode1",
+      "episode1_5",
+      "episode2",
+      "episode2_5",
+      "episode3",
+      "episode3_5",
+      "episode4",
+      "episode5",
+      "episode6",
+      "episode7",
+      "episode7_5",
+      "episode8",
+      "episode8_5",
+      "episode9",
+      "episode10",
+      "episode11",
+      "episode11_5",
+      "episode12",
+      "episode13",
+      "episode14",
+      "episode15",
+      "episode16",
+      "ending"
+    ]
   },
   {
     "id": "hskk_basic",
