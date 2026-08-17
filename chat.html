@@ -1458,7 +1458,7 @@ function addImageAttachment(imageId,isMe){
   var img=document.createElement('img');
   img.src=src;
   img.alt='';
-  img.loading='lazy';
+  img.onload=function(){ scrollDown(); };
   img.onerror=function(){ box.remove(); };
   box.appendChild(img);
   chat.appendChild(box);
