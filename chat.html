@@ -1415,6 +1415,11 @@ function addExplain(node){
   var title=document.createElement('h3');
   title.textContent=node.title||'Tips';
   card.appendChild(title);
+  if(node.intro){
+    var intro=document.createElement('p');
+    intro.textContent=node.intro;
+    card.appendChild(intro);
+  }
   (node.rows||[]).forEach(function(row){
     var div=document.createElement('div');
     div.innerHTML='<b>'+escapeHtml(row.zh||'')+'</b> <span style="color:var(--accent)">'+escapeHtml(row.pinyin||'')+'</span> <span style="color:var(--sub)">'+escapeHtml(row.ja||'')+'</span>';
