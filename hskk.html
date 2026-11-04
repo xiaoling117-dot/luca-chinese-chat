@@ -27,7 +27,8 @@
   .levels{display:flex;gap:6px;padding:9px 14px;background:rgba(15,11,30,.62);border-bottom:1px solid var(--line)}
   .level{padding:5px 10px;border-radius:99px;font-size:11px;color:var(--sub);border:1px solid var(--line)}
   .level.active{color:var(--accent);border-color:rgba(185,167,255,.4);background:rgba(185,167,255,.13)}
-  .level.disabled{opacity:.4}
+  .level.disabled{opacity:.55;cursor:default}
+  .level .soon{margin-left:4px;font-size:9px;letter-spacing:.04em}
   .content{flex:1;overflow-y:auto;padding:13px 14px calc(18px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px}
   .content::-webkit-scrollbar{width:0}
   .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -75,7 +76,7 @@
     <div class="head-text"><div class="head-name">陸（ルー）</div><div class="head-title">秘密の発音練習部屋</div></div>
   </header>
   <div class="levels" aria-label="練習レベル">
-    <span class="level active">HSKK 初級</span><span class="level disabled">中級</span><span class="level disabled">自由練習</span>
+    <span class="level active">HSKK 初級</span><span class="level disabled" aria-disabled="true">中級<small class="soon">近日公開</small></span><span class="level disabled" aria-disabled="true">自由練習<small class="soon">近日公開</small></span>
   </div>
   <section class="content" id="content">
     <div class="loading" id="loading">練習問題を読み込み中…</div>

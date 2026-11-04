@@ -437,7 +437,7 @@
     </div>
     <div class="inputbar">
       <div class="plus" id="plusBtn">＋</div>
-      <input type="text" id="freeInput" placeholder="自由入力＝2回目（AI）で実装予定…" disabled>
+      <input type="text" id="freeInput" placeholder="選択肢から返事してね" disabled>
       <button id="freeSend" class="free-send-btn" disabled>送信</button>
     </div>
   </div>
@@ -1444,10 +1444,12 @@ async function applyJsonEffect(node){
     await sleep(900);
   }
 }
+/* 容量の大きい写真は JPG に変換済み。台本データ（data/episodes）は ID のまま */
+var IMAGE_EXT={img_waitan_night:'jpg',img_pingan_apple:'jpg'};
 function resolveImagePath(id){
   if(!id) return '';
   if(/\.(png|jpe?g|webp|gif)$/i.test(id)) return id.indexOf('/')>=0?id:'assets/images/'+id;
-  return 'assets/images/'+id+'.png';
+  return 'assets/images/'+id+'.'+(IMAGE_EXT[id]||'png');
 }
 function applySceneBg(bg){
   var phone=document.querySelector('.phone');
