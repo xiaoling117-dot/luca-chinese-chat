@@ -1,5 +1,24 @@
 # 開発日誌
 
+## 2026-11-04（Claude Code）
+
+### 実施内容（初めての人向けの入口・表示の整理）
+- `data/rooms.json`：v1「陸との練習部屋」を `is_active:false` にしてルーム一覧から非表示に（データは残す）。
+- `chat.html`：入力欄の開発中文言「自由入力＝2回目（AI）で実装予定…」を「選択肢から返事してね」に変更。
+- `index.html`：「開発中」の落款（`.dev-seal`）を削除。案内文を「タップでルーム一覧へ。物語はあの夜の朗読ルームから」に変更。スタートボタンの `href` も実際の遷移先 `chat.html` に揃えた。
+- `hskk.html`：押せない「中級」「自由練習」に「近日公開」を添えた。
+- `liveroom.html`：viewport の `maximum-scale=1.0, user-scalable=no` を削除（拡大可能に）。
+- `index.html` / `liveroom.html`：`assets/images/favicon.svg` を favicon として指定（404 解消）。
+- `img_waitan_night.png`（2.4MB）→ `.jpg`（約410KB）、`img_pingan_apple.png`（1.9MB）→ `.jpg`（約300KB）。解像度はそのまま、JPEG 品質90・色間引きなし。
+
+### 修正理由
+- v1 はルーム一覧を開いた時点で自動セーブが作られプロローグが飛ばされるうえ、第3話のあと行き止まりになるため、初めての人が迷わないよう入口から外した。
+- 開発中の文言・印が、遊ぶ人に「未完成」の印象を与えていたため。
+
+### 実装メモ
+- 台本データ（`data/episodes/*.json`）は画像を ID（例：`img_waitan_night`）で参照しているだけなので書き換えていない。`chat.html` の `resolveImagePath()` に `IMAGE_EXT` 表を足し、この2枚だけ `.jpg` で解決するようにした。今後 JPG 化する画像はこの表に足す。
+- v1 の自動セーブ（`bootstrap()` → `load('luca')` → `save()`）自体は残っている。v1 を再公開するときは要修正。
+
 ## 2026-06-24（Codex）
 
 ### 実施内容
