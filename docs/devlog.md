@@ -1,5 +1,16 @@
 # 開発日誌
 
+## 2026-11-05（Claude Code）
+
+### 実施内容（PR #10 の画像の変更を元に戻す）
+- `assets/images/img_waitan_night.png`・`img_pingan_apple.png` を PR #10 の前（`c225e41`）の状態に戻し、JPG 2枚を削除。`assets/images/` は PR #10 の前と完全に同じ。
+- `chat.html`：`resolveImagePath()` の `IMAGE_EXT` 表を外し、元どおり `.png` で解決する形に戻した。
+- `CLAUDE.md`：「作業の前に `AGENTS.md` の『禁止事項』を読む」を作業ルールに足した。
+
+### 修正理由
+- `AGENTS.md`「禁止事項」の「画像ファイル（`assets/images/`）を変更・生成しない」に PR #10 が触れていた（Codex のレビュー P1、https://github.com/xiaoling117-dot/luca-chinese-chat/pull/10#discussion_r4466103077 ）。オーナーの判断で、Codex の基準どおり元に戻す。
+- 画像の容量（2枚で約4.4MB）の問題は残る。軽くするなら、規則を変えるかどうかをオーナーが決めてから。
+
 ## 2026-11-04（Claude Code）
 
 ### 実施内容（初めての人向けの入口・表示の整理）
