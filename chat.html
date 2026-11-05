@@ -1444,12 +1444,10 @@ async function applyJsonEffect(node){
     await sleep(900);
   }
 }
-/* 容量の大きい写真は JPG に変換済み。台本データ（data/episodes）は ID のまま */
-var IMAGE_EXT={img_waitan_night:'jpg',img_pingan_apple:'jpg'};
 function resolveImagePath(id){
   if(!id) return '';
   if(/\.(png|jpe?g|webp|gif)$/i.test(id)) return id.indexOf('/')>=0?id:'assets/images/'+id;
-  return 'assets/images/'+id+'.'+(IMAGE_EXT[id]||'png');
+  return 'assets/images/'+id+'.png';
 }
 function applySceneBg(bg){
   var phone=document.querySelector('.phone');
